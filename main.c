@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include "list.h"
-#include "RBtree.h"
 #include "HashTable.h"
 
 #include <sys/types.h>
