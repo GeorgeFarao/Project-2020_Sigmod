@@ -32,6 +32,12 @@ unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan 
 
 void insert_Record (char * Record , HashTable * table)
 {
+    if (table==NULL)
+    {
+        printf("Table is NULL programm will exit");
+        exit(1);
+    }
+    
     int hash_index = hash1(Record, table->size);
     
     if(table->Trees[ hash_index ] ==NULL)                   //If tree not exists
