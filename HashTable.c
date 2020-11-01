@@ -30,3 +30,20 @@ unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan 
     return hashval % HASHSIZE;
 }
 
+void insert_Record (char * Record , HashTable * table)
+{
+    int hash_index = hash1(Record, table->size);
+    
+    if(table->Trees[ hash_index ] ==NULL)                   //If tree not exists
+    {
+        table->Trees [hash_index] = new_RBTree("char *directory_name");     //we create tree
+        RBTinsert(table->Trees[ hash_index ], new_node(Record) );
+
+    }
+    else
+        RBTinsert(table->Trees[ hash_index ], new_node(Record) );
+    
+    
+}
+
+
