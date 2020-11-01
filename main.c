@@ -4,13 +4,14 @@
 
 #include "list.h"
 #include "RBtree.h"
+#include "HashTable.h"
 
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
 
-
+#define HASHTABLESIZE 128
 
 int main(int argc, const char * argv[]) {
     
@@ -19,7 +20,7 @@ int main(int argc, const char * argv[]) {
     DIR* Fd;
     struct dirent* my_file;
     char * name = malloc(1100);
-    
+    HashTable * Table = newHashTable(HASHTABLESIZE);
     printf("%s\n",argv[1]);
     Fd = opendir (argv[1]);
     if(Fd == NULL )
@@ -50,7 +51,7 @@ int main(int argc, const char * argv[]) {
                 {
                     sprintf(name, "%s//%s",my_file->d_name , file_json->d_name);
                     name[ strlen(name) - 5 ] = '\0';
-                    
+                    insert_Record(name, Table);
                     
                 }
             }
