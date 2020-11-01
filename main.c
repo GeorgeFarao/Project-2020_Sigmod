@@ -12,6 +12,8 @@
 
 #define HASHTABLESIZE 128
 
+
+//Must be executed with argv[1] = absolute path to directory W
 int main(int argc, const char * argv[]) {
     
     
