@@ -16,6 +16,7 @@ typedef struct HashTable{
 
 HashTable * newHashTable(int size);
 unsigned int hash1(char *str, unsigned int HASHSIZE);    // hash function by Dan Bernstein
+void insert_Record (char  Record , HashTable  table);
 
 
 #endif /* HashTable_h */
