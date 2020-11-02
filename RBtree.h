@@ -20,6 +20,10 @@ struct RBTree {
 
 ///////////////////// FUNCTIONS //////////////////
 
+struct node * find_key_RBtree(struct RBTree *T, char *key);
+
+void postorder_print_commons(struct RBTree *T, struct node *node);
+
 
 struct node * new_node( char * json_id );
 
