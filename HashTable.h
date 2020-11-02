@@ -17,6 +17,8 @@ typedef struct HashTable{
 HashTable * newHashTable(int size);
 unsigned int hash1(char *str, unsigned int HASHSIZE);    // hash function by Dan Bernstein
 void insert_Record (char *Record , HashTable *table);
+void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 );
+void print_commons(HashTable * table );
 
 
 #endif /* HashTable_h */
