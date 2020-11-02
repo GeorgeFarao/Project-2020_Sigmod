@@ -93,4 +93,14 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     
 }
 
+void print_commons(HashTable * table )
+{
+    for(int i=0 ;i<table->size ; i++)
+    {
+        if( table->Trees[i]!=NULL)
+            postorder_print_commons(table->Trees[i], table->Trees[i]->root);
+            
+    }
+}
+
 
