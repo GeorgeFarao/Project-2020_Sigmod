@@ -101,23 +101,27 @@ void delete_list( list * list)
     list->start = list->end = NULL;
     
 }
-void print_list( list * list)
+void print_list( list * mylist)
 {
-    if(list->start == NULL)
+   
+    lnode * temp = mylist->start;
+    lnode * temp_next;
+    
+    while ( temp->next !=NULL)
     {
-        printf("List is empty (print_list)\n");
-        return;
-    }
-    else
-    {
-        lnode *temp = list->start;
         
-        while(temp != NULL)
+        temp_next=temp->next;
+        while (temp_next!=NULL)
         {
-            printf("%s \t",temp->json_name);
-            temp = temp->next;
+            printf("%s , %s \n",temp->json_name , temp_next->json_name);
+            temp_next=temp_next;
         }
+        
+        temp=temp->next;
     }
+    
+    mylist->print_flag=1;
+    
 }
 
 /*
