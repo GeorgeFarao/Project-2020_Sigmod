@@ -6,6 +6,8 @@ list * new_list(void)
     list * mylist = malloc(sizeof( list));
     mylist->start = NULL;
     mylist->end = NULL;
+    mylist->print_flag = 0;
+    mylist->size=0;    
     
     return mylist;
 }
@@ -33,6 +35,10 @@ void insert_lnode( list* list,  lnode* lnode)
         list->end->next = lnode;
         list->end = lnode;
     }
+    
+    list->size = list->size + 1;
+    
+    
 }
 
 /*
