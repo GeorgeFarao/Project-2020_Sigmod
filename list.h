@@ -12,8 +12,11 @@ typedef struct lnode {
 }lnode;
 
 typedef struct list {
-     lnode * start;
-     lnode * end;
+    lnode * start;
+    lnode * end;
+    int print_flag;
+    int size;
+    
 }list;
 
 
@@ -27,7 +30,7 @@ int delete_key_list( list * list, char * key);
 
 void delete_list( list * list);
 
-void print_list( list * list);
+void print_list( list * mylist);
 
 // Returns pointer to patient or NULL if doesn't exist
 // patientRecord * find_patient( list * list, int recID);
