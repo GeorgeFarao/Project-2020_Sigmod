@@ -220,9 +220,6 @@ struct node * minimum(struct RBTree * T, struct node * x)
 }
 
 
-
-
-
 // Traversing tree in postorder and deleting each node
 void destroyRBTree(struct RBTree * T, struct node * recursion_root)
 {
@@ -250,6 +247,38 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
 
 }
 
+struct node * find_key_RBtree(struct RBTree *T, char *key)
+{
 
+    if(T->root==T->NIL)
+        return NULL;
+    struct node* temp = T->root;
 
+    while(temp != T->NIL)
+    {
+        if(strcmp(temp->key ,key) == 0)
+            return temp;
+        
+        else if(strcmp(temp->key, key) < 0) //temp->voter->id < key, go right
+            temp = temp->right;
+        else //go left
+            temp = temp->left;
+    }
+
+    return NULL;
+    
+}
+
+void postorder_print_commons(struct RBTree *T, struct node *node)
+{
+    if (node != T->NIL)
+    {
+        postorder_print_commons(T, node->left);
+        postorder_print_commons(T, node->right);
+        
+        if ( node->list_same_jsons->print_flag==0 )
+            print_list(node->list_same_jsons);
+
+    }
+}
 
