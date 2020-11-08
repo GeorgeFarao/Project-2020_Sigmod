@@ -108,9 +108,17 @@ int main(int argc, char * argv[]) {
             break;
         }
         int real_value= atoi(value);
-        //printf("%s %s %d\n",str1,str2,real_value);
+        if(real_value ==1)
+        match_same_products(Table,str1,str2);
+
         
     }
+
+print_list(Table);
+}
+
+
+
 
 
 }
