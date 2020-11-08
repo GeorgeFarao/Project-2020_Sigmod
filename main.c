@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#include "list.h"
 #include "HashTable.h"
 
 #include <sys/types.h>
