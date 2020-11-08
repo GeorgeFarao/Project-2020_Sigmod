@@ -77,3 +77,48 @@ void add_category_value (json_list * jsonList, char * category, char * str_value
     }
 }
 
+void delete_json_list (json_list * jsonList)
+{
+    if (jsonList->start == NULL)
+    {
+        printf("List is empty (delete_json_list)\n");
+        return;
+    }
+    else
+    {
+        json_node *prev = jsonList->start;
+        
+        while(jsonList->start != NULL)
+        {
+            jsonList->start = jsonList->start->next;
+            delete_list(prev->values);
+            free(prev->values);
+            free(prev->category);
+            free(prev);
+            prev = jsonList->start;
+        }
+    }
+    
+    jsonList->start = jsonList->end = NULL;    
+}
+
+void print_json_list (json_list * jsonList)
+{
+    json_node * temp_node = jsonList->start;
+
+    while (temp_node != NULL)
+    {
+        lnode * temp_lnode = temp_node->values->start;
+        printf("|||  %s  |||\n", temp_node->category);
+        
+        while (temp_lnode != NULL)
+        {
+            printf("%s ", temp_lnode->json_name);
+            temp_lnode = temp_lnode->next;
+        }
+        printf("\n");
+
+        temp_node = temp_node->next;
+    } 
+}
+
