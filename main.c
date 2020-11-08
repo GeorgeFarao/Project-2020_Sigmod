@@ -109,12 +109,12 @@ int main(int argc, char * argv[]) {
         }
         int real_value= atoi(value);
         if(real_value ==1)
-        match_same_products(Table,str1,str2);
+            match_same_products(Table,str1,str2);
 
         
     }
 
-print_commons(Table);
+    print_commons(Table);
 
 
 
