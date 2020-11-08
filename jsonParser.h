@@ -1,3 +1,5 @@
+//Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas
+
 #include "list.h"
 
 typedef struct json_node {
