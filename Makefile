@@ -1,7 +1,7 @@
 CC = gcc -g
 
-ex: main.o RBtree.o list.o HashTable.o
-	$(CC) -o ex main.o  RBtree.o list.o HashTable.o
+ex: main.o RBtree.o list.o HashTable.o jsonParser.o
+	$(CC) -o ex main.o  RBtree.o list.o HashTable.o jsonParser.o
 
 main.o: main.c
 	$(CC) -c main.c
@@ -15,9 +15,12 @@ list.o: list.c
 HashTable.o: HashTable.c
 	$(CC) -c HashTable.c
 
+jsonParser: jsonParser.c
+	$(CC) -c jsonParser.c	
+
 
 .PHONY: clean
 
 clean:
-	rm -f ex main.o RBtree.o list.o HashTable.o
+	rm -f ex main.o RBtree.o list.o HashTable.o jsonParser.o
 	clear
