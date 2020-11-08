@@ -276,7 +276,7 @@ void postorder_print_commons(struct RBTree *T, struct node *node)
         postorder_print_commons(T, node->left);
         postorder_print_commons(T, node->right);
         
-        if ( node->list_same_jsons->print_flag==0 )
+        if ( node->list_same_jsons->print_flag==0 && node->list_same_jsons->size >1 )
             print_list(node->list_same_jsons);
 
     }
