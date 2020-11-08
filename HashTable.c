@@ -74,7 +74,7 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     
     lnode * lnode_temp = tree_node2->list_same_jsons->start;
     
-    if(tree_node1->list_same_jsons==tree_node2->list_same_jsons ) //If already  in same list do nothing
+    if (tree_node1->list_same_jsons == tree_node2->list_same_jsons) //If already  in same list do nothing
         return ;
 
     tree_node1->list_same_jsons->end->next = tree_node2->list_same_jsons->start;

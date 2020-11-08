@@ -37,8 +37,7 @@ void insert_lnode( list* list,  lnode* lnode)
     }
     
     list->size = list->size + 1;
-    
-    
+
 }
 
 /*
@@ -107,9 +106,10 @@ void delete_list( list * list)
     list->start = list->end = NULL;
     
 }
-void print_list( list * mylist)
+void print_list(list * mylist)
 {
    
+    FILE * fp = fopen("output.txt", "a");    
     lnode * temp = mylist->start;
     lnode * temp_next;
     
@@ -119,14 +119,15 @@ void print_list( list * mylist)
         temp_next=temp->next;
         while (temp_next!=NULL)
         {
-            printf("%s , %s \n",temp->json_name , temp_next->json_name);
-            temp_next=temp_next;
+            fprintf(fp, "%s, %s \n", temp->json_name , temp_next->json_name);
+            temp_next = temp_next->next;
         }
         
         temp=temp->next;
     }
     
-    mylist->print_flag=1;
+    mylist->print_flag = 1;
+    fclose(fp);
     
 }
 
