@@ -113,6 +113,7 @@ int main(int argc, char * argv[]) {
             break;
         }
         int real_value= atoi(value);
+<<<<<<< HEAD
         //printf("%s %s %d\n",str1,str2,real_value);
         if (real_value==1){
             match_same_products(Table,str1,str2);
@@ -120,5 +121,19 @@ int main(int argc, char * argv[]) {
     }
 
     print_commons(Table);
+=======
+        if(real_value ==1)
+            match_same_products(Table,str1,str2);
+
+        
+    }
+
+    print_commons(Table);
+
+
+
+
+
+>>>>>>> 3d5689bdcfc018b01e47a819478636216f1d3840
 
 }
