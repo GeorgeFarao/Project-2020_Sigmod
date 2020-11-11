@@ -19,6 +19,8 @@ unsigned int hash1(char *str, unsigned int HASHSIZE);    // hash function by Dan
 void insert_Record (char *Record , HashTable *table, json_list *);
 void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 );
 void print_commons(HashTable * table );
+void delete_hashtable(HashTable * table);
+
 
 
 #endif /* HashTable_h */

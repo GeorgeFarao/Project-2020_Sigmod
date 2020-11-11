@@ -47,7 +47,6 @@ int main(int argc, char * argv[]) {
     DIR* Fd;
     struct dirent* my_file;
     char * name = malloc(1100);
-    char *token;
     HashTable * Table = newHashTable(HASHTABLESIZE);
     printf("%s\n",argv[1]);
     Fd = opendir (argv[1]);
@@ -122,4 +121,5 @@ int main(int argc, char * argv[]) {
     print_commons(Table);
     
 
+    
 }
