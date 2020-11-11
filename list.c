@@ -85,9 +85,9 @@ int delete_key_list(struct list * list, char * key) //returns 1 if key was found
 */
 void delete_list( list * list)
 {
+
     if (list->start == NULL)
     {
-        printf("List is empty (delete_list)\n");
         return;
     }
     else
@@ -104,8 +104,19 @@ void delete_list( list * list)
     }
     
     list->start = list->end = NULL;
-    
+    list->size=-1;      //so other nodes know that its deleted
 }
+
+void delete_list_node(list * List){
+    struct lnode * tmp = List->start;
+    List->start = List->start->next;
+    free(tmp->json_name);
+    free(tmp);
+    List->size--;
+
+}
+
+
 void print_list(list * mylist)
 {
    

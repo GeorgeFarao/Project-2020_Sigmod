@@ -246,10 +246,11 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
     delete_json_list(recursion_root->json_info);
     free(recursion_root->json_info);
     
-    if( recursion_root->list_same_jsons!=NULL)
+    if( recursion_root->list_same_jsons!=NULL && recursion_root->list_same_jsons->size!=-1)
     {
-        delete_list(recursion_root->list_same_jsons);
-        free(recursion_root->list_same_jsons);
+        delete_list_node(recursion_root->list_same_jsons);
+        if(recursion_root->list_same_jsons->size==0)
+            free(recursion_root->list_same_jsons);
         recursion_root->list_same_jsons=NULL;
         
     }

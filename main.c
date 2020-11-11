@@ -86,9 +86,11 @@ int main(int argc, char * argv[]) {
                     json_list * jsonList = Parser(second_full_path);
                    // print_json_list(jsonList);
                     insert_Record(name, Table,jsonList);
-
+                    free(second_full_path);
                 }
             }
+            free(full_path);
+            closedir(in_directory);
         }
 
     }
@@ -119,7 +121,12 @@ int main(int argc, char * argv[]) {
     }
 
     print_commons(Table);
-    
 
-    
+
+    delete_hashtable(Table);
+    closedir(Fd);
+    fclose(dataset_w);
+    free(name);
+    free(buffer);
+    free(Table);
 }

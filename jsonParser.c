@@ -133,7 +133,7 @@ int skip_whitespaces(FILE * file){
 
 json_list * Parser(char * file)
 {
-    char * buffer= malloc(1000000);
+    char * buffer= malloc(100000);
     FILE * fptr = fopen(file,"r");
     json_list * json_list= new_json_list();
     if(fptr==NULL)
@@ -146,7 +146,7 @@ json_list * Parser(char * file)
     char prev_ch;
     ch=(char)skip_whitespaces(fptr);
     int count=0;
-    char *category=malloc(10000000);
+    char *category=malloc(10000);
     if(ch!='{')
         return NULL;
     while (1)       //lines
@@ -285,6 +285,7 @@ json_list * Parser(char * file)
     }
 
     fclose(fptr);
+    free(category);
     free(buffer);
     return json_list;
 }

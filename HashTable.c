@@ -82,8 +82,7 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 
     tree_node1->list_same_jsons->size += tree_node2->list_same_jsons->size;
 
-    
-    
+
     while( lnode_temp!=NULL)
     {
         struct node * neighbour;
@@ -91,9 +90,9 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
         int neighbour_hash_index = hash1(lnode_temp->json_name, table->size);
         
         neighbour = find_key_RBtree( table->Trees[ neighbour_hash_index ],  lnode_temp->json_name );
-        free(neighbour->list_same_jsons);           //check here if segme
+
+            free(neighbour->list_same_jsons);           //check here if segme
         neighbour->list_same_jsons = tree_node1->list_same_jsons;
-        
         lnode_temp = lnode_temp->next;
     }
     
