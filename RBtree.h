@@ -9,7 +9,7 @@ struct node {
     struct node * left, * right, * parent; // links for left, right children and parent
     char * key; // entryDate or id
     list * list_same_jsons;
-    
+    json_list * json_info;
 };
 
 struct RBTree {
@@ -25,7 +25,7 @@ struct node * find_key_RBtree(struct RBTree *T, char *key);
 void postorder_print_commons(struct RBTree *T, struct node *node);
 
 
-struct node * new_node( char * json_id );
+struct node * new_node( char * json_id, json_list *);
 
 struct RBTree * new_RBTree(char * directory_name );
 

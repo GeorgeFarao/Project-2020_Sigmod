@@ -30,7 +30,7 @@ unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan 
     return hashval % HASHSIZE;
 }
 
-void insert_Record (char * Record , HashTable * table)
+void insert_Record (char * Record , HashTable * table, json_list * jsonList)
 {
     if (table==NULL)
     {
@@ -43,11 +43,11 @@ void insert_Record (char * Record , HashTable * table)
     if(table->Trees[ hash_index ] ==NULL)                   //If tree not exists
     {
         table->Trees [hash_index] = new_RBTree("char *directory_name");     //we create tree
-        RBTinsert(table->Trees[ hash_index ], new_node(Record) );
+        RBTinsert(table->Trees[ hash_index ], new_node(Record, jsonList) );
 
     }
     else
-        RBTinsert(table->Trees[ hash_index ], new_node(Record) );
+        RBTinsert(table->Trees[ hash_index ], new_node(Record, jsonList));
     
     
 }
@@ -61,17 +61,17 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     
     struct node * tree_node1;
     struct node * tree_node2;
-    
-    
+
+
     tree_node1 = find_key_RBtree(table->Trees[index1], spec_id1);
     tree_node2 = find_key_RBtree(table->Trees[index2], spec_id2);
-    
+
     if(tree_node1 ==NULL || tree_node2== NULL)
     {
-        printf("Something went bad in match same products ");
+        printf("Product not found\n");
         return ;
     }
-    
+
     lnode * lnode_temp = tree_node2->list_same_jsons->start;
     
     if (tree_node1->list_same_jsons == tree_node2->list_same_jsons) //If already  in same list do nothing

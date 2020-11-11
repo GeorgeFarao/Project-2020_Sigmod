@@ -5,7 +5,7 @@
 
 
 
-struct node * new_node( char * json_id )
+struct node * new_node( char * json_id, json_list * jsonList)
 {
     struct node * node = malloc(sizeof(struct node));
     
@@ -21,6 +21,7 @@ struct node * new_node( char * json_id )
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
+    node->json_info=jsonList;
     node->color = 'R';
     
     return node;
@@ -249,8 +250,8 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
 
 struct node * find_key_RBtree(struct RBTree *T, char *key)
 {
-
-    if(T->root==T->NIL)
+    //T==NULL in case product doesnt exist
+    if(T==NULL || T->root==T->NIL)
         return NULL;
     struct node* temp = T->root;
 

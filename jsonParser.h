@@ -27,3 +27,7 @@ void insert_json_list_node (json_list * jsonList, json_node * node);
 void delete_json_list (json_list * jsonList);
 
 void print_json_list (json_list * jsonList);
+
+json_list * Parser(char *);
+
+int skip_whitespaces(FILE *);

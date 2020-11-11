@@ -81,7 +81,12 @@ int main(int argc, char * argv[]) {
                 {
                     sprintf(name, "%s//%s",my_file->d_name , file_json->d_name);
                     name[ strlen(name) - 5 ] = '\0';
-                    insert_Record(name, Table);
+                    char *second_full_path=malloc(strlen(full_path)+strlen(file_json->d_name)+2);
+                    sprintf(second_full_path,"%s/%s",full_path,file_json->d_name);
+                    //printf("%s\n\n\n",second_full_path);
+                    json_list * jsonList=NULL; /*Parser(second_full_path);*/
+                   // print_json_list(jsonList);
+                    insert_Record(name, Table,jsonList);
 
                 }
             }
@@ -109,8 +114,11 @@ int main(int argc, char * argv[]) {
         }
         int real_value= atoi(value);
         //printf("%s %s %d\n",str1,str2,real_value);
-        
+        if (real_value==1){
+            match_same_products(Table,str1,str2);
+        }
     }
 
+    print_commons(Table);
 
 }
