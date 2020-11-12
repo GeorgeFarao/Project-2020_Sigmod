@@ -1,7 +1,9 @@
-//Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas
+/* Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas */
 
 #include "jsonParser.h"
 
+
+/* Creating main json list with product info */
 json_list * new_json_list(void)
 {
     json_list * list = malloc(sizeof(json_list));
@@ -12,6 +14,8 @@ json_list * new_json_list(void)
     return list;
 }
 
+
+/* New json node - New category to product */
 json_node * new_json_node(char * category)
 {
     json_node * node = malloc(sizeof(json_node));
@@ -25,6 +29,8 @@ json_node * new_json_node(char * category)
     return node;
 }
 
+
+/* Insert json node - category to json list */
 void insert_json_list_node (json_list * jsonList, json_node * node)
 {
     if(jsonList->start == NULL)
@@ -42,13 +48,13 @@ void insert_json_list_node (json_list * jsonList, json_node * node)
 }
 
 
-
+/* Add value to category */
 void add_category_value (json_list * jsonList, char * category, char * str_value)
 {
     json_node * temp_node = jsonList->start;
     lnode * json_node_value = new_lnode(str_value);
 
-    if (temp_node == NULL) // No json_nodes in json_list case
+    if (temp_node == NULL) /* No json_nodes in json_list case */
     {
         temp_node = new_json_node(category);
         insert_lnode(temp_node->values,  json_node_value);
@@ -58,9 +64,9 @@ void add_category_value (json_list * jsonList, char * category, char * str_value
     }
     else
     {
-        while (temp_node != NULL)
+        while (temp_node != NULL) /* Check if category exists */
         {
-            if (strcmp(temp_node->category, category) == 0) // Found category so insert value at json_node
+            if (strcmp(temp_node->category, category) == 0) /* Found category so insert value at json_node */
             {
                 insert_lnode(temp_node->values,  json_node_value);
                 return;
@@ -69,14 +75,16 @@ void add_category_value (json_list * jsonList, char * category, char * str_value
             temp_node = temp_node->next;
         }
 
-        // No category found so create category and add value
+        /* No category found so create category and add value */
 
-        temp_node = new_json_node(category); // Initialize json_node
-        insert_lnode(temp_node->values,  json_node_value); // Insert value at json_node
-        insert_json_list_node (jsonList, temp_node); // Insert json_node at json_list
+        temp_node = new_json_node(category); /* Initialize json_node - category */
+        insert_lnode(temp_node->values,  json_node_value); /* Insert value at json_node - category */
+        insert_json_list_node (jsonList, temp_node); /* Insert json_node - category with values - at json_list */
     }
 }
 
+
+/* Deleting main json list */
 void delete_json_list (json_list * jsonList)
 {
     if (jsonList->start == NULL)
@@ -102,6 +110,8 @@ void delete_json_list (json_list * jsonList)
     jsonList->start = jsonList->end = NULL;    
 }
 
+
+/* Print json list for debugging purposes */
 void print_json_list (json_list * jsonList)
 {
     json_node * temp_node = jsonList->start;
@@ -122,6 +132,8 @@ void print_json_list (json_list * jsonList)
     } 
 }
 
+
+/* Skipping whitespaces */
 int skip_whitespaces(FILE * file){
     int ch=fgetc(file);
     while (ch == '\n' || ch == ' ' || ch == '\t')
@@ -130,7 +142,7 @@ int skip_whitespaces(FILE * file){
 }
 
 
-
+/* Parsing function that reads json file */
 json_list * Parser(char * file)
 {
     char * buffer= malloc(100000);
