@@ -296,3 +296,45 @@ void postorder_print_commons(struct RBTree *T, struct node *node)
     }
 }
 
+
+/* Inspired by https://www.techiedelight.com/determine-binary-tree-satisfy-height-balanced-property-red-black-tree/ */
+
+/* Recursive function to determine if the given binary tree */
+/* satisfy the height-balanced property of red–black tree or not */
+/* It takes reference to rootMax variable for storing the */
+/* maximum height of the root node */
+int isHeightBalanced(struct RBTree * tree, struct node *root, int *rootMax)
+{
+    /* Base case */
+    if (root == tree->NIL)
+        return 1;
+ 
+    /* variables to hold maximum height of left and right subtree */
+    int leftMax = 0, rightMax = 0;
+ 
+    /* proceed only if both left and right subtree are balanced */
+    if (isHeightBalanced(tree, root->left, &leftMax) &&
+        isHeightBalanced(tree, root->right, &rightMax))
+    {
+        /* Calculate the minimum height of the left and right subtree */
+        int rootMin;
+        if (leftMax <= rightMax)
+            rootMin = leftMax + 1;
+        else
+            rootMin = rightMax + 1;    
+        
+        /* Calculate the maximum height of the left and right subtree */
+        if (leftMax >= rightMax)
+            *rootMax = leftMax + 1;
+        else    
+            *rootMax = rightMax + 1;
+ 
+        /* return 1 if the root node is height balanced */
+        if (*rootMax <= 2*rootMin)
+            return 1;
+    }
+ 
+    /* return 0 if either left or right subtree is unbalanced */
+    return 0;
+}
+
