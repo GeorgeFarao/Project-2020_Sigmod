@@ -43,4 +43,6 @@ struct node * minimum(struct RBTree * T, struct node * x);
 
 void destroyRBTree(struct RBTree * T, struct node * node);
 
+/* Check if height is balanced - Useful for unit testing */
+int isHeightBalanced(struct RBTree * tree, struct node *root, int *rootMax); 
 
