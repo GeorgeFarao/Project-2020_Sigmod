@@ -41,6 +41,48 @@ void test_list (void)
     free(temp_list);
 }
 
+void test_json_list(void)
+{
+    json_list *temp_list = new_json_list();
+    json_node *temp_jnode1, *temp_jnode2;
+
+    temp_jnode1 = new_json_node("first_cat");
+    temp_jnode2 = new_json_node("second_cat");
+
+    /* Check for creation of list */
+    TEST_CHECK(temp_list != NULL);
+    TEST_MSG("List is null after creation.\n");
+
+    /* Check for creation of jnodes */
+    TEST_CHECK(temp_jnode1 != NULL);
+    TEST_MSG("lnode1 is null after creation.\n");
+    TEST_CHECK(temp_jnode2 != NULL);
+    TEST_MSG("lnode2 is null after creation.\n");
+
+    add_category_value(temp_list, "first_cat", "value1");
+    add_category_value(temp_list, "second_cat", "value2");
+
+    TEST_CHECK(strcmp(temp_list->start->category, "first_cat") == 0 &&
+               strcmp(temp_list->end->category, "second_cat") == 0);
+    TEST_MSG("Something went wrong with list of categories insertion.");
+
+    TEST_CHECK(strcmp(temp_list->start->values->start->json_name, "value1") == 0 &&
+               strcmp(temp_list->end->values->start->json_name, "value2") == 0);
+    TEST_MSG("Something went wrong with list of values insertion.");
+
+    delete_json_list(temp_list);
+    TEST_CHECK(temp_list->start == NULL && temp_list->end == NULL);
+    TEST_MSG("Something went wrong with list deletion.");
+
+    free(temp_list);
+    free(temp_jnode1->category);
+    free(temp_jnode1->values);
+    free(temp_jnode1);
+    free(temp_jnode2->category);
+    free(temp_jnode2->values);
+    free(temp_jnode2);
+}
+
 void test_hashtable(void)
 {
     HashTable * table = newHashTable(15);
@@ -93,7 +135,7 @@ void test_hashtable(void)
 
 TEST_LIST = {
     {"hash", test_hashtable},
-
+    {"json_list", test_json_list},
     {"list", test_list},
     {NULL, NULL}
 };
