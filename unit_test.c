@@ -7,6 +7,42 @@
 #include <unistd.h>
 #include <errno.h>
 
+
+void test_RBTree (void)
+{   
+    /* Creating RBTree and inserting nodes with json_id's as the given sequence of numbers below */
+    /* 8, 18, 5, 15, 17, 25, 40, 80 */
+    struct RBTree * tree = new_RBTree("www.ebay.com");
+    int rootMax = 0;
+
+    /* Creating nodes */
+    struct node * tree_node1 = new_node("8.json", NULL);
+    struct node * tree_node2 = new_node("18.json", NULL);
+    struct node * tree_node3 = new_node("5.json", NULL);
+    struct node * tree_node4 = new_node("15.json", NULL);
+    struct node * tree_node5 = new_node("17.json", NULL);
+    struct node * tree_node6 = new_node("25.json", NULL);
+    struct node * tree_node7 = new_node("40.json", NULL);
+    struct node * tree_node8 = new_node("80.json", NULL);
+
+    /* Inserting nodes */
+    RBTinsert(tree, tree_node1);
+    RBTinsert(tree, tree_node2);
+    RBTinsert(tree, tree_node3);
+    RBTinsert(tree, tree_node4);
+    RBTinsert(tree, tree_node5);
+    RBTinsert(tree, tree_node6);
+    RBTinsert(tree, tree_node7);
+    RBTinsert(tree, tree_node8);
+
+    /* Check if height is balanced */
+    TEST_CHECK(isHeightBalanced(tree, tree->root, &rootMax) == 1);
+    TEST_MSG("Error in RBTree, height not balanced!, %d");
+
+    destroyRBTree(tree, tree->root);
+}
+
+
 void test_list (void)
 {
     list * temp_list = new_list();
@@ -134,6 +170,7 @@ void test_hashtable(void)
 
 
 TEST_LIST = {
+    {"RBTree", test_RBTree},
     {"hash", test_hashtable},
     {"json_list", test_json_list},
     {"list", test_list},
