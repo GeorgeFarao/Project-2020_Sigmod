@@ -37,7 +37,7 @@ void test_RBTree (void)
 
     /* Check if height is balanced */
     TEST_CHECK(isHeightBalanced(tree, tree->root, &rootMax) == 1);
-    TEST_MSG("Error in RBTree, height not balanced!, %d");
+    TEST_MSG("Error in RBTree, height not balanced!");
 
     destroyRBTree(tree, tree->root);
 }
