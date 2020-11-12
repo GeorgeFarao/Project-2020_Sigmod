@@ -87,11 +87,11 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     {
         struct node * neighbour;
 
-        int neighbour_hash_index = hash1(lnode_temp->json_name, table->size);
-        
+        int neighbour_hash_index = hash1(lnode_temp->json_name, table->size);        
         neighbour = find_key_RBtree( table->Trees[ neighbour_hash_index ],  lnode_temp->json_name );
+        
         if(strcmp(neighbour->list_same_jsons->end->json_name,neighbour->key)==0)
-            free(neighbour->list_same_jsons);           //check here if segme
+            free(neighbour->list_same_jsons);          
 
         neighbour->list_same_jsons = tree_node1->list_same_jsons;
         lnode_temp = lnode_temp->next;

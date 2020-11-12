@@ -1,17 +1,13 @@
 //Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas
 
 #include <stdio.h>
-
 #include "HashTable.h"
-
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
 
 #define HASHTABLESIZE 128
-
-
 
 
 int get_max_size_line(char *file_name){
@@ -57,24 +53,25 @@ int main(int argc, char * argv[]) {
     }
 
     //we read dataset X
-    while (( my_file = readdir(Fd)) != NULL)
+    while ((my_file = readdir(Fd)) != NULL)
     {       //read directory and count subdirs
 
         if (strcmp(my_file->d_name, ".") != 0 && strcmp(my_file->d_name, "..") != 0)
         {
             DIR * in_directory;
             struct dirent * file_json;
-            char *full_path=malloc(strlen((argv[1]))+strlen(my_file->d_name)+2);
+            char *full_path = malloc(strlen((argv[1]))+strlen(my_file->d_name)+2);
             sprintf(full_path,"%s/%s",argv[1],my_file->d_name);
             full_path[strlen(full_path)]='\0';
             in_directory = opendir(full_path);
-            if(in_directory == NULL)
+            
+            if (in_directory == NULL)
             {
                 perror("Didnt open inner directory");
                 return 1;
-
             }
-            while (( file_json = readdir(in_directory)) != NULL)
+            
+            while ((file_json = readdir(in_directory)) != NULL)
             {
                 if (strcmp(file_json->d_name, ".") != 0 && strcmp(file_json->d_name, "..") != 0)
                 {
@@ -82,13 +79,12 @@ int main(int argc, char * argv[]) {
                     name[ strlen(name) - 5 ] = '\0';
                     char *second_full_path=malloc(strlen(full_path)+strlen(file_json->d_name)+2);
                     sprintf(second_full_path,"%s/%s",full_path,file_json->d_name);
-                    //printf("%s\n\n\n",second_full_path);
                     json_list * jsonList = Parser(second_full_path);
-                   // print_json_list(jsonList);
                     insert_Record(name, Table,jsonList);
                     free(second_full_path);
                 }
             }
+
             free(full_path);
             closedir(in_directory);
         }
@@ -96,32 +92,31 @@ int main(int argc, char * argv[]) {
     }
 
 
-    int buffer_size= get_max_size_line(argv[2]);
-    char * buffer= malloc(buffer_size);
+    int buffer_size = get_max_size_line(argv[2]);
+    char * buffer = malloc(buffer_size);
 
     FILE * dataset_w = fopen(argv[2],"r");
     fgets(buffer,buffer_size,dataset_w);
 
     while (fgets(buffer,buffer_size,dataset_w)!=NULL)
-    {   char * str1, * str2, * value;
+    {   
+        char * str1, * str2, * value;
+        
         buffer[strlen(buffer)-1]='\0';
         str1=strtok(buffer,",");
-        //str1=token;
         str2= strtok(NULL, ",");
-        //str2=token;
         value=strtok(NULL, ",");
-        if(value==NULL) {
+        
+        if(value==NULL) 
             break;
-        }
-        int real_value= atoi(value);
-        //printf("%s %s %d\n",str1,str2,real_value);
-        if (real_value==1){
+
+        int real_value = atoi(value);
+
+        if (real_value == 1)
             match_same_products(Table,str1,str2);
-        }
     }
 
     print_commons(Table);
-
 
     delete_hashtable(Table);
     closedir(Fd);

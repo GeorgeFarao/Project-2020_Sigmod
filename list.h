@@ -20,7 +20,7 @@ typedef struct list {
 }list;
 
 
- list * new_list(void);
+list * new_list(void);
 
 lnode * new_lnode(char * jsonName);
 
