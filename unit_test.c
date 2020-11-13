@@ -53,7 +53,7 @@ void test_list (void)
     insert_lnode(temp_list, temp_lnode2);
 
     /* Check for creation of list */
-    TEST_CHECK(temp_list != NULL);    
+    TEST_CHECK(temp_list == NULL);    
     TEST_MSG("List is null after creation.\n");
 
     /* Check for creation of lnodes */
