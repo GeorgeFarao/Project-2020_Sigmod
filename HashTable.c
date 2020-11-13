@@ -86,6 +86,9 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     tree_node1->list_same_jsons->end = tree_node2->list_same_jsons->end;
     tree_node1->list_same_jsons->size += tree_node2->list_same_jsons->size;
 
+    int x = 0;
+
+
     /* We traverse second node's list and make each node in the list point to first's list */
     while( lnode_temp!=NULL)
     {
