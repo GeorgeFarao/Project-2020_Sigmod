@@ -146,8 +146,10 @@ int skip_whitespaces(FILE * file){
 json_list * Parser(char * file)
 {
     char * buffer= malloc(100000);
+    /* First we open the json file */
     FILE * fptr = fopen(file,"r");
     json_list * json_list= new_json_list();
+    /* Check if fopen was successful */
     if(fptr==NULL)
     {
         printf("File not found\n");
@@ -156,118 +158,92 @@ json_list * Parser(char * file)
 
     char ch;
     char prev_ch;
+    /* Skip whitespaces and find first character */
     ch=(char)skip_whitespaces(fptr);
     int count=0;
     char *category=malloc(10000);
     if(ch!='{')
         return NULL;
-    while (1)       //lines
+
+    /* Read each line from the json file */
+    while (1)
     {
         prev_ch=ch;
         count=0;
-        ch = (char)skip_whitespaces(fptr);      //ch=="
-        //buffer[0]=(char)ch;
-        //count++;
-
+        ch = (char)skip_whitespaces(fptr);      /* Get to the first non whitespace character of each line */
         prev_ch=ch;
-        while (1){  //read lines
+
+        /* First read the category */
+        while (1){
             prev_ch=ch;
             ch = (char) fgetc(fptr);
-            category[count]=(char)ch;
+            category[count]=(char)ch;      /* We read the whole string and store it in the buffer */
             count++;
             int flag=0;
-            /*if(ch=='}'){
-                buffer[count-2]='\0';
-                break;
-            }*/
-            if (ch=='"'){
+
+            if (ch=='"'){                   /* When we find " character we have read the whole word so we break */
                 category[count-1]='\0';
                 count=0;
                 break;
             }
 
-            /*if(prev_ch==' ' && ch=='['){
-                while (1) {
-                    prev_ch = ch;
-                    ch = (char) fgetc(fptr);
-                    buffer[count] = (char) ch;
-                    count++;
-                    if (ch == '}') {
-                        buffer[count - 2] = '\0';
-                        break;
-                    }
-                    if (ch == ',' && prev_ch == ']') {
-                        flag=1;
-                        break;
-                    }
-                }
-            }*/
-           /* if(flag==0)
-            {
-                if (ch == ',') {
-                    if (prev_ch == ']' || prev_ch == '"' || prev_ch == '\n' || prev_ch == ' ' || prev_ch == '\t') {
-                        break;
-                    }
-                }
-            }
-            else
-                break;*/
         }
-
-
 
         ch=(char)skip_whitespaces(fptr);        //skip :
         ch=(char)skip_whitespaces(fptr);        //finds starting character of value
 
-        //two cases
+        /* There are two cases */
+        /* either we have a simple value or we have a list of values */
 
-        if(ch=='"')
+        if(ch=='"')         /* Simple values case */
         {
             while (1)
             {
                 prev_ch = ch;
                 ch = (char) fgetc(fptr);
-                buffer[count] = (char) ch;
+                buffer[count] = (char) ch;          /* We store the value in the buffer */
                 count++;
-                if(ch=='}' && prev_ch!='\\') {        //end of file
+                if(ch=='}' && prev_ch!='\\') {          /* When we find } without \ before we ahve reached the end of the file */
                     buffer[count - 3] = '\0';
                     break;
                 }
 
-
-                if (ch == ',' /*!!!!!!*/ && count>1 /*!!!!!!*/) {
+                /* When we find , which is not ing the beginning of the word */
+                /* and prev is " value ends so we break */
+                if (ch == ','  && count>1 ) {
                     if (prev_ch == '"' && buffer[count-3]!='\\' ) {
                         break;
                     }
                 }
             }
             buffer[count-2]='\0';
-            //printf("%s\n",buffer);
-            add_category_value(json_list,category,buffer);
+            add_category_value(json_list,category,buffer);      /* Add value into the list */
         }
 
-        if(ch=='[')
+        if(ch=='[')     /* List of values */
         {
             while (1)
             {
                 prev_ch = ch;
-                ch = (char) skip_whitespaces(fptr);     //find "
-                while (1)
+                ch = (char) skip_whitespaces(fptr);     /* Find each value of the list*/
+
+                while (1)       /* Read the value */
                 {
                     prev_ch = ch;
                     ch = (char) fgetc(fptr);
-                    buffer[count] = (char) ch;
+                    buffer[count] = (char) ch;      /* Store the value into the buffer */
                     count++;
 
+                    /* " indicate that we have reached the end of the value */
                     if (ch == '"' && prev_ch!='\\') {
                         buffer[count-1]='\0';
-                        //printf("%s\n",buffer);
                         add_category_value(json_list,category,buffer);
                         count=0;
                         break;
                     }
                 }
-
+                /* If next character is , there are still values in the list so we continue reading */
+                /* If next character is ] we have reached the end of the list so we break */
                 ch=skip_whitespaces(fptr);
                 if (ch==',')
                     continue;
@@ -275,25 +251,12 @@ json_list * Parser(char * file)
                     ch=skip_whitespaces(fptr);
                     break;
                 }
-                //if ()
-
-
             }
-
         }
-
-
-
-
-
-        //buffer[count]='\0';
-        //printf("New line: %s\n",buffer);
 
         if (ch=='}'){
-
             break;
         }
-        //break;
     }
 
     fclose(fptr);
