@@ -44,7 +44,11 @@ int main(int argc, char * argv[]) {
     struct dirent* my_file;
     char * name = malloc(1100);
     HashTable * Table = newHashTable(HASHTABLESIZE);
-    printf("%s\n",argv[1]);
+    if( argv[1][ strlen(argv[1]) -1] =='/'  )
+        argv[1][ strlen(argv[1]) ] = '\0';
+
+    
+    
     Fd = opendir (argv[1]);
     if(Fd == NULL )
     {
