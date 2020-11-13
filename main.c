@@ -45,7 +45,7 @@ int main(int argc, char * argv[]) {
     char * name = malloc(1100);
     HashTable * Table = newHashTable(HASHTABLESIZE);
     
-    if (argc!=2)
+    if (argc!=3)
     {
         printf("Wrong input\nPlzGive Directory with specks and .csv file");
         return 5;
