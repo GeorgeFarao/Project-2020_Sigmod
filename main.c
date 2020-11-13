@@ -44,6 +44,13 @@ int main(int argc, char * argv[]) {
     struct dirent* my_file;
     char * name = malloc(1100);
     HashTable * Table = newHashTable(HASHTABLESIZE);
+    
+    if (argc!=2)
+    {
+        printf("Wrong input\nPlzGive Directory with specks and .csv file");
+        return 5;
+    }
+    
     if( argv[1][ strlen(argv[1]) -1] =='/'  )
         argv[1][ strlen(argv[1]) ] = '\0';
 
