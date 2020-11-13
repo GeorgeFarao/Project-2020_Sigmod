@@ -1,11 +1,11 @@
 //Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas
 
 #include <stdio.h>
-#include "HashTable.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
+#include "HashTable.h"
 
 #define HASHTABLESIZE 128
 
