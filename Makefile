@@ -2,8 +2,8 @@ CC = gcc -g
 
 all: find_commons unit_test 
 
-find_commons: main.o RBtree.o list.o HashTable.o jsonParser.o
-	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o
+find_commons: main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
+	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
 
 main.o: main.c
 	$(CC) -c main.c
@@ -20,11 +20,14 @@ HashTable.o: HashTable.c
 jsonParser: jsonParser.c
 	$(CC) -c jsonParser.c
 
-unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o
-	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o
+helpFunctions: helpFunctions.c
+	$(CC) -c helpFunctions.c
+
+unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
+	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
 
 .PHONY: clean
 
 clean:
-	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o unit_test.o output.txt
+	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o unit_test.o output.csv
 	clear
