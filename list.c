@@ -92,7 +92,7 @@ void delete_list_node(list * List)
 void print_list(list * mylist)
 {
    
-    FILE * fp = fopen("output.txt", "a");    
+    FILE * fp = fopen("output.csv", "a");    
     lnode * temp = mylist->start;
     lnode * temp_next;
     
@@ -106,7 +106,7 @@ void print_list(list * mylist)
         
         while (temp_next != NULL)
         {
-            fprintf(fp, "%s, %s \n", temp->json_name , temp_next->json_name);
+            fprintf(fp, "%s, %s\n", temp->json_name , temp_next->json_name);
             temp_next = temp_next->next;
         }
         
