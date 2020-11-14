@@ -21,7 +21,8 @@ int main(int argc, char * argv[]) {
         printf("Wrong input\nPease give Directory with specs and .csv file and hash table size\n");
         return 5;
     }    
-
+	
+	/* Reading parameters */
 	for(int i=0; i<argc; i++)
 	{
 		if (strcmp(argv[i], "-d") == 0) /* path to directory parameter */
@@ -30,9 +31,8 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[i], "-f") == 0) /* .csv file parameter */
 			file_name = argv[i+1];
 
-        else if (strcmp(argv[i], "-h") == 0) /* hashtable size parameter */
-            hashtable_size = argv[i+1];
-
+		else if (strcmp(argv[i], "-h") == 0) /* hashtable size parameter */
+		    hashtable_size = argv[i+1];
 	}
 	
 	if (directory_name == NULL || file_name == NULL || hashtable_size == NULL)
