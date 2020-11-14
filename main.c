@@ -18,7 +18,7 @@ int main(int argc, char * argv[]) {
 
     if (argc != 7)
     {
-        printf("Wrong input\nPease give Directory with specs and .csv file");
+        printf("Wrong input\nPease give Directory with specs and .csv file and hash table size\n");
         return 5;
     }    
 
