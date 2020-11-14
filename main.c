@@ -16,7 +16,7 @@ int main(int argc, char * argv[]) {
     char * file_name = NULL;
     char * hashtable_size = NULL;
 
-    if (argc != 5)
+    if (argc != 7)
     {
         printf("Wrong input\nPease give Directory with specs and .csv file");
         return 5;
