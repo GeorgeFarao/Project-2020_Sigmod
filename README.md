@@ -13,9 +13,9 @@ Purpose of the project is to find matching products (in this case json files) of
 ### How to run
 1. There is a makefile that responds to the following commands:
 
-* make -> compile the program and produce the corresponding object files and the executables, including unit test
+    * make -> compile the program and produce the corresponding object files and the executables, including unit test
 
-* make clean -> deletes the object files , executables and the output file that was created
+    * make clean -> deletes the object files , executables and the output file that was created
 
 2. Command for executing:
     ./find_commons -d path_to_directory -f file_with_matching_products -h hashtable_size 
