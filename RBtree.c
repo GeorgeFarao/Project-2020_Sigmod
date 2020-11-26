@@ -44,6 +44,9 @@ struct node * new_node( char * json_id, json_list * jsonList)
     node->parent = NULL;
     node->json_info=jsonList;
     node->color = 'R';
+
+    node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
+    
     
     return node;
 }
@@ -173,10 +176,13 @@ void RBTinsert(struct RBTree * T, struct node * z)
     {
         y = x;
 
-        if(strcmp(z->key, x->key)<=0)
+        if(strcmp(z->key, x->key)<0)
             x = x->left;
-        else
+        else if (strcmp(z->key, x->key)>0)
             x = x->right;
+        else
+            return ;
+        
     }
     
     z->parent = y;
@@ -221,6 +227,31 @@ struct node * minimum(struct RBTree * T, struct node * x)
         x = x->left;
     return x;
 }
+
+
+
+
+
+
+
+void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
+{
+    if(recursion_root== Tree1->NIL)
+        return;
+    
+    combine_trees(Tree1, recursion_root->left, Tree2);
+    combine_trees(Tree1, recursion_root->right, Tree2);
+    
+    RBTinsert(Tree2, recursion_root);
+    
+    
+}
+
+
+
+
+
+
 
 
 /*  Traversing tree in postorder and deleting each node */

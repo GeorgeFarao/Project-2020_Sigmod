@@ -53,6 +53,61 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList)
 }
 
 
+
+void match_different_products (HashTable * table , char * spec_id1 , char * spec_id2 )
+{
+    /* Find indexes of the ids in the Hashtable */
+    int index1 = hash1(spec_id1, table->size);
+    int index2 = hash1 (spec_id2,  table->size );
+    
+    struct node * tree_node1;
+    struct node * tree_node2;
+    
+    /* Find the nodes that we need */
+    tree_node1 = find_key_RBtree(table->Trees[index1], spec_id1);
+    tree_node2 = find_key_RBtree(table->Trees[index2], spec_id2);
+    
+    if(tree_node1 ==NULL || tree_node2== NULL)
+    {
+        printf("Product not found\n");
+        return ;
+    }
+    
+    lnode * lnode_temp = tree_node2->list_same_jsons->start;
+    while ( lnode_temp!=NULL )
+    {
+        struct node * neighbour;
+        int index_neig =hash1 (lnode_temp->json_name ,  table->size );
+        
+        neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
+        
+        RBTinsert(tree_node1->list_same_jsons->different_cliques, neighbour);
+        
+        lnode_temp=lnode_temp->next;
+    }
+    
+    lnode_temp = tree_node1->list_same_jsons->start;
+    while ( lnode_temp!=NULL )
+    {
+        struct node * neighbour;
+        int index_neig =hash1 (lnode_temp->json_name ,  table->size );
+        
+        neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
+        
+        RBTinsert(tree_node2->list_same_jsons->different_cliques, neighbour);
+        
+        lnode_temp=lnode_temp->next;
+        
+    }
+    
+    
+    
+    
+}
+
+
+
+
 /* Matches same products and creates cliques */
 void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 {
@@ -80,12 +135,28 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     /* If they are already  in same list (clique) do nothing */
     if (tree_node1->list_same_jsons == tree_node2->list_same_jsons)
         return ;
+    
+    combine_tree_list(table, tree_node1->list_same_jsons->different_cliques,
+                      tree_node1->list_same_jsons->different_cliques->root, tree_node2->list_same_jsons->start);
+    
+    
+    combine_tree_list(table, tree_node2->list_same_jsons->different_cliques,
+                      tree_node2->list_same_jsons->different_cliques->root, tree_node1->list_same_jsons->start);
+    
 
+    
+    combine_trees(tree_node2->list_same_jsons->different_cliques,
+                  tree_node2->list_same_jsons->different_cliques->root,tree_node1->list_same_jsons->different_cliques);
+    
     /* Make first node's end point to the start of second node's list  and it's end to the second's end*/
     tree_node1->list_same_jsons->end->next = tree_node2->list_same_jsons->start;
     tree_node1->list_same_jsons->end = tree_node2->list_same_jsons->end;
     tree_node1->list_same_jsons->size += tree_node2->list_same_jsons->size;
 
+    
+    
+    
+    
     /* We traverse second node's list and make each node in the list point to first's list */
     while( lnode_temp!=NULL)
     {
@@ -104,6 +175,10 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
         neighbour->list_same_jsons = tree_node1->list_same_jsons;
         lnode_temp = lnode_temp->next;
     }
+    
+    
+    
+
     
     
 }
@@ -133,4 +208,37 @@ void delete_hashtable(HashTable * table)
     free(table->Trees);
 
 
+}
+
+
+
+
+void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * recursion_root, lnode * start)
+{
+    
+    if(recursion_root == Tree1->NIL)
+        return;
+    combine_tree_list(table, Tree1, recursion_root -> left, start);
+    combine_tree_list(table, Tree1, recursion_root -> right, start);
+
+    
+    
+    
+    struct node * neighbour;
+    int index_neig ;
+    
+    
+    
+    
+    
+    while (start !=NULL)
+    {
+        index_neig =hash1 (start->json_name ,  table->size );
+        neighbour = find_key_RBtree(table->Trees[index_neig], start->json_name);
+        
+        RBTinsert( recursion_root->list_same_jsons->different_cliques , neighbour);
+        
+        start = start->next;
+    }
+    
 }

@@ -10,8 +10,10 @@ list * new_list(void)
     mylist->start = NULL;
     mylist->end = NULL;
     mylist->print_flag = 0;
-    mylist->size=0;    
+    mylist->size=0;
     
+    mylist->different_cliques = NULL;
+
     return mylist;
 }
 
@@ -84,8 +86,13 @@ void delete_list_node(list * List)
     free(tmp);
     
     List->size--; /* Updating size */
+    
+
+    
+    
 
 }
+
 
 
 /* Printing matching json files - basic printing */

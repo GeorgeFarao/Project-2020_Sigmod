@@ -42,6 +42,11 @@ void transplant(struct RBTree * T, struct node * u, struct node * v);
 /* Returns node with minimum value in the subtree with root x */
 struct node * minimum(struct RBTree * T, struct node * x);
 
+
+/*   Combine Trees */
+void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 );
+
+
 /*  Traversing tree in postorder and deleting each node */
 void destroyRBTree(struct RBTree * T, struct node * node);
 
