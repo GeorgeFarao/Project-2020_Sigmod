@@ -77,11 +77,19 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
     while ( lnode_temp!=NULL )
     {
         struct node * neighbour;
+        struct node * newNode;
+        
         int index_neig =hash1 (lnode_temp->json_name ,  table->size );
         
         neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
         
-        RBTinsert(tree_node1->list_same_jsons->different_cliques, neighbour);
+        newNode = new_node(lnode_temp->json_name, NULL);
+        newNode->self_node=neighbour;
+        
+        
+
+        
+        RBTinsert(tree_node1->list_same_jsons->different_cliques, newNode);
         
         lnode_temp=lnode_temp->next;
     }
@@ -90,11 +98,17 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
     while ( lnode_temp!=NULL )
     {
         struct node * neighbour;
+        struct node * newNode;
+
+        
         int index_neig =hash1 (lnode_temp->json_name ,  table->size );
         
         neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
         
-        RBTinsert(tree_node2->list_same_jsons->different_cliques, neighbour);
+        
+        newNode = new_node(lnode_temp->json_name, NULL);
+        newNode->self_node=neighbour;
+        RBTinsert(tree_node2->list_same_jsons->different_cliques, newNode);
         
         lnode_temp=lnode_temp->next;
         
@@ -218,15 +232,15 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
     
     if(recursion_root == Tree1->NIL)
         return;
-    combine_tree_list(table, Tree1, recursion_root -> left, start);
-    combine_tree_list(table, Tree1, recursion_root -> right, start);
+    combine_tree_list(table, Tree1, recursion_root->left, start);
+    combine_tree_list(table, Tree1, recursion_root->right, start);
 
     
     
     
     struct node * neighbour;
     int index_neig ;
-    
+    struct node * newNode;
     
     
     
@@ -234,9 +248,14 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
     while (start !=NULL)
     {
         index_neig =hash1 (start->json_name ,  table->size );
+        
         neighbour = find_key_RBtree(table->Trees[index_neig], start->json_name);
         
-        RBTinsert( recursion_root->list_same_jsons->different_cliques , neighbour);
+        
+        newNode =  new_node(start->json_name, NULL);
+        newNode->self_node= neighbour;
+        
+        RBTinsert( recursion_root->self_node->list_same_jsons->different_cliques , newNode);
         
         start = start->next;
     }

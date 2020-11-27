@@ -127,6 +127,9 @@ void reading_csv_file (char * file_name, HashTable * Table)
         /* Check if json files match */
         if (matching_flag == 1) 
             match_same_products(Table,str1,str2);
+        else
+            match_different_products(Table, str1, str2);
+        
     }
 
     print_commons(Table); /* Printing matching json files */   

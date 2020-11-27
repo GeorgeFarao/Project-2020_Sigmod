@@ -9,6 +9,8 @@ struct node {
     struct node * left, * right, * parent; /* links for left, right children and parent */
     char * key; /* json file */
     list * list_same_jsons; /* Pointer to list with matching json files of current json */
+    struct node * self_node;
+    
     json_list * json_info; /* List of categories and values of each category of json file */
 };
 

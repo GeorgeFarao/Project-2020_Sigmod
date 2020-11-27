@@ -44,6 +44,8 @@ struct node * new_node( char * json_id, json_list * jsonList)
     node->parent = NULL;
     node->json_info=jsonList;
     node->color = 'R';
+    node->self_node=NULL;
+    
 
     node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
     
@@ -239,10 +241,15 @@ void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct 
     if(recursion_root== Tree1->NIL)
         return;
     
+    
     combine_trees(Tree1, recursion_root->left, Tree2);
     combine_trees(Tree1, recursion_root->right, Tree2);
     
-    RBTinsert(Tree2, recursion_root);
+    struct node * Newnode;
+    Newnode = new_node(recursion_root->key, NULL);
+    Newnode->self_node=recursion_root;
+    
+    RBTinsert(Tree2, Newnode);
     
     
 }
