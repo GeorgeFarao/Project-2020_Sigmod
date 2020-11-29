@@ -32,13 +32,18 @@ struct node * new_node( char * json_id, json_list * jsonList)
     
     node->key=malloc( strlen(json_id)+1 );
     strcpy(node->key, json_id);
-    
-    node->list_same_jsons = new_list();     /* List with matching json files */
-    
-    /* Initialize list with itself */
-    lnode * listnode = new_lnode(json_id);      
-    insert_lnode(node->list_same_jsons, listnode);
-    
+
+    if(jsonList!=NULL)
+    {
+        node->list_same_jsons = new_list();     /* List with matching json files */
+
+        /* Initialize list with itself */
+        lnode *listnode = new_lnode(json_id);
+        insert_lnode(node->list_same_jsons, listnode);
+        node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
+    } else{
+        node->list_same_jsons=NULL;
+    }
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
@@ -47,7 +52,7 @@ struct node * new_node( char * json_id, json_list * jsonList)
     node->self_node=NULL;
     
 
-    node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
+
     
     
     return node;
@@ -256,6 +261,28 @@ void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct 
 
 
 
+void destroy_diffRBTree(struct RBTree * T, struct node * recursion_root)
+{
+    if (recursion_root == T->NIL)
+        return;
+
+    destroyRBTree(T, recursion_root->left );
+    destroyRBTree(T, recursion_root->right);
+
+
+
+    if(recursion_root == T->root)
+    {
+        free(T->NIL);
+        free(T->directory_name);
+        free(T);
+    }
+
+    free(recursion_root->key);
+
+    free(recursion_root);
+
+}
 
 
 
@@ -287,8 +314,10 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
     if( recursion_root->list_same_jsons!=NULL && recursion_root->list_same_jsons->size!=-1)
     {
         delete_list_node(recursion_root->list_same_jsons);
-        if(recursion_root->list_same_jsons->size==0)
+        if(recursion_root->list_same_jsons->size==0) {
+            destroy_diffRBTree(recursion_root->list_same_jsons->different_cliques, recursion_root->list_same_jsons->different_cliques->root);
             free(recursion_root->list_same_jsons);
+        }
         recursion_root->list_same_jsons=NULL;
         
     }
@@ -297,6 +326,8 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
     free(recursion_root);
 
 }
+
+
 
 
 /* Returns node with specidied key */

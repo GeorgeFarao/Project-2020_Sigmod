@@ -48,7 +48,7 @@ struct node * minimum(struct RBTree * T, struct node * x);
 /*   Combine Trees */
 void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 );
 
-
+void destroy_diffRBTree(struct RBTree * T, struct node * recursion_root);
 /*  Traversing tree in postorder and deleting each node */
 void destroyRBTree(struct RBTree * T, struct node * node);
 

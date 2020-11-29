@@ -172,8 +172,12 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 
         /* Only one node from the old list must delete it because they all point to same list item that contains 
 	and end information of the list   */
-        if(strcmp(neighbour->list_same_jsons->end->json_name,neighbour->key)==0)
+        if(strcmp(neighbour->list_same_jsons->end->json_name,neighbour->key)==0){
+            //destroy_diffRBTree(neighbour->list_same_jsons->different_cliques, neighbour->list_same_jsons->different_cliques->root);
             free(neighbour->list_same_jsons);
+        }
+
+
 
         /* Make neighbour point to the new merged list */
         neighbour->list_same_jsons = tree_node1->list_same_jsons;
@@ -242,7 +246,6 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
 
     newNode =  new_node(start->json_name, NULL);
     newNode->self_node= neighbour;
-
     RBTinsert( recursion_root->self_node->list_same_jsons->different_cliques , newNode);
 
 
