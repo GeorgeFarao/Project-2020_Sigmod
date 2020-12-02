@@ -262,26 +262,34 @@ void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct 
 
 void destroy_diffRBTree(struct RBTree * T, struct node * recursion_root)
 {
-    if (recursion_root == T->NIL)
+    if (recursion_root == T->NIL && recursion_root !=T->root  )
         return;
-
-    destroyRBTree(T, recursion_root->left );
-    destroyRBTree(T, recursion_root->right);
-
-
-
-    if(recursion_root == T->root)
+    else  if(recursion_root == T->root && T->root== T->NIL)
     {
         free(T->NIL);
         free(T->directory_name);
         free(T);
+        return ;
     }
-
+    
+    
+    destroy_diffRBTree(T, recursion_root->left );
+    destroy_diffRBTree(T, recursion_root->right);
+    
+    if(recursion_root == T->root )
+    {
+        
+        free(T->NIL);
+        free(T->directory_name);
+        free(T);
+        
+    }
     free(recursion_root->key);
-
+    
     free(recursion_root);
-
+    
 }
+
 
 
 
