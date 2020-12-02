@@ -172,7 +172,7 @@ void RBTinsertFixup(struct RBTree * T, struct node * z)
 }
 
 /* Inseting node to RedBlackTree */
-void RBTinsert(struct RBTree * T, struct node * z)
+int RBTinsert(struct RBTree * T, struct node * z)
 {
     
     struct node * y = T->NIL;
@@ -188,10 +188,8 @@ void RBTinsert(struct RBTree * T, struct node * z)
         else if (strcmp(z->key, x->key)>0)
             x = x->right;
         else
-            return ;
-        
+            return 0;      
     }
-    
     z->parent = y;
     
     if (y == T->NIL)
@@ -208,6 +206,7 @@ void RBTinsert(struct RBTree * T, struct node * z)
     z->left = T->NIL;
     
     RBTinsertFixup(T, z);
+    return 1;
 }
 
 /* TRANSPLANT */
