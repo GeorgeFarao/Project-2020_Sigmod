@@ -81,7 +81,6 @@ void delete_list_node(list * List)
 {
     struct lnode * tmp = List->start;
     List->start = List->start->next; /* Updating list->start */
-    
     free(tmp->json_name);
     free(tmp);
     

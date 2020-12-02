@@ -137,3 +137,37 @@ void reading_csv_file (char * file_name, HashTable * Table)
     fclose(dataset_w);
     free(buffer); 
 }
+
+HashTable * create_stopwords_Hash(char *filename)
+{
+    char  c=' ';
+    int count=0;
+    HashTable * Table= newHashTable(10);
+    char * buffer = malloc(100);
+    FILE * file = fopen(filename,"r");
+    while(c!=EOF)
+    {
+        c=fgetc(file);
+        if(c==',')
+        {
+           buffer[count]='\0';
+           printf("%s\n",buffer);
+           insert_Record(buffer,Table,NULL);
+           count=0;
+        }
+        else if (c==EOF)
+        {
+            buffer[count]='\0';
+            printf("%s\n",buffer);
+            insert_Record(buffer,Table,NULL);
+            break;
+        }
+        else{
+           buffer[count]=c;
+            count++;
+        }
+
+    }
+    free(buffer);
+    fclose(file);
+}

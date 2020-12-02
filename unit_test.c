@@ -119,13 +119,17 @@ void test_json_list(void)
     free(temp_jnode2);
 }
 
-
-
- void test_hashtable(void)
+void test_hashtable(void)
 {
     HashTable * table = newHashTable(15);
     int hash;
     json_list * temp= new_json_list();
+    json_node *temp_jnode1, *temp_jnode2;
+
+    temp_jnode1 = new_json_node("first_cat");
+    temp_jnode2 = new_json_node("second_cat");
+    add_category_value(temp, "first_cat", "value1");
+    add_category_value(temp, "second_cat", "value2");
     /* Check for creation of HashTable */
     TEST_CHECK(table!=NULL );
     TEST_MSG("Table was not create.\n");
@@ -164,11 +168,10 @@ void test_json_list(void)
     TEST_CHECK(ebay101->list_same_jsons == ebay103->list_same_jsons);
     TEST_MSG("Nodes do not point at same clique \n");
     
-    //delete_hashtable(table);
+   // delete_hashtable(table);
     free(table);
     free(temp);
-} 
-
+}
 
 
 

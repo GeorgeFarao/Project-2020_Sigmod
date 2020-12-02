@@ -12,11 +12,12 @@ int main(int argc, char * argv[]) {
 
 
     HashTable * Table;
+    HashTable * stopwords;
     char * directory_name = NULL; 
     char * file_name = NULL;
     char * hashtable_size = NULL;
-
-    if (argc != 7)
+    char * stopwords_file_name=NULL;
+    if (argc != 9)
     {
         printf("Wrong input\nPease give Directory with specs and .csv file and hash table size\n");
         return 5;
@@ -33,6 +34,8 @@ int main(int argc, char * argv[]) {
 
 		else if (strcmp(argv[i], "-h") == 0) /* hashtable size parameter */
 		    hashtable_size = argv[i+1];
+        else if (strcmp(argv[i], "-sw") == 0) /* stopwords file */
+            stopwords_file_name = argv[i+1];
 	}
 	
 	if (directory_name == NULL || file_name == NULL || hashtable_size == NULL)
@@ -46,9 +49,10 @@ int main(int argc, char * argv[]) {
     /* Reading input files and initializing our structs */
     reading_directory (directory_name, Table);
     reading_csv_file (file_name, Table);
-
+    stopwords= create_stopwords_Hash(stopwords_file_name);
     /* Free allocated memory */
-    delete_hashtable(Table);    
+    delete_hashtable(Table);
+    // na ftiaksoume delete gia to stopwords
     free(Table);
 }
 

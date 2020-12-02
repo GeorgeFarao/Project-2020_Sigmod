@@ -188,8 +188,10 @@ int RBTinsert(struct RBTree * T, struct node * z)
         else if (strcmp(z->key, x->key)>0)
             x = x->right;
         else
-            return 0;      
+            return 0;
+        
     }
+    
     z->parent = y;
     
     if (y == T->NIL)
@@ -242,20 +244,24 @@ struct node * minimum(struct RBTree * T, struct node * x)
 
 void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
 {
-    if(recursion_root== Tree1->NIL)
+    if(recursion_root== Tree1->NIL) {
         return;
-    
+    }
     
     combine_trees(Tree1, recursion_root->left, Tree2);
     combine_trees(Tree1, recursion_root->right, Tree2);
-    
+
     struct node * Newnode;
     Newnode = new_node(recursion_root->key, NULL);
-    Newnode->self_node=recursion_root;
+    Newnode->self_node=recursion_root->self_node;
     
-    RBTinsert(Tree2, Newnode);
-    
-    
+
+    int res=-1;
+    res=  RBTinsert(Tree2, Newnode);
+    if(res==0){
+        free(Newnode->key);
+        free(Newnode);
+    }
 }
 
 
@@ -271,25 +277,24 @@ void destroy_diffRBTree(struct RBTree * T, struct node * recursion_root)
         free(T);
         return ;
     }
-    
-    
+
+
     destroy_diffRBTree(T, recursion_root->left );
     destroy_diffRBTree(T, recursion_root->right);
-    
+
     if(recursion_root == T->root )
     {
-        
+
         free(T->NIL);
         free(T->directory_name);
         free(T);
-        
+
     }
     free(recursion_root->key);
-    
-    free(recursion_root);
-    
-}
 
+    free(recursion_root);
+
+}
 
 
 
@@ -297,15 +302,14 @@ void destroy_diffRBTree(struct RBTree * T, struct node * recursion_root)
 
 /*  Traversing tree in postorder and deleting each node */
 void destroyRBTree(struct RBTree * T, struct node * recursion_root)
-{   
-    if (recursion_root == T->NIL)
+{
+    if (recursion_root == T->NIL )
         return;
         
     destroyRBTree(T, recursion_root->left );
     destroyRBTree(T, recursion_root->right);
-        
 
-    
+
     if(recursion_root == T->root)
     {
         free(T->NIL);
@@ -314,10 +318,11 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
     }
 
     free(recursion_root->key);
+
     if (recursion_root->json_info != NULL)
         delete_json_list(recursion_root->json_info);
     free(recursion_root->json_info);
-    
+
     if( recursion_root->list_same_jsons!=NULL && recursion_root->list_same_jsons->size!=-1)
     {
         delete_list_node(recursion_root->list_same_jsons);
