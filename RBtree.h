@@ -33,7 +33,7 @@ void RightRotate(struct RBTree * T, struct node * y); /* Right rotate procedure 
 /* RBTinsert calls RBTinsertFixup which secures Red Black Tree properties aren't violated */
 void RBTinsertFixup(struct RBTree * T, struct node * z); 
 
-void RBTinsert(struct RBTree * T, struct node * z); /* Inseting node to RedBlackTree */
+int RBTinsert(struct RBTree * T, struct node * z); /* Inseting node to RedBlackTree */
 
 /* TRANSPLANT */
 /* node v is the brother of deleted node u */
