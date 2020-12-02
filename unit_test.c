@@ -121,9 +121,60 @@ void test_json_list(void)
 
 
 
+ void test_hashtable(void)
+{
+    HashTable * table = newHashTable(15);
+    int hash;
+    json_list * temp= new_json_list();
+    /* Check for creation of HashTable */
+    TEST_CHECK(table!=NULL );
+    TEST_MSG("Table was not create.\n");
+    
+    /* Check for insertion */
+    insert_Record("ebay100.json", table, temp);
+    hash = hash1("ebay100.json", 15);
+    
+    TEST_CHECK(table->Trees[hash]->root!=NULL);
+    TEST_MSG("Insertion went bad\n");
+    
+    /*  Check for match_same_products function   */
+    
+    insert_Record("ebay101.json", table, temp);
+    insert_Record("ebay102.json", table, temp);
+    insert_Record("ebay103.json", table, temp);
+
+    
+    match_same_products(table, "ebay101.json", "ebay102.json");     //101 = 102
+    match_same_products(table, "ebay103.json", "ebay100.json");     //103 = 100
+    match_same_products(table, "ebay101.json", "ebay100.json");     //101 = 100 => 101=102=103=100
+    
+    
+    struct node * ebay100 = find_key_RBtree(table->Trees[ hash1("ebay100.json", 15) ], "ebay100.json");
+    struct node * ebay101 = find_key_RBtree(table->Trees[ hash1("ebay101.json", 15) ], "ebay101.json");
+    struct node * ebay102 = find_key_RBtree(table->Trees[ hash1("ebay102.json", 15) ], "ebay102.json");
+    struct node * ebay103 = find_key_RBtree(table->Trees[ hash1("ebay103.json", 15) ], "ebay103.json");
+    
+    
+    TEST_CHECK(ebay101->list_same_jsons == ebay102->list_same_jsons);
+    TEST_MSG("Nodes do not point at same clique \n");
+    
+    TEST_CHECK(ebay100->list_same_jsons == ebay103->list_same_jsons);
+    TEST_MSG("Nodes do not point at same clique \n");
+    
+    TEST_CHECK(ebay101->list_same_jsons == ebay103->list_same_jsons);
+    TEST_MSG("Nodes do not point at same clique \n");
+    
+    //delete_hashtable(table);
+    free(table);
+    free(temp);
+} 
+
+
+
 
 TEST_LIST = {
     {"RBTree", test_RBTree},
+    {"hash", test_hashtable},
     {"json_list", test_json_list},
     {"list", test_list},
     {NULL, NULL}
