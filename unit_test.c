@@ -124,7 +124,6 @@ void test_json_list(void)
 
 TEST_LIST = {
     {"RBTree", test_RBTree},
-    {"hash", test_hashtable},
     {"json_list", test_json_list},
     {"list", test_list},
     {NULL, NULL}
