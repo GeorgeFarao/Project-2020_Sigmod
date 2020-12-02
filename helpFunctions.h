@@ -12,3 +12,5 @@ void reading_directory (char * directory_name, HashTable * Table); /* Reading fi
 void reading_csv_file (char * file_name, HashTable * Table); /* Reading csv file and matching same products */
 
 HashTable * create_stopwords_Hash(char *filename);
+
+void process_string(char * string,json_list * list,char * category, HashTable * Table);

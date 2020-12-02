@@ -151,14 +151,12 @@ HashTable * create_stopwords_Hash(char *filename)
         if(c==',')
         {
            buffer[count]='\0';
-           printf("%s\n",buffer);
            insert_Record(buffer,Table,NULL);
            count=0;
         }
         else if (c==EOF)
         {
             buffer[count]='\0';
-            printf("%s\n",buffer);
             insert_Record(buffer,Table,NULL);
             break;
         }
@@ -170,4 +168,56 @@ HashTable * create_stopwords_Hash(char *filename)
     }
     free(buffer);
     fclose(file);
+}
+
+void process_string(char * string,json_list * list,char * category, HashTable * Table)
+{
+    int size= strlen(string);
+    char * new_buf= malloc(size+1);
+    int c=0;
+    int new_count=0;
+    if(strcmp(category,"url")==0)
+    {
+        add_category_value(list,category,new_buf);
+        return;
+
+    }
+    while (string[c] !='\0')
+    {
+        if(string[c]>='A' && string[c]<='Z')
+        {
+            new_buf[new_count] = string[c] + 32;
+            new_count++;
+        }
+        else if ( string[c]=='-' && c!=0 && string[c-1]!=' ')
+        {
+            new_buf[new_count]=string[c];
+            new_count++;
+        }
+        else if (string[c]==',' && c!=0 && c!=size && (string[c-1]>='0' && string[c+1]<='9'))
+        {
+            new_buf[new_count]='.';
+            new_count++;
+        }
+        else if ((string[c]>='a' && string[c]<='z') || (string[c]>='0' && string[c]<='9') || string[c]=='.'
+                 || string[c]==':' || string[c]=='\\' || string[c]=='_' || string[c]=='=' )
+        {
+            new_buf[new_count]=string[c];
+            new_count++;
+        }
+        else if( string[c]==' ' || string[c]=='|')
+        {
+            new_buf[new_count]='\0';
+            int index= hash1(new_buf,Table->size);
+            struct node * tree_node;
+            tree_node = find_key_RBtree(Table->Trees[index], new_buf);
+            if (tree_node==NULL)
+            {
+                add_category_value(list,category,new_buf);
+            }
+            new_count=0;
+        }
+        c++;
+    }
+
 }

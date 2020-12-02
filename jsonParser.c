@@ -142,6 +142,9 @@ int skip_whitespaces(FILE * file){
 }
 
 
+
+
+
 /* Parsing function that reads json file */
 json_list * Parser(char * file)
 {

@@ -2,6 +2,8 @@
 
 #include "list.h"
 
+typedef struct Hashtable * hashptr;
+
 typedef struct json_node {
     char * category; /* Category name */
     list * values; /* List of possible values - Values of a category can be more than one */
