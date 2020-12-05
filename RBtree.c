@@ -248,8 +248,6 @@ struct node * minimum(struct RBTree * T, struct node * x)
 
 
 
-
-
 void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
 {
     if(recursion_root== Tree1->NIL) {
@@ -271,6 +269,8 @@ void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct 
         free(Newnode);
     }
 }
+
+
 
 
 
@@ -386,6 +386,33 @@ void postorder_print_commons(struct RBTree *T, struct node *node)
 
     }
 }
+
+void postorder_remove_duplicates(struct RBTree *T, struct node *node)
+{
+    if (node != T->NIL)
+    {
+        postorder_remove_duplicates(T, node->left);
+        postorder_remove_duplicates(T, node->right);
+        
+        
+        
+        
+        if ( node->list_same_jsons->Removed_duplicates==0 )
+        {
+            struct RBTree * new_tree = new_RBTree("Different_cliques");
+            fix_duplicates(node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root, new_tree);
+            destroy_diffRBTree(node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root);
+            node->list_same_jsons->different_cliques=new_tree;
+            
+        }
+    }
+}
+
+
+
+
+
+
 
 
 /* Inspired by https://www.techiedelight.com/determine-binary-tree-satisfy-height-balanced-property-red-black-tree/ */

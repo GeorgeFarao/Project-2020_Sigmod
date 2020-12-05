@@ -253,3 +253,37 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
 
 
 }
+
+
+void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
+{
+    if(recursion_root== Tree1->NIL) {
+        return;
+    }
+    
+    fix_duplicates(Tree1, recursion_root->left, Tree2);
+    fix_duplicates(Tree1, recursion_root->right, Tree2);
+    
+    struct node * Newnode;
+    Newnode = new_node(recursion_root->list_same_jsons->start->json_name, NULL);
+    Newnode->self_node=recursion_root->self_node;
+    Newnode->list_same_jsons->Removed_duplicates=1;
+    
+    int res=-1;
+    res=  RBTinsert(Tree2, Newnode);
+    if(res==0){
+        free(Newnode->key);
+        free(Newnode);
+    }
+}
+
+void remove_duplicates (HashTable * table)
+{
+    for (int i=0 ;i <table->size ;i++)
+    {
+        if (table->Trees[i]!=NULL)
+            postorder_remove_duplicates(table->Trees[i] , table->Trees[i]->root);
+    }
+    
+    
+}

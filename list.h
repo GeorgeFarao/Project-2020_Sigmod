@@ -21,6 +21,8 @@ typedef struct list {
     
     int print_flag; /* 1 when list is being printed, else 0 */
     int size; /* Size of list */
+    int Removed_duplicates;
+    
 }list;
 
 /////////////////////////////////////////   FUNCTIONS   /////////////////////////////////////////

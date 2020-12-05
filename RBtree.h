@@ -56,5 +56,8 @@ struct node * find_key_RBtree(struct RBTree *T, char *key);
 
 void postorder_print_commons(struct RBTree *T, struct node *node); /* Print matching json files */
 
+void postorder_remove_duplicates(struct RBTree *T, struct node *node);
+
+
 /* Check if height is balanced - Useful for unit testing */
 int isHeightBalanced(struct RBTree * tree, struct node *root, int *rootMax); 

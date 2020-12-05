@@ -21,7 +21,9 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 void print_commons(HashTable * table );
 void delete_hashtable(HashTable * table);
 void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * recursion_root, lnode * start);
+void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 );
 
+void remove_duplicates (HashTable * table);
 
 #endif /* HashTable_h */
 

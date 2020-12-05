@@ -69,6 +69,8 @@ void reading_directory (char * directory_name, HashTable * Table)
             DIR * in_directory; /* in directory with json files */
             struct dirent * file_json; /* For every json file */
 
+        
+            
             /* Path includes directory and subdirectory */
             char *full_path = malloc(strlen((directory_name))+strlen(directory_with_json_files->d_name)+2); 
             sprintf(full_path,"%s/%s",directory_name,directory_with_json_files->d_name); 

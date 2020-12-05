@@ -20,6 +20,7 @@ list * new_list(void)
     mylist->end = NULL;
     mylist->print_flag = 0;
     mylist->size=0;
+    mylist->Removed_duplicates=0;
     
     mylist->different_cliques = NULL;
 
