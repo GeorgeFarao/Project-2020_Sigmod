@@ -1,8 +1,6 @@
 /* Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas */
 
-#include <stdlib.h>
-#include <string.h>
-#include "jsonParser.h"
+
 
 struct node {
     char color;  /* for color property */

@@ -1,6 +1,14 @@
 /* Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+
+#include "list.h"
 #include "jsonParser.h"
+#include "RBtree.h"
+#include "HashTable.h"
+#include "helpFunctions.h"
 
 
 /* Creating main json list with product info */
@@ -182,8 +190,6 @@ json_list * Parser(char * file)
             ch = (char) fgetc(fptr);
             category[count]=(char)ch;      /* We read the whole string and store it in the buffer */
             count++;
-            int flag=0;
-
             if (ch=='"'){                   /* When we find " character we have read the whole word so we break */
                 category[count-1]='\0';
                 count=0;

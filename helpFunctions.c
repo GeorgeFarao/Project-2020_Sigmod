@@ -1,3 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <errno.h>
+
+
+
+
+
+#include "list.h"
+#include "jsonParser.h"
+#include "RBtree.h"
+#include "HashTable.h"
 #include "helpFunctions.h"
 
 /* Get maximum size of a line in file */ 
@@ -168,6 +184,8 @@ HashTable * create_stopwords_Hash(char *filename)
     }
     free(buffer);
     fclose(file);
+    return Table;
+
 }
 
 void process_string(char * string,json_list * list,char * category, HashTable * Table)
@@ -207,15 +225,19 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
         }
         else if( string[c]==' ' || string[c]=='|')
         {
+            
+
             new_buf[new_count]='\0';
             int index= hash1(new_buf,Table->size);
             struct node * tree_node;
             tree_node = find_key_RBtree(Table->Trees[index], new_buf);
             if (tree_node==NULL)
             {
+                printf("%s \n",new_buf);
                 add_category_value(list,category,new_buf);
             }
             new_count=0;
+             
         }
         c++;
     }

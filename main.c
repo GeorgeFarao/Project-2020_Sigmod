@@ -1,5 +1,14 @@
 /* Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+
+
+#include "list.h"
+#include "jsonParser.h"
+#include "RBtree.h"
+#include "HashTable.h"
 #include "helpFunctions.h"
 
 #define HASHTABLESIZE 128

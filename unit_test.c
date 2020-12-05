@@ -1,11 +1,15 @@
-#include "acutest.h"
-#include "HashTable.h"
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
+
+#include "list.h"
+#include "jsonParser.h"
+#include "RBtree.h"
+#include "HashTable.h"
+#include "helpFunctions.h"
+#include "acutest.h"
 
 
 void test_RBTree (void)

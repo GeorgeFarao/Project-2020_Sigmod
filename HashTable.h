@@ -2,8 +2,7 @@
 #ifndef HashTable_h
 #define HashTable_h
 
-#include <stdio.h>
-#include "RBtree.h"
+
 
 typedef struct HashTable{
 

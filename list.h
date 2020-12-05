@@ -3,9 +3,6 @@
 #ifndef list_h
 #define list_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 
 typedef struct lnode {
@@ -14,15 +11,13 @@ typedef struct lnode {
 }lnode;
 
 
-typedef struct RBTree * RBTptr;
 
 
 
 typedef struct list {
     lnode * start;
     lnode * end;
-    RBTptr different_cliques;
-    
+    struct RBTree * different_cliques;
     
     int print_flag; /* 1 when list is being printed, else 0 */
     int size; /* Size of list */
