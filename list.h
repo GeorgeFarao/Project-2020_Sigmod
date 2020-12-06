@@ -18,6 +18,9 @@ typedef struct list {
     lnode * start;
     lnode * end;
     struct RBTree * different_cliques;
+    struct RBTree * printed_different_cliques;
+    
+    
     
     int print_flag; /* 1 when list is being printed, else 0 */
     int size; /* Size of list */
@@ -39,7 +42,7 @@ void delete_list_node(list * List); /* Deleting first node of list */
 
 void print_list( list * mylist); /* Printing matching json files - basic printing */
 
-
+void print_two_lists(list * mylist1 ,list * mylist2);
 
 
 

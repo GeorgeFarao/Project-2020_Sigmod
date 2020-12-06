@@ -58,7 +58,9 @@ int main(int argc, char * argv[]) {
     /* Reading input files and initializing our structs */
     reading_directory (directory_name, Table);
     reading_csv_file (file_name, Table);
-    stopwords= create_stopwords_Hash(stopwords_file_name);
+    remove_duplicates(Table);
+    print_all_different (Table);
+   // stopwords= create_stopwords_Hash(stopwords_file_name);
     /* Free allocated memory */
     delete_hashtable(Table);
     // na ftiaksoume delete gia to stopwords

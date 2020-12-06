@@ -23,7 +23,11 @@ list * new_list(void)
     mylist->Removed_duplicates=0;
     
     mylist->different_cliques = NULL;
-
+    mylist->printed_different_cliques = new_RBTree("Printed_Different_cliques");
+    
+    
+    
+    
     return mylist;
 }
 
@@ -132,3 +136,33 @@ void print_list(list * mylist)
     mylist->print_flag = 1; /* So other nodes pointing to list know current list is being printed */
     fclose(fp);
 }
+
+
+
+
+void print_two_lists(list * mylist1 ,list * mylist2)
+{
+    FILE * fp = fopen("different.csv", "a");
+
+    lnode * temp = mylist1->start;
+    lnode * temp_next ;
+
+    while (temp != NULL)
+    {
+        temp_next = mylist2->start;
+
+        while (temp_next != NULL)
+        {
+            //printf( "second here %s, %s\n", temp->json_name , temp_next->json_name);
+            fprintf(fp, "%s, %s\n", temp->json_name , temp_next->json_name);
+            temp_next = temp_next->next;
+        }
+
+            temp=temp->next;
+    }
+
+    fclose(fp);
+
+}
+    
+

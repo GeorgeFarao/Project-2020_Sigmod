@@ -336,6 +336,7 @@ void destroyRBTree(struct RBTree * T, struct node * recursion_root)
         delete_list_node(recursion_root->list_same_jsons);
         if(recursion_root->list_same_jsons->size==0) {
             destroy_diffRBTree(recursion_root->list_same_jsons->different_cliques, recursion_root->list_same_jsons->different_cliques->root);
+            destroy_diffRBTree(recursion_root->list_same_jsons->printed_different_cliques, recursion_root->list_same_jsons->printed_different_cliques->root);
             free(recursion_root->list_same_jsons);
         }
         recursion_root->list_same_jsons=NULL;
@@ -373,6 +374,39 @@ struct node * find_key_RBtree(struct RBTree *T, char *key)
     
 }
 
+void print_different(list *clique ,struct RBTree * Tree_different_cliques , struct node * recursion_root  )
+{
+    if(recursion_root == Tree_different_cliques->NIL)
+        return ;
+    print_different(clique, Tree_different_cliques, recursion_root->right);
+    print_different(clique, Tree_different_cliques ,recursion_root->left);
+    
+    struct node * check =find_key_RBtree(clique->printed_different_cliques
+                                         , recursion_root->self_node->list_same_jsons->start->json_name);
+    struct node * check2 =find_key_RBtree(recursion_root->self_node->list_same_jsons->printed_different_cliques
+            , clique->start->json_name);
+    if(check ==NULL && check2==NULL)
+    {
+        print_two_lists(clique, recursion_root->self_node->list_same_jsons);
+        int res=-1;
+        struct node * temp1 = new_node(recursion_root->self_node->list_same_jsons->start->json_name , NULL);
+        res=RBTinsert( clique->printed_different_cliques, temp1 );
+        if(res==0){
+            free(temp1->key);
+            free(temp1);
+        }
+        res=-1;
+        temp1 = new_node(clique->start->json_name, NULL);
+        res=RBTinsert(recursion_root->self_node->list_same_jsons->different_cliques, temp1);
+        if(res==0){
+            free(temp1->key);
+            free(temp1);
+        }
+        
+    }
+}
+
+
 /* Print matching json files */
 void postorder_print_commons(struct RBTree *T, struct node *node)
 {
@@ -386,6 +420,10 @@ void postorder_print_commons(struct RBTree *T, struct node *node)
 
     }
 }
+
+
+
+
 
 void postorder_remove_duplicates(struct RBTree *T, struct node *node)
 {
@@ -409,6 +447,20 @@ void postorder_remove_duplicates(struct RBTree *T, struct node *node)
 }
 
 
+void postorder_print_different(struct RBTree * Tree , struct node * node)
+{
+    
+    if (node != Tree->NIL)
+    {
+        postorder_print_different(Tree, node->left);
+        postorder_print_different(Tree, node->right);
+        
+        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques
+                        , node->list_same_jsons->different_cliques->root);
+        
+    }
+    
+}
 
 
 

@@ -182,6 +182,7 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 
         if(strcmp(neighbour->list_same_jsons->end->json_name,neighbour->key)==0){
             destroy_diffRBTree(neighbour->list_same_jsons->different_cliques, neighbour->list_same_jsons->different_cliques->root);
+            destroy_diffRBTree(neighbour->list_same_jsons->printed_different_cliques, neighbour->list_same_jsons->printed_different_cliques->root);
             free(neighbour->list_same_jsons);
         }
 
@@ -265,9 +266,9 @@ void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct
     fix_duplicates(Tree1, recursion_root->right, Tree2);
     
     struct node * Newnode;
-    Newnode = new_node(recursion_root->list_same_jsons->start->json_name, NULL);
+    Newnode = new_node(	recursion_root->self_node->list_same_jsons->start->json_name, NULL);
     Newnode->self_node=recursion_root->self_node;
-    Newnode->list_same_jsons->Removed_duplicates=1;
+    Newnode->self_node->list_same_jsons->Removed_duplicates=1;
     
     int res=-1;
     res=  RBTinsert(Tree2, Newnode);
@@ -283,6 +284,18 @@ void remove_duplicates (HashTable * table)
     {
         if (table->Trees[i]!=NULL)
             postorder_remove_duplicates(table->Trees[i] , table->Trees[i]->root);
+    }
+    
+    
+}
+
+
+void print_all_different (HashTable * table)
+{
+    for (int i=0 ;i <table->size ;i++)
+    {
+        if (table->Trees[i]!=NULL)
+            postorder_print_different(table->Trees[i] , table->Trees[i]->root);
     }
     
     

@@ -24,6 +24,7 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
 void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 );
 
 void remove_duplicates (HashTable * table);
+void print_all_different (HashTable * table);
 
 #endif /* HashTable_h */
 

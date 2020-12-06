@@ -29,5 +29,5 @@ unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
 .PHONY: clean
 
 clean:
-	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o unit_test.o output.csv
+	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o unit_test.o output.csv different.csv
 	clear
