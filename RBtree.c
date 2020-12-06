@@ -49,6 +49,7 @@ struct node * new_node( char * json_id, json_list * jsonList)
         lnode *listnode = new_lnode(json_id);
         insert_lnode(node->list_same_jsons, listnode);
         node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
+        node->list_same_jsons->printed_different_cliques= new_RBTree("Printed_Different_cliques");
     } else{
         node->list_same_jsons=NULL;
     }

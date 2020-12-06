@@ -23,7 +23,7 @@ list * new_list(void)
     mylist->Removed_duplicates=0;
     
     mylist->different_cliques = NULL;
-    mylist->printed_different_cliques = new_RBTree("Printed_Different_cliques");
+    mylist->printed_different_cliques = NULL;
     
     
     
