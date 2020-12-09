@@ -49,15 +49,73 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList)
     /* Find correct bucket for the Record */
     int hash_index = hash1(Record, table->size);
 
+    struct node * temp;
+    
+    
+    
     if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
     {
         table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
-        RBTinsert(table->Trees[ hash_index ], new_node(Record, jsonList) );     /* We create and insert a node to the tree */
-
+        
+        
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        temp->bow_tf_idf_index=global_index;
+        RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
     }
     else            /* tree exits */
     {
-        RBTinsert(table->Trees[hash_index],new_node(Record, jsonList) );  /* We create and insert a node to the tree */
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        temp->bow_tf_idf_index=global_index;
+        RBTinsert(table->Trees[ hash_index ], temp );
+        
+        
+        /* We create and insert a node to the tree */
+    }
+}
+
+void insert_bow (char * Record , HashTable * table, int total_files)
+{
+    if (table==NULL)
+    {
+        printf("Table is NULL programm will exit");
+        exit(1);
+    }
+    
+    /* Find correct bucket for the Record */
+    int hash_index = hash1(Record, table->size);
+    
+    struct node * temp;
+    int res;
+    
+    
+    if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
+    {
+        table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
+        
+        
+        temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
+        temp->bow_tf_idf_index=global_index;
+        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
+        
+
+        
+        
+    }
+    else            /* tree exits */
+    {
+        temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
+        temp->bow_tf_idf_index=global_index;
+        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp );
+        if (res ==0)
+        {
+            free (temp->key);
+            free (temp->bow);
+            free (temp->tf_idf);
+            free (temp);
+        }
+        
+        
+        /* We create and insert a node to the tree */
     }
 }
 
@@ -91,7 +149,7 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
 
     neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
 
-    newNode = new_node(lnode_temp->json_name, NULL);
+    newNode = new_node(lnode_temp->json_name, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER );
     newNode->self_node=neighbour;
 
     int res=-1;
@@ -109,7 +167,7 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
     neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
 
 
-    newNode = new_node(lnode_temp->json_name, NULL);
+    newNode = new_node(lnode_temp->json_name, NULL , DIFFERENT_CLIQUES ,NO_PARAMETER);
     newNode->self_node=neighbour;
      res=-1;
     res= RBTinsert(tree_node2->list_same_jsons->different_cliques, newNode);
@@ -243,7 +301,7 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
     neighbour = find_key_RBtree(table->Trees[index_neig], start->json_name);
 
 
-    newNode =  new_node(start->json_name, NULL);
+    newNode =  new_node(start->json_name, NULL , DIFFERENT_CLIQUES , NO_PARAMETER);
     newNode->self_node= neighbour;
     int res=-1;
     res=RBTinsert( recursion_root->self_node->list_same_jsons->different_cliques , newNode);
@@ -266,7 +324,7 @@ void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct
     fix_duplicates(Tree1, recursion_root->right, Tree2);
     
     struct node * Newnode;
-    Newnode = new_node(	recursion_root->self_node->list_same_jsons->start->json_name, NULL);
+    Newnode = new_node(	recursion_root->self_node->list_same_jsons->start->json_name, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER);
     Newnode->self_node=recursion_root->self_node;
     Newnode->self_node->list_same_jsons->Removed_duplicates=1;
     

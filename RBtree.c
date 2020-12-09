@@ -10,6 +10,10 @@
 #include "HashTable.h"
 #include "helpFunctions.h"
 
+int global_index;
+
+
+
 /* Creating new RedBlackTree */
 struct RBTree * new_RBTree(char * directory_name )
 {
@@ -34,14 +38,14 @@ struct RBTree * new_RBTree(char * directory_name )
 
 
 /* Creating new tree node */
-struct node * new_node( char * json_id, json_list * jsonList)
+struct node * new_node( char * json_id, json_list * jsonList , int flag ,int total_files)
 {
     struct node * node = malloc(sizeof(struct node));
     
     node->key=malloc( strlen(json_id)+1 );
     strcpy(node->key, json_id);
 
-    if(jsonList!=NULL)
+    if(jsonList!=NULL  )
     {
         node->list_same_jsons = new_list();     /* List with matching json files */
 
@@ -50,16 +54,37 @@ struct node * new_node( char * json_id, json_list * jsonList)
         insert_lnode(node->list_same_jsons, listnode);
         node->list_same_jsons->different_cliques = new_RBTree("Tree_For_Different_CLiques");
         node->list_same_jsons->printed_different_cliques= new_RBTree("Printed_Different_cliques");
-    } else{
-        node->list_same_jsons=NULL;
+        node->bow = NULL;
+        node->tf_idf = NULL;
     }
+    else if (flag == DIFFERENT_CLIQUES)
+    {
+        node->list_same_jsons = NULL;
+        node->tf_idf = NULL;
+        node->bow = NULL;
+    }
+    else if (flag == BOW_TF_IDF)
+    {
+        node->list_same_jsons = NULL;
+        node->bow = malloc(sizeof(int)* total_files);
+        node->tf_idf = malloc(sizeof(double)* total_files);
+        for (int i=0 ;i<total_files ;i++)
+        {
+            node->bow[i]=0;
+            node->tf_idf[i]=0;
+        }
+    }
+    
+    
+    
+    
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
     node->json_info=jsonList;
     node->color = 'R';
     node->self_node=NULL;
-    
+    node->number_of_words = 0;
 
 
     
@@ -220,6 +245,51 @@ int RBTinsert(struct RBTree * T, struct node * z)
     return 1;
 }
 
+int RBTinsert_bow_tf(struct RBTree * T, struct node * z)
+{
+    
+    struct node * y = T->NIL;
+    struct node * x = T->root;
+    
+    /* Traverse the tree and find appropriate position for new node */
+    while(x != T->NIL)
+    {
+        y = x;
+        
+        if(strcmp(z->key, x->key)<0)
+            x = x->left;
+        else if (strcmp(z->key, x->key)>0)
+            x = x->right;
+        else
+        {
+            z->bow[global_index] = z->bow[global_index] +1;
+            return 0;
+        }
+        
+    }
+    
+    z->bow[global_index] = 1;
+    
+    z->parent = y;
+    
+    if (y == T->NIL)
+        T->root = z;
+    else
+    {
+        if(strcmp(z->key, y->key) <= 0)
+            y->left = z;
+        else
+            y->right = z;
+    }
+    
+    z->right = T->NIL;
+    z->left = T->NIL;
+    
+    RBTinsertFixup(T, z);
+    return 1;
+}
+
+
 /* TRANSPLANT */
 /* node v is the brother of deleted node u */
 /* v will replace u */
@@ -259,7 +329,7 @@ void combine_trees(struct RBTree * Tree1, struct node * recursion_root , struct 
     combine_trees(Tree1, recursion_root->right, Tree2);
 
     struct node * Newnode;
-    Newnode = new_node(recursion_root->key, NULL);
+    Newnode = new_node(recursion_root->key, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER);
     Newnode->self_node=recursion_root->self_node;
     
 
@@ -390,14 +460,15 @@ void print_different(list *clique ,struct RBTree * Tree_different_cliques , stru
     {
         print_two_lists(clique, recursion_root->self_node->list_same_jsons);
         int res=-1;
-        struct node * temp1 = new_node(recursion_root->self_node->list_same_jsons->start->json_name , NULL);
+        struct node * temp1 = new_node(recursion_root->self_node->list_same_jsons->start->json_name
+                                       , NULL, DIFFERENT_CLIQUES ,NO_PARAMETER);
         res=RBTinsert( clique->printed_different_cliques, temp1 );
         if(res==0){
             free(temp1->key);
             free(temp1);
         }
         res=-1;
-        temp1 = new_node(clique->start->json_name, NULL);
+        temp1 = new_node(clique->start->json_name, NULL , DIFFERENT_CLIQUES ,NO_PARAMETER);
         res=RBTinsert(recursion_root->self_node->list_same_jsons->different_cliques, temp1);
         if(res==0){
             free(temp1->key);

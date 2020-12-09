@@ -1,6 +1,11 @@
 /* Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas */
 
+#define NO_PARAMETER 0
+#define DIFFERENT_CLIQUES 1
+#define BOW_TF_IDF 2
 
+
+extern int global_index;
 
 struct node {
     char color;  /* for color property */
@@ -10,19 +15,25 @@ struct node {
     struct node * self_node;
     
     json_list * json_info; /* List of categories and values of each category of json file */
+    int * bow;
+    double * tf_idf;
+    int bow_tf_idf_index;
+    int number_of_words;
+    
 };
 
 struct RBTree {
     struct node * root;
     struct node * NIL;
     char * directory_name;
+    
 };
 
 /////////////////////////////////////////   FUNCTIONS   /////////////////////////////////////////
 
 struct RBTree * new_RBTree(char * directory_name ); /* Creating new RedBlackTree */
 
-struct node * new_node( char * json_id, json_list *); /* Creating new tree node */
+struct node * new_node( char * json_id, json_list * jsonList , int flag ,int total_files); /* Creating new tree node */
 
 void LeftRotate(struct RBTree * T, struct node * x); /* Left rotate procedure */
 
@@ -63,3 +74,4 @@ void postorder_remove_duplicates(struct RBTree *T, struct node *node);
 int isHeightBalanced(struct RBTree * tree, struct node *root, int *rootMax); 
 void print_different(list *clique ,struct RBTree * Tree_different_cliques , struct node * recursion_root  );
 void postorder_print_different(struct RBTree * Tree , struct node * node);
+int RBTinsert_bow_tf(struct RBTree * T, struct node * z);

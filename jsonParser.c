@@ -154,12 +154,12 @@ int skip_whitespaces(FILE * file){
 
 
 /* Parsing function that reads json file */
-json_list * Parser(char * file)
+json_list * Parser(char * file , HashTable * stopwords , HashTable * bow_tf , int totalfiles)
 {
     char * buffer= malloc(100000);
     /* First we open the json file */
     FILE * fptr = fopen(file,"r");
-    json_list * json_list= new_json_list();
+    json_list * json_list = new_json_list();
     /* Check if fopen was successful */
     if(fptr==NULL)
     {
@@ -226,7 +226,7 @@ json_list * Parser(char * file)
                 }
             }
             buffer[count-2]='\0';
-            add_category_value(json_list,category,buffer);      /* Add value into the list */
+            process_string(buffer, json_list, category, stopwords, bow_tf, totalfiles);      /* Add value into the list */
         }
 
         if(ch=='[')     /* List of values */
@@ -246,7 +246,7 @@ json_list * Parser(char * file)
                     /* " indicate that we have reached the end of the value */
                     if (ch == '"' && prev_ch!='\\') {
                         buffer[count-1]='\0';
-                        add_category_value(json_list,category,buffer);
+                        process_string(buffer, json_list, category, stopwords, bow_tf, totalfiles);
                         count=0;
                         break;
                     }

@@ -33,4 +33,3 @@ void print_json_list (json_list * jsonList); /* Print json list for debugging pu
 
 int skip_whitespaces(FILE *); /* Skipping whitespaces */
 
-json_list * Parser(char *); /* Parsing function that reads json file */

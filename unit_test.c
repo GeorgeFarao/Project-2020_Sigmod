@@ -20,14 +20,14 @@ void test_RBTree (void)
     int rootMax = 0;
 
     /* Creating nodes */
-    struct node * tree_node1 = new_node("8.json", NULL);
-    struct node * tree_node2 = new_node("18.json", NULL);
-    struct node * tree_node3 = new_node("5.json", NULL);
-    struct node * tree_node4 = new_node("15.json", NULL);
-    struct node * tree_node5 = new_node("17.json", NULL);
-    struct node * tree_node6 = new_node("25.json", NULL);
-    struct node * tree_node7 = new_node("40.json", NULL);
-    struct node * tree_node8 = new_node("80.json", NULL);
+    struct node * tree_node1 = new_node("8.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node2 = new_node("18.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node3 = new_node("5.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node4 = new_node("15.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node5 = new_node("17.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node6 = new_node("25.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node7 = new_node("40.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node * tree_node8 = new_node("80.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
 
     /* Inserting nodes */
     RBTinsert(tree, tree_node1);

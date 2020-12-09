@@ -16,6 +16,7 @@
 #include "HashTable.h"
 #include "helpFunctions.h"
 
+
 /* Get maximum size of a line in file */ 
 int get_max_size_line(char *file_name)
 {
@@ -44,7 +45,8 @@ int get_max_size_line(char *file_name)
 }
 
 /* Reading file and initializing structs */
-void reading_directory (char * directory_name, HashTable * Table)
+
+void reading_directory (char * directory_name, HashTable * Table , HashTable * stopwords , HashTable * bow_tf , int total_files)
 {
     DIR* Fd;
     struct dirent* directory_with_json_files;
@@ -99,11 +101,11 @@ void reading_directory (char * directory_name, HashTable * Table)
                     
                     /* Extracting info's from jason files and initialzing jsonList */
                     /* jsonList includes categories and values of categories for current json file */
-                    json_list * jsonList = Parser(second_full_path); 
+                    json_list * jsonList = Parser(second_full_path, stopwords, bow_tf, total_files);
 
                     /* Inset json record to our structures */
                     insert_Record(name, Table, jsonList);
-
+                    global_index++;
                     free(second_full_path);
                 }
             }
@@ -190,7 +192,73 @@ HashTable * create_stopwords_Hash(char *filename)
 
 }
 
-void process_string(char * string,json_list * list,char * category, HashTable * Table)
+int count_number_of_files(char * directory_name)
+{
+    int counter = 0;
+    
+    DIR* Fd;
+    struct dirent* directory_with_json_files;
+    char * name = malloc(1100);
+    
+    if (directory_name[strlen(directory_name) - 1] =='/')
+        directory_name[strlen(directory_name) - 1] = '\0';
+    
+    Fd = opendir (directory_name);
+    if(Fd == NULL )
+    {
+        perror("Didnt open Directory");
+        exit(1);
+    }
+    
+    /* Reading directory with json files */
+    while ((directory_with_json_files = readdir(Fd)) != NULL)
+    {
+        /* Reading directory and count subdirs */
+        if (strcmp(directory_with_json_files->d_name, ".") != 0 && strcmp(directory_with_json_files->d_name, "..") != 0)
+        {
+            DIR * in_directory; /* in directory with json files */
+            struct dirent * file_json; /* For every json file */
+            
+            
+            
+            /* Path includes directory and subdirectory */
+            char *full_path = malloc(strlen((directory_name))+strlen(directory_with_json_files->d_name)+2);
+            sprintf(full_path,"%s/%s",directory_name,directory_with_json_files->d_name);
+            full_path[strlen(full_path)]='\0';
+            
+            in_directory = opendir(full_path);
+            
+            if (in_directory == NULL)
+            {
+                perror("Didnt open inner directory");
+                exit(1);
+            }
+            
+            /* Reading all json files of subdirectory */
+            while ((file_json = readdir(in_directory)) != NULL)
+            {
+                if (strcmp(file_json->d_name, ".") != 0 && strcmp(file_json->d_name, "..") != 0)
+                    counter++;
+
+            }
+            
+            free(full_path);
+            closedir(in_directory);
+        }
+        
+    }
+    
+    free(name);
+    closedir(Fd);
+    return counter;
+    
+    
+}
+
+
+
+
+void process_string(char * string,json_list * list,char * category, HashTable * stopWords, HashTable * bow_tf_idf , int totalfiles  )
 {
     int size= strlen(string);
     char * new_buf= malloc(size+1);
@@ -199,6 +267,7 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
     if(strcmp(category,"url")==0)
     {
         add_category_value(list,category,new_buf);
+        insert_bow(new_buf, bow_tf_idf, totalfiles);
         return;
 
     }
@@ -230,13 +299,13 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
             
 
             new_buf[new_count]='\0';
-            int index= hash1(new_buf,Table->size);
+            int index= hash1(new_buf,stopWords->size);
             struct node * tree_node;
-            tree_node = find_key_RBtree(Table->Trees[index], new_buf);
+            tree_node = find_key_RBtree(stopWords->Trees[index], new_buf);
             if (tree_node==NULL)
             {
-                printf("%s \n",new_buf);
                 add_category_value(list,category,new_buf);
+                insert_bow(new_buf, bow_tf_idf, totalfiles);
             }
             new_count=0;
              

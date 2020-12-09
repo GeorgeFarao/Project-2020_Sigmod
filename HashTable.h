@@ -25,6 +25,8 @@ void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct
 
 void remove_duplicates (HashTable * table);
 void print_all_different (HashTable * table);
+void insert_bow (char * Record , HashTable * table , int total_files);
 
+json_list * Parser(char * file , HashTable * stopwords , HashTable * bow_tf , int totalfiles); /* Parsing function that reads json file */
 #endif /* HashTable_h */
 

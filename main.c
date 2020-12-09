@@ -19,9 +19,12 @@
 
 int main(int argc, char * argv[]) {
 
-
+    
     HashTable * Table;
     HashTable * stopwords;
+    HashTable * bow_tfidf;
+    
+    
     char * directory_name = NULL; 
     char * file_name = NULL;
     char * hashtable_size = NULL;
@@ -52,15 +55,21 @@ int main(int argc, char * argv[]) {
 		printf("Error in parameters given !\n");
 		return 0;
 	}
+    int total_files = count_number_of_files(directory_name);
+
+    
 
     Table = newHashTable(atoi(hashtable_size));
+    bow_tfidf = newHashTable(atoi(hashtable_size)*15);
+    stopwords= create_stopwords_Hash(stopwords_file_name);
+    
 
     /* Reading input files and initializing our structs */
-    reading_directory (directory_name, Table);
+    reading_directory(directory_name, Table, stopwords, bow_tfidf, total_files);
     reading_csv_file (file_name, Table);
     remove_duplicates(Table);
     print_all_different (Table);
-   // stopwords= create_stopwords_Hash(stopwords_file_name);
+    
     /* Free allocated memory */
     delete_hashtable(Table);
     // na ftiaksoume delete gia to stopwords
