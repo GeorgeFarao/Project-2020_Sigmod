@@ -272,7 +272,7 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
         return;
 
     }
-    while (string[c] !='\0')
+    while (1)
     {
         if(string[c]>='A' && string[c]<='Z')
         {
@@ -284,18 +284,18 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
             new_buf[new_count]=string[c];
             new_count++;
         }
-        else if (string[c]==',' && c!=0 && c!=size && (string[c-1]>='0' && string[c+1]<='9'))
+       /* else if (string[c]==',' && c!=0 && c!=size && (string[c-1]>='0' && string[c+1]<='9'))
         {
             new_buf[new_count]='.';
             new_count++;
-        }
-        else if ((string[c]>='a' && string[c]<='z') || (string[c]>='0' && string[c]<='9') || string[c]=='.'
-                 || string[c]==':' || string[c]=='\\' || string[c]=='_' || string[c]=='=' )
+        }*/
+        else if ((string[c]>='a' && string[c]<='z') /*|| (string[c]>='0' && string[c]<='9') */)
         {
             new_buf[new_count]=string[c];
             new_count++;
         }
-        else if( string[c]==' ' || string[c]=='|')
+        else if(string[c]=='.' || string[c]==':' || string[c]=='\\' || string[c]=='_' ||
+                string[c]=='=' || string[c]==' ' || string[c]=='|' || string[c]=='\0')
         {
             
 
@@ -303,13 +303,15 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
             int index= hash1(new_buf,stopWords->size);
             struct node * tree_node;
             tree_node = find_key_RBtree(stopWords->Trees[index], new_buf);
-            if (tree_node==NULL)
-            {
+            if (tree_node==NULL && new_count!=1 && strlen(new_buf)>1)
+            {    
                 add_category_value(list,category,new_buf);
                 insert_bow(new_buf, bow_tf_idf, totalfiles);
             }
+
             new_count=0;
-             
+             if (string[c]=='\0')
+                 break;
         }
         c++;
     }
