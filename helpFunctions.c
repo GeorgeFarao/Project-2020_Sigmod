@@ -105,6 +105,7 @@ void reading_directory (char * directory_name, HashTable * Table , HashTable * s
 
                     /* Inset json record to our structures */
                     insert_Record(name, Table, jsonList);
+                    printf("%d\n",global_index);
                     global_index++;
                     free(second_full_path);
                 }
@@ -266,8 +267,8 @@ void process_string(char * string,json_list * list,char * category, HashTable * 
     int new_count=0;
     if(strcmp(category,"url")==0)
     {
-        add_category_value(list,category,new_buf);
-        insert_bow(new_buf, bow_tf_idf, totalfiles);
+        add_category_value(list,category,string);
+        insert_bow(string, bow_tf_idf, totalfiles);
         return;
 
     }

@@ -60,7 +60,7 @@ int main(int argc, char * argv[]) {
     
 
     Table = newHashTable(atoi(hashtable_size));
-    bow_tfidf = newHashTable(atoi(hashtable_size)*15);
+    bow_tfidf = newHashTable(atoi(hashtable_size)*1500);
     stopwords= create_stopwords_Hash(stopwords_file_name);
     
 

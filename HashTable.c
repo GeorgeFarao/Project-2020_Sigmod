@@ -95,7 +95,7 @@ void insert_bow (char * Record , HashTable * table, int total_files)
         
         temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
         temp->bow_tf_idf_index=global_index;
-        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
+        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp ,total_files);     /* We create and insert a node to the tree */
         
 
         
@@ -105,12 +105,12 @@ void insert_bow (char * Record , HashTable * table, int total_files)
     {
         temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
         temp->bow_tf_idf_index=global_index;
-        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp );
+        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp ,total_files);
         if (res ==0)
         {
             free (temp->key);
-            free (temp->bow);
-            free (temp->tf_idf);
+//            free (temp->bow);
+  //          free (temp->tf_idf);
             free (temp);
         }
         

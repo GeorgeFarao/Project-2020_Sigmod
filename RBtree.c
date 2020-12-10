@@ -66,13 +66,8 @@ struct node * new_node( char * json_id, json_list * jsonList , int flag ,int tot
     else if (flag == BOW_TF_IDF)
     {
         node->list_same_jsons = NULL;
-        node->bow = malloc(sizeof(int)* total_files);
-        node->tf_idf = malloc(sizeof(double)* total_files);
-        for (int i=0 ;i<total_files ;i++)
-        {
-            node->bow[i]=0;
-            node->tf_idf[i]=0;
-        }
+
+
     }
     
     
@@ -245,7 +240,7 @@ int RBTinsert(struct RBTree * T, struct node * z)
     return 1;
 }
 
-int RBTinsert_bow_tf(struct RBTree * T, struct node * z)
+int RBTinsert_bow_tf(struct RBTree * T, struct node * z, int total_files)
 {
     
     struct node * y = T->NIL;
@@ -262,11 +257,19 @@ int RBTinsert_bow_tf(struct RBTree * T, struct node * z)
             x = x->right;
         else
         {
-            z->bow[global_index] = z->bow[global_index] +1;
+            x->bow[global_index] = x->bow[global_index] +1;
             return 0;
         }
         
     }
+
+
+        z->bow = malloc(sizeof(int)* total_files);
+        z->tf_idf = malloc(sizeof(double)* total_files);
+        memset(z->bow,0,sizeof(int)* total_files);
+        memset(z->tf_idf,0,sizeof(double)* total_files);
+
+
     
     z->bow[global_index] = 1;
     

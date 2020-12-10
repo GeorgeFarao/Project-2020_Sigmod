@@ -74,4 +74,4 @@ void postorder_remove_duplicates(struct RBTree *T, struct node *node);
 int isHeightBalanced(struct RBTree * tree, struct node *root, int *rootMax); 
 void print_different(list *clique ,struct RBTree * Tree_different_cliques , struct node * recursion_root  );
 void postorder_print_different(struct RBTree * Tree , struct node * node);
-int RBTinsert_bow_tf(struct RBTree * T, struct node * z);
+int RBTinsert_bow_tf(struct RBTree * T, struct node * z,int total_files);
