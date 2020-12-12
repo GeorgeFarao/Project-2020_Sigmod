@@ -11,23 +11,22 @@
 #include "helpFunctions.h"
 #include "acutest.h"
 
-
-void test_RBTree (void)
-{   
+void test_RBTree(void)
+{
     /* Creating RBTree and inserting nodes with json_id's as the given sequence of numbers below */
     /* 8, 18, 5, 15, 17, 25, 40, 80 */
-    struct RBTree * tree = new_RBTree("www.ebay.com");
+    struct RBTree *tree = new_RBTree("www.ebay.com");
     int rootMax = 0;
 
     /* Creating nodes */
-    struct node * tree_node1 = new_node("8.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node2 = new_node("18.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node3 = new_node("5.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node4 = new_node("15.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node5 = new_node("17.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node6 = new_node("25.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node7 = new_node("40.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
-    struct node * tree_node8 = new_node("80.json", NULL,DIFFERENT_CLIQUES,NO_PARAMETER);
+    struct node *tree_node1 = new_node("8.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node2 = new_node("18.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node3 = new_node("5.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node4 = new_node("15.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node5 = new_node("17.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node6 = new_node("25.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node7 = new_node("40.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    struct node *tree_node8 = new_node("80.json", NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
 
     /* Inserting nodes */
     RBTinsert(tree, tree_node1);
@@ -46,30 +45,29 @@ void test_RBTree (void)
     destroyRBTree(tree, tree->root);
 }
 
-
-void test_list (void)
+void test_list(void)
 {
-    list * temp_list = new_list();
-    lnode * temp_lnode1 = new_lnode("1.json");
-    lnode * temp_lnode2 = new_lnode("2.json");
+    list *temp_list = new_list();
+    lnode *temp_lnode1 = new_lnode("1.json");
+    lnode *temp_lnode2 = new_lnode("2.json");
 
     insert_lnode(temp_list, temp_lnode1);
     insert_lnode(temp_list, temp_lnode2);
 
     /* Check for creation of list */
-    TEST_CHECK(temp_list != NULL);    
+    TEST_CHECK(temp_list != NULL);
     TEST_MSG("List is null after creation.\n");
 
     /* Check for creation of lnodes */
-    TEST_CHECK(temp_lnode1 != NULL);    
+    TEST_CHECK(temp_lnode1 != NULL);
     TEST_MSG("lnode1 is null after creation.\n");
-    TEST_CHECK(temp_lnode2 != NULL);    
-    TEST_MSG("lnode2 is null after creation.\n");    
-    
+    TEST_CHECK(temp_lnode2 != NULL);
+    TEST_MSG("lnode2 is null after creation.\n");
+
     /* Check for insertion */
     TEST_CHECK(temp_list->start == temp_lnode1 && temp_list->end == temp_lnode2);
     TEST_MSG("Something went wrong with list insertion.");
-    
+
     /* Check for deletion */
     delete_list_node(temp_list); /* Supposed to delete first node */
     TEST_CHECK(temp_list->start == temp_lnode2 && temp_list->end == temp_lnode2);
@@ -125,9 +123,9 @@ void test_json_list(void)
 
 void test_hashtable(void)
 {
-    HashTable * table = newHashTable(15);
+    HashTable *table = newHashTable(15);
     int hash;
-    json_list * temp= new_json_list();
+    json_list *temp = new_json_list();
     json_node *temp_jnode1, *temp_jnode2;
 
     temp_jnode1 = new_json_node("first_cat");
@@ -135,54 +133,48 @@ void test_hashtable(void)
     add_category_value(temp, "first_cat", "value1");
     add_category_value(temp, "second_cat", "value2");
     /* Check for creation of HashTable */
-    TEST_CHECK(table!=NULL );
+    TEST_CHECK(table != NULL);
     TEST_MSG("Table was not create.\n");
-    
-    /* Check for insertion */
-    insert_Record("ebay100.json", table, temp);
-    hash = hash1("ebay100.json", 15);
-    
-    TEST_CHECK(table->Trees[hash]->root!=NULL);
-    TEST_MSG("Insertion went bad\n");
-    
-    /*  Check for match_same_products function   */
-    
-    insert_Record("ebay101.json", table, temp);
-    insert_Record("ebay102.json", table, temp);
-    insert_Record("ebay103.json", table, temp);
 
-    
-    match_same_products(table, "ebay101.json", "ebay102.json");     //101 = 102
-    match_same_products(table, "ebay103.json", "ebay100.json");     //103 = 100
-    match_same_products(table, "ebay101.json", "ebay100.json");     //101 = 100 => 101=102=103=100
-    
-    
-    struct node * ebay100 = find_key_RBtree(table->Trees[ hash1("ebay100.json", 15) ], "ebay100.json");
-    struct node * ebay101 = find_key_RBtree(table->Trees[ hash1("ebay101.json", 15) ], "ebay101.json");
-    struct node * ebay102 = find_key_RBtree(table->Trees[ hash1("ebay102.json", 15) ], "ebay102.json");
-    struct node * ebay103 = find_key_RBtree(table->Trees[ hash1("ebay103.json", 15) ], "ebay103.json");
-    
-    
+    /* Check for insertion */
+    insert_Record("ebay100.json", table, temp, NO_PARAMETER);
+    hash = hash1("ebay100.json", 15);
+
+    TEST_CHECK(table->Trees[hash]->root != NULL);
+    TEST_MSG("Insertion went bad\n");
+
+    /*  Check for match_same_products function   */
+
+    insert_Record("ebay101.json", table, temp, NO_PARAMETER);
+    insert_Record("ebay102.json", table, temp, NO_PARAMETER);
+    insert_Record("ebay103.json", table, temp, NO_PARAMETER);
+
+    match_same_products(table, "ebay101.json", "ebay102.json"); //101 = 102
+    match_same_products(table, "ebay103.json", "ebay100.json"); //103 = 100
+    match_same_products(table, "ebay101.json", "ebay100.json"); //101 = 100 => 101=102=103=100
+
+    struct node *ebay100 = find_key_RBtree(table->Trees[hash1("ebay100.json", 15)], "ebay100.json");
+    struct node *ebay101 = find_key_RBtree(table->Trees[hash1("ebay101.json", 15)], "ebay101.json");
+    struct node *ebay102 = find_key_RBtree(table->Trees[hash1("ebay102.json", 15)], "ebay102.json");
+    struct node *ebay103 = find_key_RBtree(table->Trees[hash1("ebay103.json", 15)], "ebay103.json");
+
     TEST_CHECK(ebay101->list_same_jsons == ebay102->list_same_jsons);
     TEST_MSG("Nodes do not point at same clique \n");
-    
+
     TEST_CHECK(ebay100->list_same_jsons == ebay103->list_same_jsons);
     TEST_MSG("Nodes do not point at same clique \n");
-    
+
     TEST_CHECK(ebay101->list_same_jsons == ebay103->list_same_jsons);
     TEST_MSG("Nodes do not point at same clique \n");
-    
-   // delete_hashtable(table);
+
+    // delete_hashtable(table);
     free(table);
     free(temp);
 }
-
-
 
 TEST_LIST = {
     {"RBTree", test_RBTree},
     {"hash", test_hashtable},
     {"json_list", test_json_list},
     {"list", test_list},
-    {NULL, NULL}
-};
+    {NULL, NULL}};

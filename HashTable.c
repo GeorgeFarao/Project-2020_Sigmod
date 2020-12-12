@@ -9,38 +9,35 @@
 #include "HashTable.h"
 #include "helpFunctions.h"
 
-
 /* Create new HashTable */
-HashTable * newHashTable(int size)
+HashTable *newHashTable(int size)
 {
-    HashTable * newTable= malloc(sizeof(HashTable));
-    newTable->Trees = malloc ( sizeof(struct RBTree *)  * (size)  );        //Allocate memory for table's trees
+    HashTable *newTable = malloc(sizeof(HashTable));
+    newTable->Trees = malloc(sizeof(struct RBTree *) * (size)); //Allocate memory for table's trees
 
-    for(int i=0; i < size ; i++)
-        newTable->Trees[i]=NULL;
+    for (int i = 0; i < size; i++)
+        newTable->Trees[i] = NULL;
 
-    newTable->size=size;
+    newTable->size = size;
+    newTable->total_words = 0;
     return newTable;
 }
 
-
-
-
-unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan Bernstein
+unsigned int hash1(char *str, unsigned int HASHSIZE) // hash function by Dan Bernstein
 // inspired by http://www.cs.yorku.ca/~oz/hash.html
 {
     unsigned int hashval;
 
     for (hashval = 0; *(str) != '\0'; str++)
-        hashval = *str + 31*hashval;
+        hashval = *str + 31 * hashval;
 
     return hashval % HASHSIZE;
 }
 
 /* Insert record to the table */
-void insert_Record (char * Record , HashTable * table, json_list * jsonList)
+void insert_Record(char *Record, HashTable *table, json_list *jsonList, int words_count)
 {
-    if (table==NULL)
+    if (table == NULL)
     {
         printf("Table is NULL programm will exit");
         exit(1);
@@ -49,196 +46,183 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList)
     /* Find correct bucket for the Record */
     int hash_index = hash1(Record, table->size);
 
-    struct node * temp;
-    
-    
-    
-    if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
+    struct node *temp;
+
+    if (table->Trees[hash_index] == NULL) /* If tree does not exist */
     {
-        table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
-        
-        
-        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
-        temp->bow_tf_idf_index=global_index;
-        RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
+        table->Trees[hash_index] = new_RBTree("char *directory_name"); /* we create tree */
+
+        temp = new_node(Record, jsonList, NO_PARAMETER, NO_PARAMETER);
+        temp->bow_tf_idf_index = global_index;
+        temp->number_of_words = words_count;
+
+        RBTinsert(table->Trees[hash_index], temp); /* We create and insert a node to the tree */
     }
-    else            /* tree exits */
+    else /* tree exits */
     {
-        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
-        temp->bow_tf_idf_index=global_index;
-        RBTinsert(table->Trees[ hash_index ], temp );
-        
-        
+        temp = new_node(Record, jsonList, NO_PARAMETER, NO_PARAMETER);
+        temp->bow_tf_idf_index = global_index;
+        temp->number_of_words = words_count;
+
+        RBTinsert(table->Trees[hash_index], temp);
+
         /* We create and insert a node to the tree */
     }
 }
 
-void insert_bow (char * Record , HashTable * table, int total_files)
+void insert_bow(char *Record, HashTable *table, int total_files)
 {
-    if (table==NULL)
+    if (table == NULL)
     {
         printf("Table is NULL programm will exit");
         exit(1);
     }
-    
+
     /* Find correct bucket for the Record */
     int hash_index = hash1(Record, table->size);
-    
-    struct node * temp;
+
+    struct node *temp;
     int res;
-    
-    
-    if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
-    {
-        table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
-        
-        
-        temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
-        temp->bow_tf_idf_index=global_index;
-        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp ,total_files);     /* We create and insert a node to the tree */
-        
 
-        
-        
-    }
-    else            /* tree exits */
+    if (table->Trees[hash_index] == NULL) /* If tree does not exist */
     {
-        temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
-        temp->bow_tf_idf_index=global_index;
-        res = RBTinsert_bow_tf(table->Trees[ hash_index ], temp ,total_files);
-        if (res ==0)
+        table->Trees[hash_index] = new_RBTree("char *directory_name"); /* we create tree */
+        temp = new_node(Record, NULL, BOW_TF_IDF, total_files);
+        temp->word_id = global_total_words++;
+        temp->bow_tf_idf_index = global_index;
+        table->total_words++;
+        res = RBTinsert_bow_tf(table->Trees[hash_index], temp, total_files); /* We create and insert a node to the tree */
+    }
+    else /* tree exits */
+    {
+        temp = new_node(Record, NULL, BOW_TF_IDF, total_files);
+        temp->bow_tf_idf_index = global_index;
+        res = RBTinsert_bow_tf(table->Trees[hash_index], temp, total_files);
+        if (res == 0)
         {
-            free (temp->key);
-//            free (temp->bow);
-  //          free (temp->tf_idf);
-            free (temp);
+            free(temp->key);
+            free(temp);
         }
-        
-        
+        else
+        {
+            table->total_words++;
+            temp->word_id = global_total_words++;
+        }
         /* We create and insert a node to the tree */
     }
 }
 
-
-
-void match_different_products (HashTable * table , char * spec_id1 , char * spec_id2 )
+void match_different_products(HashTable *table, char *spec_id1, char *spec_id2)
 {
     /* Find indexes of the ids in the Hashtable */
     int index1 = hash1(spec_id1, table->size);
-    int index2 = hash1 (spec_id2,  table->size );
+    int index2 = hash1(spec_id2, table->size);
 
-    struct node * tree_node1;
-    struct node * tree_node2;
+    struct node *tree_node1;
+    struct node *tree_node2;
 
     /* Find the nodes that we need */
     tree_node1 = find_key_RBtree(table->Trees[index1], spec_id1);
     tree_node2 = find_key_RBtree(table->Trees[index2], spec_id2);
 
-    if(tree_node1 ==NULL || tree_node2== NULL)
+    if (tree_node1 == NULL || tree_node2 == NULL)
     {
         printf("Product not found\n");
-        return ;
+        return;
     }
 
-    lnode * lnode_temp = tree_node2->list_same_jsons->start;
+    lnode *lnode_temp = tree_node2->list_same_jsons->start;
 
-    struct node * neighbour;
-    struct node * newNode;
+    struct node *neighbour;
+    struct node *newNode;
 
-    int index_neig =hash1 (lnode_temp->json_name ,  table->size );
+    int index_neig = hash1(lnode_temp->json_name, table->size);
 
     neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
 
-    newNode = new_node(lnode_temp->json_name, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER );
-    newNode->self_node=neighbour;
+    newNode = new_node(lnode_temp->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    newNode->self_node = neighbour;
 
-    int res=-1;
-    res= RBTinsert(tree_node1->list_same_jsons->different_cliques, newNode);
-    if(res==0){
+    int res = -1;
+    res = RBTinsert(tree_node1->list_same_jsons->different_cliques, newNode);
+    if (res == 0)
+    {
         free(newNode->key);
         free(newNode);
     }
 
     lnode_temp = tree_node1->list_same_jsons->start;
 
-
-    index_neig =hash1 (lnode_temp->json_name ,  table->size );
+    index_neig = hash1(lnode_temp->json_name, table->size);
 
     neighbour = find_key_RBtree(table->Trees[index_neig], lnode_temp->json_name);
 
-
-    newNode = new_node(lnode_temp->json_name, NULL , DIFFERENT_CLIQUES ,NO_PARAMETER);
-    newNode->self_node=neighbour;
-     res=-1;
-    res= RBTinsert(tree_node2->list_same_jsons->different_cliques, newNode);
-    if(res==0){
+    newNode = new_node(lnode_temp->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    newNode->self_node = neighbour;
+    res = -1;
+    res = RBTinsert(tree_node2->list_same_jsons->different_cliques, newNode);
+    if (res == 0)
+    {
         free(newNode->key);
         free(newNode);
     }
-
 }
 
-
-
-
 /* Matches same products and creates cliques */
-void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
+void match_same_products(HashTable *table, char *spec_id1, char *spec_id2)
 {
 
     /* Find indexes of the ids in the Hashtable */
     int index1 = hash1(spec_id1, table->size);
-    int index2 = hash1 (spec_id2,  table->size );
+    int index2 = hash1(spec_id2, table->size);
 
-    struct node * tree_node1;
-    struct node * tree_node2;
+    struct node *tree_node1;
+    struct node *tree_node2;
 
     /* Find the nodes that we need */
     tree_node1 = find_key_RBtree(table->Trees[index1], spec_id1);
     tree_node2 = find_key_RBtree(table->Trees[index2], spec_id2);
 
-    if(tree_node1 ==NULL || tree_node2== NULL)
+    if (tree_node1 == NULL || tree_node2 == NULL)
     {
         printf("Product not found\n");
-        return ;
+        return;
     }
 
     /* make temp pointer point to second node's list */
-    lnode * lnode_temp = tree_node2->list_same_jsons->start;
+    lnode *lnode_temp = tree_node2->list_same_jsons->start;
 
     /* If they are already  in same list (clique) do nothing */
     if (tree_node1->list_same_jsons == tree_node2->list_same_jsons)
-        return ;
+        return;
 
     combine_tree_list(table, tree_node1->list_same_jsons->different_cliques,
                       tree_node1->list_same_jsons->different_cliques->root, tree_node2->list_same_jsons->start);
 
-
     combine_tree_list(table, tree_node2->list_same_jsons->different_cliques,
                       tree_node2->list_same_jsons->different_cliques->root, tree_node1->list_same_jsons->start);
 
-
     combine_trees(tree_node2->list_same_jsons->different_cliques,
-                  tree_node2->list_same_jsons->different_cliques->root,tree_node1->list_same_jsons->different_cliques);
-   // destroy_diffRBTree(tree_node2->list_same_jsons->different_cliques, tree_node2->list_same_jsons->different_cliques->root);
+                  tree_node2->list_same_jsons->different_cliques->root, tree_node1->list_same_jsons->different_cliques);
+    // destroy_diffRBTree(tree_node2->list_same_jsons->different_cliques, tree_node2->list_same_jsons->different_cliques->root);
     /* Make first node's end point to the start of second node's list  and it's end to the second's end*/
     tree_node1->list_same_jsons->end->next = tree_node2->list_same_jsons->start;
     tree_node1->list_same_jsons->end = tree_node2->list_same_jsons->end;
     tree_node1->list_same_jsons->size += tree_node2->list_same_jsons->size;
 
-
-
     /* We traverse second node's list and make each node in the list point to first's list */
-    while( lnode_temp!=NULL)
+    while (lnode_temp != NULL)
     {
-        struct node * neighbour;
+        struct node *neighbour;
         /* Find Every Node of the clique */
         int neighbour_hash_index = hash1(lnode_temp->json_name, table->size);
-        neighbour = find_key_RBtree( table->Trees[ neighbour_hash_index ],  lnode_temp->json_name );
+        neighbour = find_key_RBtree(table->Trees[neighbour_hash_index], lnode_temp->json_name);
 
         /* Only one node from the old list must delete it because they all point to same list item that contains
 	and end information of the list   */
 
-        if(strcmp(neighbour->list_same_jsons->end->json_name,neighbour->key)==0){
+        if (strcmp(neighbour->list_same_jsons->end->json_name, neighbour->key) == 0)
+        {
             destroy_diffRBTree(neighbour->list_same_jsons->different_cliques, neighbour->list_same_jsons->different_cliques->root);
             destroy_diffRBTree(neighbour->list_same_jsons->printed_different_cliques, neighbour->list_same_jsons->printed_different_cliques->root);
             free(neighbour->list_same_jsons);
@@ -250,111 +234,118 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     }
 }
 
-
 /* Prints all the pairs */
-void print_commons(HashTable * table )
+void print_commons(HashTable *table)
 {
-    for(int i=0 ;i<table->size ; i++)
+    for (int i = 0; i < table->size; i++)
     {
-        if( table->Trees[i]!=NULL)
+        if (table->Trees[i] != NULL)
             postorder_print_commons(table->Trees[i], table->Trees[i]->root);
-
     }
 }
 
 /* Deletes HashTable */
-void delete_hashtable(HashTable * table)
+void delete_hashtable(HashTable *table)
 {
-    for (int i=0; i<table->size ;i++)
+    for (int i = 0; i < table->size; i++)
     {
-        if(table->Trees[i]!=NULL)
+        if (table->Trees[i] != NULL)
             destroyRBTree(table->Trees[i], table->Trees[i]->root);
-
-
     }
     free(table->Trees);
-
-
 }
 
-
-
-
-void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * recursion_root, lnode * start)
+void combine_tree_list(HashTable *table, struct RBTree *Tree1, struct node *recursion_root, lnode *start)
 {
 
-    if(recursion_root == Tree1->NIL) {
+    if (recursion_root == Tree1->NIL)
+    {
 
         return;
     }
     combine_tree_list(table, Tree1, recursion_root->left, start);
     combine_tree_list(table, Tree1, recursion_root->right, start);
 
+    struct node *neighbour;
+    int index_neig;
+    struct node *newNode;
 
-    struct node * neighbour;
-    int index_neig ;
-    struct node * newNode;
-
-
-    index_neig =hash1 (start->json_name ,  table->size );
+    index_neig = hash1(start->json_name, table->size);
 
     neighbour = find_key_RBtree(table->Trees[index_neig], start->json_name);
 
-
-    newNode =  new_node(start->json_name, NULL , DIFFERENT_CLIQUES , NO_PARAMETER);
-    newNode->self_node= neighbour;
-    int res=-1;
-    res=RBTinsert( recursion_root->self_node->list_same_jsons->different_cliques , newNode);
-    if(res==0){
+    newNode = new_node(start->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    newNode->self_node = neighbour;
+    int res = -1;
+    res = RBTinsert(recursion_root->self_node->list_same_jsons->different_cliques, newNode);
+    if (res == 0)
+    {
         free(newNode->key);
         free(newNode);
     }
-
-
 }
 
-
-void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
+void fix_duplicates(struct RBTree *Tree1, struct node *recursion_root, struct RBTree *Tree2)
 {
-    if(recursion_root== Tree1->NIL) {
+    if (recursion_root == Tree1->NIL)
+    {
         return;
     }
-    
+
     fix_duplicates(Tree1, recursion_root->left, Tree2);
     fix_duplicates(Tree1, recursion_root->right, Tree2);
-    
-    struct node * Newnode;
-    Newnode = new_node(	recursion_root->self_node->list_same_jsons->start->json_name, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER);
-    Newnode->self_node=recursion_root->self_node;
-    Newnode->self_node->list_same_jsons->Removed_duplicates=1;
-    
-    int res=-1;
-    res=  RBTinsert(Tree2, Newnode);
-    if(res==0){
+
+    struct node *Newnode;
+    Newnode = new_node(recursion_root->self_node->list_same_jsons->start->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
+    Newnode->self_node = recursion_root->self_node;
+    Newnode->self_node->list_same_jsons->Removed_duplicates = 1;
+
+    int res = -1;
+    res = RBTinsert(Tree2, Newnode);
+    if (res == 0)
+    {
         free(Newnode->key);
         free(Newnode);
     }
 }
 
-void remove_duplicates (HashTable * table)
+void remove_duplicates(HashTable *table)
 {
-    for (int i=0 ;i <table->size ;i++)
+    for (int i = 0; i < table->size; i++)
     {
-        if (table->Trees[i]!=NULL)
-            postorder_remove_duplicates(table->Trees[i] , table->Trees[i]->root);
+        if (table->Trees[i] != NULL)
+            postorder_remove_duplicates(table->Trees[i], table->Trees[i]->root);
     }
-    
-    
 }
 
-
-void print_all_different (HashTable * table)
+void print_all_different(HashTable *table)
 {
-    for (int i=0 ;i <table->size ;i++)
+    for (int i = 0; i < table->size; i++)
     {
-        if (table->Trees[i]!=NULL)
-            postorder_print_different(table->Trees[i] , table->Trees[i]->root);
+        if (table->Trees[i] != NULL)
+            postorder_print_different(table->Trees[i], table->Trees[i]->root);
     }
-    
-    
+}
+
+void create_tfidf_bow(HashTable *files, HashTable *different_words)
+{
+    for (int i = 0; i < files->size; ++i)
+    {
+        if (files->Trees[i] != NULL)
+        {
+            postorder_initialize_bow_tfidf_row(files->Trees[i], files->Trees[i]->root, different_words);
+        }
+    }
+}
+
+// void postorder_help_to_initialize_bow_tfidf_row(struct RBTree *Tree, struct node *recursion_root, struct node *file, HashTable *different_words)
+void traversing_words_for_tfidf_bow(HashTable *different_words, struct node *file)
+{
+    for (int i = 0; i < different_words->size; ++i)
+    {
+        if (different_words->Trees[i] != NULL)
+        {
+            postorder_help_to_initialize_bow_tfidf_row(different_words->Trees[i], different_words->Trees[i]->root, file, different_words);
+        }
+    }
 }
