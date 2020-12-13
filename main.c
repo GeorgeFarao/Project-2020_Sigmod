@@ -69,7 +69,7 @@ int main(int argc, char * argv[]) {
     reading_csv_file (file_name, Table);
     remove_duplicates(Table);
     print_all_different (Table);
-    
+    create_tfidf_bow(Table,bow_tfidf);
     /* Free allocated memory */
     delete_hashtable(Table);
     // na ftiaksoume delete gia to stopwords
