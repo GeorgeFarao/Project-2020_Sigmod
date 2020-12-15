@@ -129,3 +129,92 @@ void train(HashTable *files, logistic_regression *model)
         printf("Accuracy: %f %%\n", (double)numOfCorrectAnswers * 100 / (double)count);
     }
 }
+
+double px(double fx_val)
+{
+    double exponential = exp(-fx_val);
+    return 1.0 / (1.0 + exponential);
+}
+
+double *nabla(logistic_regression *model, struct node *file1, struct node *file2, int y)
+{
+    double *nabla_array = malloc(sizeof(double) * model->N);
+
+    memset(nabla_array, 0, sizeof(double) * model->N);
+    double sum = px(fx(model, file1, file2));
+    // printf("start of nabla\n");
+    for (int j = 0; j < file1->number_of_words; j++)
+    {
+        if (file1->non_zero_values[j] >= global_total_words)
+            printf("bigger than global %d %d\n", file1->non_zero_values[j], global_total_words);
+        if (file1->non_zero_values[j] != 0)
+        {
+            // printf("%d\n",file1->non_zero_values[j]);
+            nabla_array[file1->non_zero_values[j]] = derivative_error_function(model, file1->tf_idf, file2->tf_idf,
+                                                                               file1->non_zero_values[j], y, sum);
+        }
+        else
+            break;
+    }
+
+    for (int j = 0; j < file2->number_of_words; j++)
+    {
+        if (file2->non_zero_values[j] >= global_total_words)
+            printf("bigger than global %d %d\n", file2->non_zero_values[j], global_total_words);
+        if (file2->non_zero_values[j] != 0)
+        {
+            nabla_array[file2->non_zero_values[j] + model->N / 2] = derivative_error_function(model, file1->tf_idf,
+                                                                                              file2->tf_idf,
+                                                                                              file2->non_zero_values[j] +
+                                                                                                  model->N / 2,
+                                                                                              y, sum);
+        }
+        else
+            break;
+    }
+
+    return nabla_array;
+}
+
+double absolute(double val)
+{
+    if (val < 0.0)
+        return -val;
+    else
+        return val;
+}
+
+void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate)
+{
+    double *nabla_array = nabla(model, file1, file2, y);
+
+    for (int j = 0; j < file1->number_of_words; j++)
+    {
+        // printf("first loop\n");
+        if (file1->non_zero_values[j] != 0)
+            model->w[file1->non_zero_values[j]] = model->w[file1->non_zero_values[j]] -
+                                                  learning_rate * nabla_array[file1->non_zero_values[j]];
+
+        else
+            break;
+    }
+
+    for (int j = 0; j < file2->number_of_words; j++)
+    {
+        // printf("second loop\n");
+        if (file2->non_zero_values[j] != 0)
+            model->w[file2->non_zero_values[j] + model->N / 2] = model->w[file2->non_zero_values[j] + model->N / 2] -
+                                                                 learning_rate * nabla_array[file2->non_zero_values[j] + model->N / 2];
+        else
+            break;
+    }
+
+    free(nabla_array);
+
+    double new_norm = norm(model);
+
+    if (absolute(new_norm - model->norm) < model->tolerance)
+        ;
+
+    model->norm = new_norm;
+}

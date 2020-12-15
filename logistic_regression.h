@@ -30,4 +30,12 @@ double norm(logistic_regression *model);
 
 void train(HashTable *files, logistic_regression *model);
 
+double *nabla(logistic_regression *model, struct node *file1, struct node *file2, int y);
+
+double px(double fx_val);
+
+void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate);
+
+double absolute(double val);
+
 #endif /* logistic_regression_h */
