@@ -8,6 +8,8 @@
 #include "RBtree.h"
 #include "HashTable.h"
 #include "helpFunctions.h"
+#include "dataList.h"
+#include "logistic_regression.h"
 
 
 /* Create new HashTable */

@@ -1,9 +1,9 @@
-CC = gcc -g
+CC = gcc -g -Wall
 
 all: find_commons unit_test 
 
-find_commons: main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
-	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o -lm
+find_commons: main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o
+	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm
 
 main.o: main.c
 	$(CC) -c main.c
@@ -17,17 +17,23 @@ list.o: list.c
 HashTable.o: HashTable.c
 	$(CC) -c HashTable.c
 
-jsonParser: jsonParser.c
+jsonParser.o: jsonParser.c
 	$(CC) -c jsonParser.c
 
-helpFunctions: helpFunctions.c
+helpFunctions.o: helpFunctions.c
 	$(CC) -c helpFunctions.c
 
-unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o
-	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o -lm
+dataList.o: dataList.c
+	$(CC) -c dataList.c
+
+logistic_regression.o: logistic_regression.c
+	$(CC) -c logistic_regression.c
+
+unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o
+	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm
 
 .PHONY: clean
 
 clean:
-	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o unit_test.o output.csv different.csv
+	rm -f find_commons unit_test main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o unit_test.o dataList.o logistic_regression.o output.csv different.csv
 	clear
