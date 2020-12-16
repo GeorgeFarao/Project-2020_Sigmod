@@ -218,3 +218,9 @@ void calculate_optimal_weights(logistic_regression *model, struct node *file1, s
 
     model->norm = new_norm;
 }
+
+void destroy_model(logistic_regression *model)
+{
+    free(model->w);
+    free(model);
+}

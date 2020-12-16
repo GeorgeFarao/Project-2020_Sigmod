@@ -71,3 +71,30 @@ train_data *new_train_data(char *str1, char *str2, int match_val)
 
     return temp;
 }
+
+void delete_dataList(list_data *dataList)
+{
+    if (dataList->start == NULL) /* Checking if list is empty */
+    {
+        free(dataList);
+        return;
+    }
+    else
+    {
+        lnode_data *prev = dataList->start;
+
+        while(dataList->start != NULL) /* Free allocated memory while moving prev and start pointers */
+        {
+            dataList->start = dataList->start->next; /* Move list->start to next node */
+            free(prev->data->file1);
+            free(prev->data->file2);
+            free(prev->data);
+            free(prev);
+            prev = dataList->start; /* Prev indicated to previous state of list->start */
+        }
+    }
+
+    dataList->start = dataList->end = NULL;
+    dataList->size = -1;      /* So other nodes indicating to the list it's being deleted */
+    free(dataList);
+}

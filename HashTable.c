@@ -58,8 +58,7 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList,int 
     if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
     {
         table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
-        
-        
+
         temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
         temp->bow_tf_idf_index=global_index;
         temp->number_of_words= words_count;
@@ -145,7 +144,7 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
 
     if(tree_node1 ==NULL || tree_node2== NULL)
     {
-        printf("Product not found\n");
+       // printf("Product not found\n");
         return ;
     }
 
@@ -207,7 +206,7 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 
     if(tree_node1 ==NULL || tree_node2== NULL)
     {
-        printf("Product not found\n");
+        //printf("Product not found\n");
         return ;
     }
 
@@ -282,7 +281,7 @@ void delete_hashtable(HashTable * table)
 
     }
     free(table->Trees);
-
+    free(table);
 
 }
 
@@ -297,7 +296,7 @@ void destroy_HashTable(HashTable * table)
     }
     free(table->Trees);
 
-
+    free(table);
 }
 
 

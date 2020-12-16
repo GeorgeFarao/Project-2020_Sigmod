@@ -66,6 +66,10 @@ struct node *new_node(char *json_id, json_list *jsonList, int flag, int total_fi
     {
         node->list_same_jsons = NULL;
     }
+    else if (jsonList==NULL)
+    {
+        node->list_same_jsons=NULL;
+    }
 
     node->left = NULL;
     node->right = NULL;
@@ -364,10 +368,19 @@ void destroy_diffRBTree(struct RBTree *T, struct node *recursion_root)
         free(T->directory_name);
         free(T);
     }
+
     free(recursion_root->key);
+
+    if(recursion_root->list_same_jsons!=NULL){
+
+        delete_list(recursion_root->list_same_jsons);
+        free(recursion_root->list_same_jsons);
+    }
 
     free(recursion_root);
 }
+
+
 
 /*  Traversing tree in postorder and deleting each node */
 void destroyRBTree(struct RBTree *T, struct node *recursion_root)

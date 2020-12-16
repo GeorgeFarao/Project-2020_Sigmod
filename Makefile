@@ -1,4 +1,4 @@
-CC = gcc -g -Wall
+CC = gcc -g 
 
 all: find_commons unit_test 
 

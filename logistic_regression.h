@@ -37,5 +37,6 @@ double px(double fx_val);
 void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate);
 
 double absolute(double val);
+void destroy_model(logistic_regression *model);
 
 #endif /* logistic_regression_h */
