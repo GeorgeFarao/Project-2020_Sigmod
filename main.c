@@ -70,14 +70,16 @@ int main(int argc, char *argv[])
     create_tfidf_bow(Table, bow_tfidf);
     printf("%d %d %d\n",data->size,test->size,validation->size);
     logistic_regression * model;
-    model = new_model(global_total_words*2, 0, 0.00000001,5);
-    train(Table,model);
+    //model = new_model(global_total_words*2, 0, 0.00000001,5);
+    //train(Table,model);
 
 
     //train(Table,model);
     //train(Table,model);
     /* Free allocated memory */
     delete_hashtable(Table);
+    destroy_HashTable(stopwords);
+    destroy_HashTable(bow_tfidf);
     // na ftiaksoume delete gia to stopwords
     free(Table);
 }

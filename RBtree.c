@@ -386,7 +386,9 @@ void destroyRBTree(struct RBTree *T, struct node *recursion_root)
     }
 
     free(recursion_root->key);
-
+    free(recursion_root->bow);
+    free(recursion_root->tf_idf);
+    free(recursion_root->non_zero_values);
     if (recursion_root->json_info != NULL)
         delete_json_list(recursion_root->json_info);
     free(recursion_root->json_info);
