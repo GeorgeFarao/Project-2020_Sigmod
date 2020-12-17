@@ -57,6 +57,23 @@ All products that match point to the same list. When we find a new set of produc
 * By using a red black tree we can search a node  in O(logn) time with n being the number of products. 
 * By using a hash table with a good hash function we can reduce the complexity to O(1)*O(logn/M) with M being size of hash table.
 
+
+## Project - Part 2
+
+### What's been added to Part 1
+
+* Everything has been implemented according to the excercise requirements.
+* For every clique we find all products that are different.
+* We split randomly our data
+   * train_set: 80%
+   * test_set: 20%
+* Before training, we clean up the text:
+   1. Lowercase
+   2. Remove punctuation
+   3. Remove numbers
+* When calculating optimal weights we avoid unnecessary calculations, that gives a huge time boost to the procedure of training.
+* Accuracy usually starts from ~77% and it increases for each epoch.
+
 ### Files
 * RBtree.c, RBtree.h: Red black tree implementation
 * HashTable.c, HashTable.h: Functions for hashtable 
@@ -65,4 +82,6 @@ All products that match point to the same list. When we find a new set of produc
 * helpFunctions.c, helpFunctions.h: Functions for reading input arguments and initializing data structures 
 * unit_test.c: Unit test functions
 * main.c: Main
+* logistic_regression.c, logistic_regression.h: Logistic regression implementation
+* dataList.c, dataList.h: lists for storing train and test data
 * Makefile: Creates object files and executables, including unit_test
