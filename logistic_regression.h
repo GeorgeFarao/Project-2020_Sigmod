@@ -11,32 +11,44 @@
 
 typedef struct logistic_regression
 {
-    int N;
-    double *w;
-    double b;
+    int N;     /* number of weights == 2*(number of columns of tfidf array) */
+    double *w; /* array of weights */
+    double b;  /* constant used in linear function f(x) */
     double tolerance;
     double norm;
-    int epox;
+    int epoch; /* number of epoches */
 
 } logistic_regression;
 
-logistic_regression *new_model(int n, double b, double tolerance, int epox);
+/* initialize model */
+logistic_regression *new_model(int n, double b, double tolerance, int epoch);
 
+/* calculate linear function f(x) 
+    f(x) = b + w1*x1 + w2*x2 + ... + wr*xr */
 double fx(logistic_regression *model, struct node *file1, struct node *file2);
 
+/* derivative_error_function = (p(f(x)) - yi) * xj */
 double derivative_error_function(logistic_regression *model, double *tf_idf1, double *tf_idf2, int j, int y, double sum_px);
 
+/* calculate norm of vector w = (w1, w2, ... ,wn) */
 double norm(logistic_regression *model);
 
+/* main function that trains our model */
 void train(HashTable *files, logistic_regression *model);
 
+/* calls derivative_error_function() for every component */
 double *nabla(logistic_regression *model, struct node *file1, struct node *file2, int y);
 
+/* p(x) = 1 / (1 + e^-f(x)) */
 double px(double fx_val);
 
+/* for every component calculates w^t+1 = w^t - learning_rate * nabla() */
 void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate);
 
+/* absolute value */
 double absolute(double val);
+
+/* free allocated memory */
 void destroy_model(logistic_regression *model);
 
 #endif /* logistic_regression_h */
