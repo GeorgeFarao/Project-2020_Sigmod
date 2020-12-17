@@ -235,6 +235,8 @@ int RBTinsert(struct RBTree *T, struct node *z)
     return 1;
 }
 
+
+/* insert node in bow or tf */
 int RBTinsert_bow_tf(struct RBTree *T, struct node *z, int total_files)
 {
 
@@ -252,7 +254,7 @@ int RBTinsert_bow_tf(struct RBTree *T, struct node *z, int total_files)
             x = x->right;
         else
         {
-            //   x->bow[global_index] = x->bow[global_index] +1;
+            //check if we are in the same file and w already have counted it
             if (global_index != atoi(x->list_same_jsons->end->json_name))
             {
                 char *temp_name = malloc(20);
@@ -265,19 +267,15 @@ int RBTinsert_bow_tf(struct RBTree *T, struct node *z, int total_files)
             return 0;
         }
     }
+
+    /* we use this list to know in how many files a word appears */
+    /* the size of the list is the number of the files it appears to*/
     z->list_same_jsons = new_list();
     char *temp_name = malloc(20);
     sprintf(temp_name, "%d", global_index);
     struct lnode *temp = new_lnode(temp_name);
     free(temp_name);
     insert_lnode(z->list_same_jsons, temp);
-
-    /* z->bow = malloc(sizeof(int)* total_files);
-    z->tf_idf = malloc(sizeof(double)* total_files);
-    memset(z->bow,0,sizeof(int)* total_files);
-    memset(z->tf_idf,0,sizeof(double)* total_files);*/
-
-    //  z->bow[global_index] = 1;
 
     z->parent = y;
 
@@ -322,6 +320,7 @@ struct node *minimum(struct RBTree *T, struct node *x)
     return x;
 }
 
+/* inserts first tree's nodes to the second one*/
 void combine_trees(struct RBTree *Tree1, struct node *recursion_root, struct RBTree *Tree2)
 {
     if (recursion_root == Tree1->NIL)
@@ -345,11 +344,13 @@ void combine_trees(struct RBTree *Tree1, struct node *recursion_root, struct RBT
     }
 }
 
+
+// works like destroyRBTree but for different kind of tree nodes
 void destroy_diffRBTree(struct RBTree *T, struct node *recursion_root)
 {
-    if (recursion_root == T->NIL && recursion_root != T->root)
+    if (recursion_root == T->NIL && recursion_root != T->root)  // end of recursion case
         return;
-    else if (recursion_root == T->root && T->root == T->NIL)
+    else if (recursion_root == T->root && T->root == T->NIL)    //tree is empty
     {
         free(T->NIL);
         free(T->directory_name);
@@ -442,6 +443,8 @@ struct node *find_key_RBtree(struct RBTree *T, char *key)
     return NULL;
 }
 
+
+/* prints all different relations between the cliques */
 void print_different(list *clique, struct RBTree *Tree_different_cliques, struct node *recursion_root)
 {
     if (recursion_root == Tree_different_cliques->NIL)
@@ -451,8 +454,9 @@ void print_different(list *clique, struct RBTree *Tree_different_cliques, struct
 
     struct node *check = find_key_RBtree(clique->printed_different_cliques, recursion_root->self_node->list_same_jsons->start->json_name);
     struct node *check2 = find_key_RBtree(recursion_root->self_node->list_same_jsons->printed_different_cliques, clique->start->json_name);
-    if (check == NULL && check2 == NULL)
+    if (check == NULL && check2 == NULL)        // check if we already have printing the given relation
     {
+        // store in trees so we dont print the same relation more than one time
         print_two_lists(clique, recursion_root->self_node->list_same_jsons);
         int res = -1;
         struct node *temp1 = new_node(recursion_root->self_node->list_same_jsons->start->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
@@ -556,11 +560,12 @@ int isHeightBalanced(struct RBTree *tree, struct node *root, int *rootMax)
     return 0;
 }
 
-void initialize_bow_tf_idf(struct node *file, HashTable *diffWords)
+void initialize_bow_tf_idf(struct node *file, HashTable *diffWords)     //initializes bow and tf_idf arrays
 {
-    file->bow = malloc(sizeof(int) * global_total_words);
+    file->bow = malloc(sizeof(int) * global_total_words);           //we allocate space for the arrays
     file->tf_idf = malloc(sizeof(double) * global_total_words);
 
+    /* Initialize both arrays with 0 */
     memset(file->bow, 0, sizeof(int) * global_total_words);
     memset(file->tf_idf, 0, sizeof(double) * global_total_words);
 
@@ -571,39 +576,41 @@ void initialize_bow_tf_idf(struct node *file, HashTable *diffWords)
     int count = 0;
     double tf, idf;
     struct node *temp;
+    // here we store for each word of the file it's index in real bow array
     int *word_ids_array = malloc(sizeof(int) * file->number_of_words);
     memset(word_ids_array, 0, sizeof(int) * file->number_of_words);
-    
+
+    // we use this tree to ignore duplicates
     struct RBTree * sorted_non_zero_values = new_RBTree("sorted_non_zero_values");
     char * id_key = malloc(30);
     struct node * id ;
     int res=-1;
     
     
-    while (temp_category != NULL)
+    while (temp_category != NULL)       //for each category of the list
     {
         temp_value = temp_category->values->start;
-        while (temp_value != NULL)
+        while (temp_value != NULL)      //for each value of each category
         {
             index = hash1(temp_value->json_name, diffWords->size);
-            temp = find_key_RBtree(diffWords->Trees[index], temp_value->json_name);
-            file->bow[temp->word_id] += 1;
+            temp = find_key_RBtree(diffWords->Trees[index], temp_value->json_name);     //find the word in the tree of different words
+            file->bow[temp->word_id] += 1;      //increase the word's count by 1 in bow
             
             sprintf(id_key, "%d",temp->word_id);
-            id = new_node(id_key, NULL, NO_PARAMETER, NO_PARAMETER);
+            id = new_node(id_key, NULL, NO_PARAMETER, NO_PARAMETER);      //try to insert a node in the tree
             res = RBTinsert(sorted_non_zero_values, id);
-            if(res==1)
+            if(res==1)      //new word so we store it's position and increase the counter
             {
                 word_ids_array[count] = temp->word_id;
                 count++;
             }
-            else
+            else        //word already in the tree
             {
                 free(id->key);
                 free(id);
             }
             
-            file->tf_idf[temp->word_id] = temp->list_same_jsons->size; //store temporarily how many times a word appears to files
+            file->tf_idf[temp->word_id] = temp->list_same_jsons->size; //store temporarily how many times a word appears to files (idf)
             temp_value = temp_value->next;
         }
         temp_category = temp_category->next;
@@ -611,15 +618,15 @@ void initialize_bow_tf_idf(struct node *file, HashTable *diffWords)
 
     temp_category = file->json_info->start;
     temp_value = temp_category->values->start;
-    for (int i = 0; i < file->number_of_words; i++)
+    for (int i = 0; i < file->number_of_words; i++)    //initialize tfidf array
     {
         if (word_ids_array[i] != 0)
         {
-            tf = ((double)file->bow[word_ids_array[i]]) / ((double)file->number_of_words);
-            idf = log((double)global_index / file->tf_idf[word_ids_array[i]]);
-            file->tf_idf[word_ids_array[i]] = tf * idf;
+            tf = ((double)file->bow[word_ids_array[i]]) / ((double)file->number_of_words);  //calculate tf
+            idf = log((double)global_index / file->tf_idf[word_ids_array[i]]);          //calculate idf
+            file->tf_idf[word_ids_array[i]] = tf * idf;                                     //store the value in tfidf array
         }
-        else
+        else        //when we find zero there are no other words so we stop
             break;
     }
 
@@ -629,7 +636,6 @@ void initialize_bow_tf_idf(struct node *file, HashTable *diffWords)
 
     file->non_zero_values = word_ids_array;
     destroy_diffRBTree(sorted_non_zero_values,sorted_non_zero_values->root);
-    //free(word_ids_array);
 }
 
 void postorder_initialize_bow_tfidf(struct RBTree *Tree, struct node *root, HashTable *diffWords)
