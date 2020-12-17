@@ -25,9 +25,6 @@ HashTable * newHashTable(int size)
     return newTable;
 }
 
-
-
-
 unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan Bernstein
 // inspired by http://www.cs.yorku.ca/~oz/hash.html
 {
@@ -97,8 +94,8 @@ void insert_bow (char * Record , HashTable * table, int total_files)
         
         
         temp=new_node(Record, NULL,BOW_TF_IDF ,total_files);
-        temp->bow_tf_idf_index=global_index;
-        temp->word_id=global_total_words;
+        temp->bow_tf_idf_index = global_index;
+        temp->word_id = global_total_words;                                 /*  Each Word has a unique word id   */
         RBTinsert_bow_tf(table->Trees[ hash_index ], temp ,total_files);     /* We create and insert a node to the tree */
         global_total_words++;
 
@@ -113,8 +110,6 @@ void insert_bow (char * Record , HashTable * table, int total_files)
         if (res ==0)
         {
             free (temp->key);
-//            free (temp->bow);
-  //          free (temp->tf_idf);
             free (temp);
         }
         else{
@@ -137,7 +132,7 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
     struct node * tree_node1;
     struct node * tree_node2;
 
-    /* Find the nodes that we need */
+    /* Find the nodes that we need to say they are different*/
     tree_node1 = find_key_RBtree(table->Trees[index1], spec_id1);
     tree_node2 = find_key_RBtree(table->Trees[index2], spec_id2);
 
@@ -147,6 +142,12 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
         return ;
     }
 
+    /* When we find two different nodes:  we insert the clique of first node in the list of different cliques of second node  */
+    
+    /* A clique is represented by its first element */
+    /* Cliques change but we control it elsewhere*/
+    
+    
     lnode * lnode_temp = tree_node2->list_same_jsons->start;
 
     struct node * neighbour;
@@ -161,11 +162,16 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
 
     int res=-1;
     res= RBTinsert(tree_node1->list_same_jsons->different_cliques, newNode);
-    if(res==0){
+    if(res==0)
+    {
         free(newNode->key);
         free(newNode);
     }
 
+    
+    /* and then  we insert the clique of second node in the list of different cliques of first node  */
+
+    
     lnode_temp = tree_node1->list_same_jsons->start;
 
 
@@ -176,9 +182,10 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
 
     newNode = new_node(lnode_temp->json_name, NULL , DIFFERENT_CLIQUES ,NO_PARAMETER);
     newNode->self_node=neighbour;
-     res=-1;
+    res=-1;
     res= RBTinsert(tree_node2->list_same_jsons->different_cliques, newNode);
-    if(res==0){
+    if(res==0)
+    {
         free(newNode->key);
         free(newNode);
     }
@@ -216,10 +223,19 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     if (tree_node1->list_same_jsons == tree_node2->list_same_jsons)
         return ;
 
+    
+
+    
+    
+    /*We find all different products of first node and update them
+    so they are different with the products that are same with second node */
+    
     combine_tree_list(table, tree_node1->list_same_jsons->different_cliques,
                       tree_node1->list_same_jsons->different_cliques->root, tree_node2->list_same_jsons->start);
 
-
+    /*We find all different products of second node and update them
+     so they are different with the products that are same with first node*/
+    
     combine_tree_list(table, tree_node2->list_same_jsons->different_cliques,
                       tree_node2->list_same_jsons->different_cliques->root, tree_node1->list_same_jsons->start);
 
@@ -299,15 +315,13 @@ void destroy_HashTable(HashTable * table)
 }
 
 
-
-
+/*We find all products that are different with a node and update
+ them so that they are different with the products that are same to the node */
 void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * recursion_root, lnode * start)
 {
-
-    if(recursion_root == Tree1->NIL) {
-
+    if(recursion_root == Tree1->NIL)
         return;
-    }
+    
     combine_tree_list(table, Tree1, recursion_root->left, start);
     combine_tree_list(table, Tree1, recursion_root->right, start);
 
@@ -326,27 +340,31 @@ void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * 
     newNode->self_node= neighbour;
     int res=-1;
     res=RBTinsert( recursion_root->self_node->list_same_jsons->different_cliques , newNode);
-    if(res==0){
+    if(res==0)
+    {
         free(newNode->key);
         free(newNode);
     }
-
-
 }
 
 
+/*For a clique we save in a tree all cliques that are different with this clique. We keep one node from
+ each clique but when two nodes are getting same we have saved the clique twich so we remove it */
+
 void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 )
 {
-    if(recursion_root== Tree1->NIL) {
+    if(recursion_root== Tree1->NIL)
         return;
-    }
+    
     
     fix_duplicates(Tree1, recursion_root->left, Tree2);
     fix_duplicates(Tree1, recursion_root->right, Tree2);
     
     struct node * Newnode;
+    
+    /* We insert nodes to a second Tree sorted according to clique*/
     Newnode = new_node(	recursion_root->self_node->list_same_jsons->start->json_name, NULL ,DIFFERENT_CLIQUES ,NO_PARAMETER);
-    Newnode->self_node=recursion_root->self_node;
+    Newnode->self_node = recursion_root->self_node;
     Newnode->self_node->list_same_jsons->Removed_duplicates=1;
     
     int res=-1;
