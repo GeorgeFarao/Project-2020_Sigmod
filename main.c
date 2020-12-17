@@ -4,7 +4,6 @@
 #include <string.h>
 #include <time.h>
 
-
 #include "list.h"
 #include "jsonParser.h"
 #include "RBtree.h"
@@ -33,6 +32,7 @@ int main(int argc, char *argv[])
     char *file_name = NULL;
     char *hashtable_size = NULL;
     char *stopwords_file_name = NULL;
+
     if (argc != 9)
     {
         printf("Wrong input\nPease give Directory with specs and .csv file and hash table size\n");
@@ -50,15 +50,17 @@ int main(int argc, char *argv[])
 
         else if (strcmp(argv[i], "-h") == 0) /* hashtable size parameter */
             hashtable_size = argv[i + 1];
+
         else if (strcmp(argv[i], "-sw") == 0) /* stopwords file */
             stopwords_file_name = argv[i + 1];
     }
 
-    if (directory_name == NULL || file_name == NULL || hashtable_size == NULL)
+    if (directory_name == NULL || file_name == NULL || hashtable_size == NULL || stopwords_file_name == NULL)
     {
         printf("Error in parameters given !\n");
         return 0;
     }
+
     int total_files = count_number_of_files(directory_name);
 
     Table = newHashTable(atoi(hashtable_size));
@@ -71,20 +73,18 @@ int main(int argc, char *argv[])
     remove_duplicates(Table);
     print_all_different(Table);
     create_tfidf_bow(Table, bow_tfidf);
-    printf("%d %d %d\n",data->size,test->size,validation->size);
-    logistic_regression * model;
-    model = new_model(global_total_words*2, 0, 0.00000001,15);
-    train(Table,model);
 
+    printf("data size: %d, test_size: %d\n", data->size, test->size);
 
-    //train(Table,model);
-    //train(Table,model);
+    /* trainning our model */
+    logistic_regression *model;
+    model = new_model(global_total_words * 2, 0, 0.00000001, 15);
+    train(Table, model);
+
     /* Free allocated memory */
     delete_hashtable(Table);
     destroy_HashTable(stopwords);
     destroy_HashTable(bow_tfidf);
-
-
     delete_dataList(data);
     delete_dataList(test);
     delete_dataList(validation);
