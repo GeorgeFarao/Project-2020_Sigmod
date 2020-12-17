@@ -79,7 +79,6 @@ struct node *new_node(char *json_id, json_list *jsonList, int flag, int total_fi
     node->self_node = NULL;
     node->number_of_words = 0;
     node->word_id = 0;
-    node->tf_idf_nt = 0;
 
     return node;
 }

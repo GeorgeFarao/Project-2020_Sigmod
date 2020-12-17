@@ -88,7 +88,6 @@ void train(HashTable *files, logistic_regression *model)
     for (int ep = 0; ep < model->epox; ++ep)
     {
         int count = 0;
-        printf("%d\n", data->size);
         lnode_data *start = data->start;
 
         for (int i = 0; i < data->size; i++)
@@ -105,7 +104,6 @@ void train(HashTable *files, logistic_regression *model)
 
         double p;
         int numOfCorrectAnswers = 0;
-        printf("start2\n");
         start = test->start;
         while (start != NULL)
         {
@@ -211,12 +209,12 @@ void calculate_optimal_weights(logistic_regression *model, struct node *file1, s
 
     free(nabla_array);
 
-    double new_norm = norm(model);
+//    double new_norm = norm(model);
 
-    if (absolute(new_norm - model->norm) < model->tolerance)
-        ;
+  //  if (absolute(new_norm - model->norm) < model->tolerance)
+    //    ;
 
-    model->norm = new_norm;
+//    model->norm = new_norm;
 }
 
 void destroy_model(logistic_regression *model)

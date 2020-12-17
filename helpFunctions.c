@@ -282,11 +282,11 @@ int process_string(char * string,json_list * list,char * category, HashTable * s
             new_buf[new_count] = string[c] + 32;
             new_count++;
         }
-        else if ( string[c]=='-' && c!=0 && string[c-1]!=' ')
-        {
-            new_buf[new_count]=string[c];
-            new_count++;
-        }
+//        else if ( string[c]=='-' && c!=0 && string[c-1]!=' ')
+//        {
+//            new_buf[new_count]=string[c];
+//            new_count++;
+//        }
        /* else if (string[c]==',' && c!=0 && c!=size && (string[c-1]>='0' && string[c+1]<='9'))
         {
             new_buf[new_count]='.';
@@ -298,7 +298,7 @@ int process_string(char * string,json_list * list,char * category, HashTable * s
             new_count++;
         }
         else if(string[c]=='.' || string[c]==':' || string[c]=='\\' || string[c]=='_' ||
-                string[c]=='=' || string[c]==' ' || string[c]=='|' || string[c]=='\0')
+                string[c]=='=' || string[c]==' ' || string[c]=='|' || string[c]=='\0' || string[c]=='-')
         {
             
 

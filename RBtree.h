@@ -23,7 +23,6 @@ struct node
     int bow_tf_idf_index;
     int number_of_words;
     int word_id;
-    int tf_idf_nt;
     
     
     

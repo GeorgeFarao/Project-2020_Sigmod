@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
 
 #include "list.h"
 #include "jsonParser.h"
@@ -19,6 +21,7 @@
 int main(int argc, char *argv[])
 {
 
+    srand(time(NULL));
     HashTable *Table;
     HashTable *stopwords;
     HashTable *bow_tfidf;
@@ -70,7 +73,7 @@ int main(int argc, char *argv[])
     create_tfidf_bow(Table, bow_tfidf);
     printf("%d %d %d\n",data->size,test->size,validation->size);
     logistic_regression * model;
-    model = new_model(global_total_words*2, 0, 0.00000001,5);
+    model = new_model(global_total_words*2, 0, 0.00000001,15);
     train(Table,model);
 
 

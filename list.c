@@ -122,8 +122,9 @@ void print_list(list * mylist)
     /* Printing basic node, and all matching nodes, that are after this node in the list */
     /* Move basic node so corresponding pointer indicates to the next node */
     /* Continue till basic node is null */
-    int cnt=0;
-    while (temp->next != NULL) 
+    int cnt=rand() %6;
+    
+    while (temp->next != NULL)
     {        
         temp_next = temp->next;
 
@@ -135,12 +136,12 @@ void print_list(list * mylist)
 
             if (cnt==5){
                 insert_lnode_data(test,node_data);
-
+                cnt =0 ;
             }
-            else if(cnt==10){
-                insert_lnode_data(validation,node_data);
-                cnt=0;
-            }
+//            else if(cnt==10){
+//                insert_lnode_data(validation,node_data);
+//                cnt=0;
+//            }
             else
                 insert_lnode_data (data,node_data);
             cnt++;
@@ -165,7 +166,8 @@ void print_two_lists(list * mylist1 ,list * mylist2)
 
     lnode * temp = mylist1->start;
     lnode * temp_next ;
-    int cnt=0;
+    int cnt= rand()%6;
+    
     while (temp != NULL)
     {
         temp_next = mylist2->start;
@@ -180,12 +182,13 @@ void print_two_lists(list * mylist1 ,list * mylist2)
             if (cnt==5){
                 //printf("OK\n");
                 insert_lnode_data(test,node_data);
+                cnt = 0;
 
             }
-            else if(cnt==10){
-                insert_lnode_data(validation,node_data);
-                cnt=0;
-            }
+//            else if(cnt==10){
+  //              insert_lnode_data(validation,node_data);
+    //            cnt=0;
+      //      }
             else
                 insert_lnode_data (data,node_data);
             cnt++;
