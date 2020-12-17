@@ -1,10 +1,5 @@
-//
-//  dataList.c
-//  model
-//
-//  Created by Mac on 13/12/20.
-//  Copyright © 2020 Mac. All rights reserved.
-//
+//Authors Kazakos Vasileios , Farao Georgios , Manolis Stivaktas
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +17,7 @@ list_data *data;
 list_data *test;
 list_data *validation;
 
-list_data *new_list_data(void)
+list_data *new_list_data(void)      //initializes new list data
 {
     list_data *mylist = malloc(sizeof(list_data));
     mylist->start = NULL;
@@ -33,11 +28,10 @@ list_data *new_list_data(void)
 }
 
 /* Creating new list node */
-lnode_data *new_lnode_data(train_data *data)
+lnode_data *new_lnode_data(train_data *data)        //initializes a new list
 {
     lnode_data *node_data = malloc(sizeof(lnode_data));
     node_data->data = data;
-
     node_data->next = NULL;
 
     return node_data;
@@ -60,19 +54,19 @@ void insert_lnode_data(list_data *list_data, lnode_data *lnodedata)
     list_data->size = list_data->size + 1; /* Updating size */
 }
 
-train_data *new_train_data(char *str1, char *str2, int match_val)
+train_data *new_train_data(char *str1, char *str2, int match_val)       //inserts new train data in the node
 {
     train_data *temp = malloc(sizeof(train_data));
-    temp->file1 = malloc(strlen(str1) + 1);
+    temp->file1 = malloc(strlen(str1) + 1);             //copy first file's name
     strcpy(temp->file1,str1);
-    temp->file2 = malloc(strlen(str2) + 1);
+    temp->file2 = malloc(strlen(str2) + 1);             //copy second file's name
     strcpy(temp->file2,str2);
     temp->match_flag = match_val;
 
     return temp;
 }
 
-void delete_dataList(list_data *dataList)
+void delete_dataList(list_data *dataList)       // deletes a data list
 {
     if (dataList->start == NULL) /* Checking if list is empty */
     {
