@@ -154,7 +154,6 @@ void reading_csv_file (char * file_name, HashTable * Table)
         
     }
 
-    print_commons(Table); /* Printing matching json files */   
 
     fclose(dataset_w);
     free(buffer); 

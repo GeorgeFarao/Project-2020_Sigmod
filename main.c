@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     reading_directory(directory_name, Table, stopwords, bow_tfidf, total_files);
     reading_csv_file(file_name, Table);
     remove_duplicates(Table);
-    print_all_different(Table);
+    print_commons(Table);
     create_tfidf_bow(Table, bow_tfidf);
 
     printf("data size: %d, test_size: %d\n", data->size, test->size);

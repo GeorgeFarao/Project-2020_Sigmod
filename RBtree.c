@@ -487,6 +487,9 @@ void postorder_print_commons(struct RBTree *T, struct node *node)
 
         if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
             print_list(node->list_same_jsons);
+        
+        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root);
+
     }
 }
 

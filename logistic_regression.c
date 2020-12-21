@@ -106,10 +106,19 @@ void train(HashTable *files, logistic_regression *model)
     struct node *temp;
     struct node *temp2;
 
+
     /* train mode "epoch" times */
     for (int ep = 0; ep < model->epoch; ++ep)
     {
         int count = 0;                   /* total number of test data */
+        
+        int number_of_correct_1=0;
+        int number_of_correct_0=0;
+        int count0=0;
+        int count1=0;
+        
+
+        
         lnode_data *start = data->start; /* first node of our trainning data-nodes */
 
         for (int i = 0; i < data->size; i++)
@@ -121,13 +130,17 @@ void train(HashTable *files, logistic_regression *model)
             /* find nodes-json files */
             temp = find_key_RBtree(files->Trees[index1], start->data->file1);
             temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
-
+            
             calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
+            //if(start->data->match_flag ==1   )
+            //    calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
+            
+ 
+            
             start = start->next; /* update pointer */
         }
 
         double p; /* probability obtained by our model */
-        int numOfCorrectAnswers = 0;
         start = test->start; /* indicates to first node of our test data-nodes */
 
         /* for every node */
@@ -145,17 +158,29 @@ void train(HashTable *files, logistic_regression *model)
             p = px(fx(model, temp, temp2));
 
             /* calculate correct answers */
+            if (start->data->match_flag == 0)
+                count0 = count0 +1;
+            else
+                count1 = count1 +1;
+            
+            
             if (p < 0.5 && start->data->match_flag == 0)
-                numOfCorrectAnswers++;
+                number_of_correct_0++;
             else if (p >= 0.5 && start->data->match_flag == 1)
-                numOfCorrectAnswers++;
+                number_of_correct_1++;
 
             /* update count and pointer */
             count++;
             start = start->next;
         }
 
-        printf("Accuracy: %f %%\n", (double)numOfCorrectAnswers * 100 / (double)count);
+        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
+        
+        printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
+        
+        printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
+        //printf("%d %d\n",count0 , count1);
+        
     }
 }
 
