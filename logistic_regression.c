@@ -176,9 +176,9 @@ void train(HashTable *files, logistic_regression *model)
 
         printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
         
-        printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
+       // printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
         
-        printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
+        //printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
         //printf("%d %d\n",count0 , count1);
         
     }
