@@ -234,3 +234,70 @@ void CreateJobs(jobScheduler * scheduler)
 
 
 
+
+void Writer(jobScheduler * scheduler,logistic_regression *model)
+{
+    
+    int iterations = data->size/MINI_BATCH_M;
+    if(data->size % MINI_BATCH_M!=0)
+        iterations++;
+    
+    
+    while(iterations)
+    {
+        //Enter critical section
+        pthread_mutex_lock(&scheduler->mtx);
+        while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS )
+            pthread_cond_wait(&scheduler->writeCond, &scheduler->mtx);
+        scheduler->writers = scheduler->writers+1;
+        scheduler->numWriters =scheduler->numWriters+1;
+        
+        pthread_mutex_unlock(&scheduler->mtx);
+        //Critical Section
+        job * Job=pop(scheduler->queue);
+
+        //Quit critical Section
+        pthread_mutex_lock(&scheduler->mtx);
+        scheduler->writers=0;
+        
+        if(scheduler->index<NUMBER_OF_THREADS)
+            pthread_cond_signal(&scheduler->writeCond);
+        
+        pthread_mutex_unlock(&scheduler->mtx);
+        
+        //DO some work
+        if(Job!=NULL)
+            nabla(model, Job);
+
+        //Enter critical section
+        pthread_mutex_lock(&scheduler->mtx);
+        while(scheduler->readers>0 || scheduler->writers>0)
+            pthread_cond_wait(&scheduler->otherWriter, &scheduler->mtx);
+        scheduler->writers = scheduler->writers+1;
+        pthread_mutex_unlock(&scheduler->mtx);
+
+
+        //Critical Section
+        if(Job!=NULL)
+            scheduler->Matrix_w[scheduler->index ] = Job->w;
+        else
+            scheduler->Matrix_w[scheduler->index ] =NULL;
+        scheduler->index++;
+
+        //Quit critical Section
+        pthread_mutex_lock(&scheduler->mtx);
+        scheduler->writers=0;
+        if(scheduler->index>=NUMBER_OF_THREADS)
+            pthread_cond_signal(&scheduler->readCond);
+        else
+            pthread_cond_signal(&scheduler->otherWriter);
+        pthread_mutex_unlock(&scheduler->mtx);
+        
+        iterations--;
+    }
+
+}
+
+
+
+
