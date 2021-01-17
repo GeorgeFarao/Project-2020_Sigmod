@@ -19,6 +19,9 @@ list_data *data;
 list_data *test;
 list_data *validation;
 
+jobScheduler * scheduler;
+
+
 list_data *new_list_data(void)      //initializes new list data
 {
     list_data *mylist = malloc(sizeof(list_data));

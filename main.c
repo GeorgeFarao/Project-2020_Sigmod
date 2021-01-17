@@ -81,8 +81,19 @@ int main(int argc, char *argv[])
     /* trainning our model */
     logistic_regression *model;
     model = new_model(global_total_words * 2, 0, 0.00000001, 15);
-    //train(Table, model);
 
+    
+    
+    scheduler = initialize_scheduler(model);
+    CreateJobs();
+    for (int i=0 ;i<NUMBER_OF_THREADS;i++)
+        pthread_create(&scheduler->threadIds[i], NULL, Writer, (void * ) model );
+    
+    Reader(model, 0.001);
+    
+    
+    
+    
     /* Free allocated memory */
     delete_hashtable(Table);
     destroy_HashTable(stopwords);

@@ -88,9 +88,12 @@ double *nabla(logistic_regression *model, job* Job);
 /* for every component calculates w^t+1 = w^t - learning_rate * nabla() */
 void calculate_optimal_weights(logistic_regression *model, double learning_rate,jobScheduler * scheduler);
 
+void *Writer(void *modl);
+void Reader(logistic_regression * model,double learning_rate );        //na sbhsoume to scheduler
+void CreateJobs(void);
 
+extern jobScheduler * scheduler;
 
-void CreateJobs(jobScheduler * scheduler);
 
 
 #endif /* thread_h */

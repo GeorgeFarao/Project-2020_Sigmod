@@ -174,7 +174,7 @@ void submit_job(jobScheduler * scheduler,job * Job)
 }
 
 
-void Reader(jobScheduler *scheduler,logistic_regression * model,double learning_rate )        //na sbhsoume to scheduler
+void Reader(logistic_regression * model,double learning_rate )        //na sbhsoume to scheduler
 {
 
     int iterations = data->size/MINI_BATCH_M;
@@ -183,15 +183,20 @@ void Reader(jobScheduler *scheduler,logistic_regression * model,double learning_
     
     while(iterations)
     {
+        printf("Reader %d\n",iterations);
         pthread_mutex_lock(&scheduler->mtx);
         while(scheduler->writers >0 || scheduler->index<(NUMBER_OF_THREADS)  )
+        {
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
+        }
         
+        printf("i just started calculating\n");
         scheduler->readers = scheduler->readers +1;
         pthread_mutex_unlock(&scheduler->mtx);
         //Critical Section
         //Calculate average and find new W
         calculate_optimal_weights(model, learning_rate, scheduler);
+        printf("i just calculated\n");
         
         scheduler->index=0;
         scheduler->numWriters=0;
@@ -204,7 +209,8 @@ void Reader(jobScheduler *scheduler,logistic_regression * model,double learning_
     }
 }
 
-void CreateJobs(jobScheduler * scheduler)
+
+void CreateJobs(void)
 {
     lnode_data * temp = data->start;
     int i=0;
@@ -235,8 +241,12 @@ void CreateJobs(jobScheduler * scheduler)
 
 
 
-void Writer(jobScheduler * scheduler,logistic_regression *model)
+
+
+
+void * Writer(void *modl)
 {
+    logistic_regression * model = (logistic_regression *)modl;
     
     int iterations = data->size/MINI_BATCH_M;
     if(data->size % MINI_BATCH_M!=0)
@@ -295,7 +305,7 @@ void Writer(jobScheduler * scheduler,logistic_regression *model)
         
         iterations--;
     }
-
+    return NULL;
 }
 
 
