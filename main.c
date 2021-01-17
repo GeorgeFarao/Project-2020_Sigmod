@@ -89,11 +89,11 @@ int main(int argc, char *argv[])
     for (int i=0 ;i<NUMBER_OF_THREADS;i++)
         pthread_create(&scheduler->threadIds[i], NULL, Writer, (void * ) model );
     
-    Reader(model, 0.001);
+    Reader(model, 0.01);
     
+    test_model(Table,model);
     
-    
-    
+    //pthread_join
     /* Free allocated memory */
     delete_hashtable(Table);
     destroy_HashTable(stopwords);

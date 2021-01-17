@@ -278,8 +278,8 @@ void * Writer(void *modl)
         
         //DO some work
         if(Job!=NULL) {
-            printf("nabla %d\n",iterations);
-            nabla(model, Job);
+           // printf("nabla %d\n",iterations);
+            Job->w=nabla(model, Job);
         }
        // printf("end of nabla %d\n",iterations);
         //Enter critical section
