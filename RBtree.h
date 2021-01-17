@@ -3,6 +3,9 @@
 #define NO_PARAMETER 0
 #define DIFFERENT_CLIQUES 1
 #define BOW_TF_IDF 2
+#define MINI_BATCH_M 512
+#define NUMBER_OF_THREADS 8
+#define TRAINING 0
 
 extern int global_index;
 extern int global_total_words;
@@ -70,7 +73,6 @@ void destroyRBTree(struct RBTree *T, struct node *node);
 /* If not found return NULL */
 struct node *find_key_RBtree(struct RBTree *T, char *key);
 
-void postorder_print_commons(struct RBTree *T, struct node *node); /* Print matching json files */
 
 void postorder_remove_duplicates(struct RBTree *T, struct node *node);
 

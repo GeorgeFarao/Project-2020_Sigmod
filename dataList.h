@@ -13,6 +13,9 @@ typedef struct train_data
 {
     char *file1;
     char *file2;
+    struct node * file1_node;
+    struct node * file2_node;
+    
     int match_flag;
     
 

@@ -4,6 +4,8 @@
 #include <string.h>
 
 
+#include <pthread.h>
+
 #include "list.h"
 #include "jsonParser.h"
 #include "RBtree.h"
@@ -11,6 +13,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
 
 
 /* Creating main json list with product info */

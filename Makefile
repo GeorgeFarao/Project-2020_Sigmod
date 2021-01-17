@@ -3,7 +3,7 @@ CC = gcc -g
 all: find_commons unit_test 
 
 find_commons: main.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o
-	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm
+	$(CC) -o find_commons main.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm -pthread
 
 main.o: main.c
 	$(CC) -c main.c
@@ -30,7 +30,7 @@ logistic_regression.o: logistic_regression.c
 	$(CC) -c logistic_regression.c
 
 unit_test: unit_test.o RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o
-	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm
+	$(CC) -o unit_test unit_test.o  RBtree.o list.o HashTable.o jsonParser.o helpFunctions.o dataList.o logistic_regression.o -lm -pthread
 
 .PHONY: clean
 

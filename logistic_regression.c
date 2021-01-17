@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 
 #include "list.h"
 #include "jsonParser.h"
@@ -18,6 +19,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
 
 /* initialize model */
 logistic_regression *new_model(int n, double b, double tolerance, int epoch)
@@ -98,91 +100,91 @@ double norm(logistic_regression *model)
 }
 
 /* main function that trains our model */
-void train(HashTable *files, logistic_regression *model)
-{
-    int index1;
-    int index2;
-
-    struct node *temp;
-    struct node *temp2;
-
-
-    /* train mode "epoch" times */
-    for (int ep = 0; ep < model->epoch; ++ep)
-    {
-        int count = 0;                   /* total number of test data */
-        
-        int number_of_correct_1=0;
-        int number_of_correct_0=0;
-        int count0=0;
-        int count1=0;
-        
-
-        
-        lnode_data *start = data->start; /* first node of our trainning data-nodes */
-
-        for (int i = 0; i < data->size; i++)
-        {
-            /* find hash indexes */
-            index1 = hash1(start->data->file1, files->size);
-            index2 = hash1(start->data->file2, files->size);
-
-            /* find nodes-json files */
-            temp = find_key_RBtree(files->Trees[index1], start->data->file1);
-            temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
-            
-            calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
-            //if(start->data->match_flag ==1   )
-            //    calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
-            
- 
-            
-            start = start->next; /* update pointer */
-        }
-
-        double p; /* probability obtained by our model */
-        start = test->start; /* indicates to first node of our test data-nodes */
-
-        /* for every node */
-        while (start != NULL)
-        {
-            /* find hash indexes */
-            index1 = hash1(start->data->file1, files->size);
-            index2 = hash1(start->data->file2, files->size);
-
-            /* find nodes-json files */
-            temp = find_key_RBtree(files->Trees[index1], start->data->file1);
-            temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
-
-            /* calculate probability */
-            p = px(fx(model, temp, temp2));
-
-            /* calculate correct answers */
-            if (start->data->match_flag == 0)
-                count0 = count0 +1;
-            else
-                count1 = count1 +1;
-            
-            
-            if (p < 0.5 && start->data->match_flag == 0)
-                number_of_correct_0++;
-            else if (p >= 0.5 && start->data->match_flag == 1)
-                number_of_correct_1++;
-
-            /* update count and pointer */
-            count++;
-            start = start->next;
-        }
-
-        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
-        
-       // printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
-        
-        //printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
-        //printf("%d %d\n",count0 , count1);
-        
-    }
-}
+//void train(HashTable *files, logistic_regression *model)
+//{
+//    int index1;
+//    int index2;
+//
+//    struct node *temp;
+//    struct node *temp2;
+//
+//
+//    /* train mode "epoch" times */
+//    for (int ep = 0; ep < model->epoch; ++ep)
+//    {
+//        int count = 0;                   /* total number of test data */
+//
+//        int number_of_correct_1=0;
+//        int number_of_correct_0=0;
+//        int count0=0;
+//        int count1=0;
+//
+//
+//
+//        lnode_data *start = data->start; /* first node of our trainning data-nodes */
+//
+//        for (int i = 0; i < data->size; i++)
+//        {
+//            /* find hash indexes */
+//            index1 = hash1(start->data->file1, files->size);
+//            index2 = hash1(start->data->file2, files->size);
+//
+//            /* find nodes-json files */
+//            temp = find_key_RBtree(files->Trees[index1], start->data->file1);
+//            temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
+//
+//            calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
+//            //if(start->data->match_flag ==1   )
+//            //    calculate_optimal_weights(model, temp, temp2, start->data->match_flag, 0.01);
+//
+// 
+//
+//            start = start->next; /* update pointer */
+//        }
+//
+//        double p; /* probability obtained by our model */
+//        start = test->start; /* indicates to first node of our test data-nodes */
+//
+//        /* for every node */
+//        while (start != NULL)
+//        {
+//            /* find hash indexes */
+//            index1 = hash1(start->data->file1, files->size);
+//            index2 = hash1(start->data->file2, files->size);
+//
+//            /* find nodes-json files */
+//            temp = find_key_RBtree(files->Trees[index1], start->data->file1);
+//            temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
+//
+//            /* calculate probability */
+//            p = px(fx(model, temp, temp2));
+//
+//            /* calculate correct answers */
+//            if (start->data->match_flag == 0)
+//                count0 = count0 +1;
+//            else
+//                count1 = count1 +1;
+//
+//
+//            if (p < 0.5 && start->data->match_flag == 0)
+//                number_of_correct_0++;
+//            else if (p >= 0.5 && start->data->match_flag == 1)
+//                number_of_correct_1++;
+//
+//            /* update count and pointer */
+//            count++;
+//            start = start->next;
+//        }
+//
+//        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
+//
+//       // printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
+//
+//        //printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
+//        //printf("%d %d\n",count0 , count1);
+//
+//    }
+//}
 
 /* p(x) = 1 / (1 + e^-f(x)) */
 double px(double fx_val)
@@ -192,46 +194,56 @@ double px(double fx_val)
 }
 
 /* calls derivative_error_function() for every component */
-double *nabla(logistic_regression *model, struct node *file1, struct node *file2, int y)
+double *nabla(logistic_regression *model, job* Job)
 {
     double *nabla_array = malloc(sizeof(double) * model->N);
     memset(nabla_array, 0, sizeof(double) * model->N);
 
-    /* sum = p(f(x)) */
-    double sum = px(fx(model, file1, file2));
-
-    /* first file case */
-    for (int j = 0; j < file1->number_of_words; j++)
+    lnode_data * temp = Job->data->start;
+    
+    while(temp!=NULL)
     {
-        if (file1->non_zero_values[j] >= global_total_words)
-            printf("bigger than global %d %d\n", file1->non_zero_values[j], global_total_words);
-
-        /* calculate only tfidf values that are greater than zero */
-        if (file1->non_zero_values[j] != 0)
+        
+        /* sum = p(f(x)) */
+        double sum = px(fx(model, temp->data->file1_node, temp->data->file2_node));
+        
+        /* first file case */
+        for (int j = 0; j < temp->data->file1_node->number_of_words; j++)
         {
-            nabla_array[file1->non_zero_values[j]] = derivative_error_function(model, file1->tf_idf, file2->tf_idf,
-                                                                               file1->non_zero_values[j], y, sum);
+            if (temp->data->file1_node->non_zero_values[j] >= global_total_words)
+                printf("bigger than global %d %d\n", temp->data->file1_node->non_zero_values[j], global_total_words);
+            
+            /* calculate only tfidf values that are greater than zero */
+            if (temp->data->file1_node->non_zero_values[j] != 0)
+            {
+                nabla_array[temp->data->file1_node->non_zero_values[j]] += derivative_error_function(model, temp->data->file1_node->tf_idf, temp->data->file2_node->tf_idf,
+                                                                    temp->data->file1_node->non_zero_values[j], temp->data->match_flag, sum);
+            }
+            else
+                break;
         }
-        else
-            break;
+        
+        /* second file case */
+        for (int j = 0; j < temp->data->file2_node->number_of_words; j++)
+        {
+            if (temp->data->file2_node->non_zero_values[j] >= global_total_words)
+                printf("bigger than global %d %d\n", temp->data->file2_node->non_zero_values[j], global_total_words);
+            
+            /* calculate only tfidf values that are greater than zero */
+            if (temp->data->file2_node->non_zero_values[j] != 0)
+            {
+                nabla_array[temp->data->file2_node->non_zero_values[j] + model->N / 2] +=
+                derivative_error_function(model,  temp->data->file1_node->tf_idf, temp->data->file2_node->tf_idf, temp->data->file2_node->non_zero_values[j] + model->N / 2, temp->data->match_flag, sum);
+            }
+            else
+                break;
+        }
+
+        temp = temp->next;
+        
     }
 
-    /* second file case */
-    for (int j = 0; j < file2->number_of_words; j++)
-    {
-        if (file2->non_zero_values[j] >= global_total_words)
-            printf("bigger than global %d %d\n", file2->non_zero_values[j], global_total_words);
-
-        /* calculate only tfidf values that are greater than zero */
-        if (file2->non_zero_values[j] != 0)
-        {
-            nabla_array[file2->non_zero_values[j] + model->N / 2] =
-                derivative_error_function(model, file1->tf_idf, file2->tf_idf, file2->non_zero_values[j] + model->N / 2, y, sum);
-        }
-        else
-            break;
-    }
-
+    Job->w=nabla_array;
     return nabla_array;
 }
 
@@ -245,41 +257,37 @@ double absolute(double val)
 }
 
 /* w^t+1 = w^t - learning_rate * nabla() */
-void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate)
+
+void calculate_optimal_weights(logistic_regression *model, double learning_rate,jobScheduler * scheduler)
 {
-    /* calculate nabla array */
-    double *nabla_array = nabla(model, file1, file2, y);
 
-    /* for every component calculate optimal weight */
-
-    /* first file case */
-    for (int j = 0; j < file1->number_of_words; j++)
+    double * averageW = malloc(sizeof(double)* model->N);
+    memset(averageW, 0, sizeof(double)* model->N);
+    
+    int count=0;
+    for (int i=0;i<NUMBER_OF_THREADS;i++)
     {
-        if (file1->non_zero_values[j] != 0)
-            model->w[file1->non_zero_values[j]] = model->w[file1->non_zero_values[j]] -
-                                                  learning_rate * nabla_array[file1->non_zero_values[j]];
+        if(scheduler->Matrix_w[i]!=NULL)
+            for (int j=0 ; j<model->N;j++)
+            {
+                averageW[j] = averageW[j]+ scheduler->Matrix_w[i][j];
+            }
         else
-            break;
+            count++;
+        
     }
-
-    /* second file case */
-    for (int j = 0; j < file2->number_of_words; j++)
+    
+    for (int j=0 ; j<model->N;j++)
     {
-        if (file2->non_zero_values[j] != 0)
-            model->w[file2->non_zero_values[j] + model->N / 2] = model->w[file2->non_zero_values[j] + model->N / 2] -
-                                                                 learning_rate * nabla_array[file2->non_zero_values[j] + model->N / 2];
-        else
-            break;
-    }
+        if(count==0)
+        
+            averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
+            model->w[j] = model->w[j] - averageW[j]*learning_rate;}
+        
+  
+    
 
-    free(nabla_array);
-
-    //    double new_norm = norm(model);
-
-    //  if (absolute(new_norm - model->norm) < model->tolerance)
-    //    ;
-
-    //    model->norm = new_norm;
+ 
 }
 
 /* free allocated memory */

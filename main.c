@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "list.h"
 #include "jsonParser.h"
@@ -11,6 +12,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
 
 #define HASHTABLESIZE 128
 
@@ -79,7 +81,7 @@ int main(int argc, char *argv[])
     /* trainning our model */
     logistic_regression *model;
     model = new_model(global_total_words * 2, 0, 0.00000001, 15);
-    train(Table, model);
+    //train(Table, model);
 
     /* Free allocated memory */
     delete_hashtable(Table);

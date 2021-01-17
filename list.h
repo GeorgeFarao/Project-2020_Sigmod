@@ -8,6 +8,7 @@
 typedef struct lnode {
     struct lnode * next;
     char * json_name;
+    
 }lnode;
 
 
@@ -40,7 +41,6 @@ void delete_list( list * list); /* Deleting list */
 
 void delete_list_node(list * List); /* Deleting first node of list */
 
-void print_list( list * mylist); /* Printing matching json files - basic printing */
 
 void print_two_lists(list * mylist1 ,list * mylist2);
 

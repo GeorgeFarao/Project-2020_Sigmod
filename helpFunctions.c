@@ -9,6 +9,8 @@
 
 
 
+#include <pthread.h>
+
 #include "list.h"
 #include "jsonParser.h"
 #include "RBtree.h"
@@ -16,6 +18,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
 
 
 /* Get maximum size of a line in file */ 

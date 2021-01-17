@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 
 #include "list.h"
 #include "jsonParser.h"
@@ -11,6 +12,8 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
+
 
 int global_index;
 int global_total_words;
@@ -477,16 +480,17 @@ void print_different(list *clique, struct RBTree *Tree_different_cliques, struct
     }
 }
 
+
 /* Print matching json files */
-void postorder_print_commons(struct RBTree *T, struct node *node)
+void postorder_print_commons(struct RBTree *T, struct node *node, HashTable * files)
 {
     if (node != T->NIL)
     {
-        postorder_print_commons(T, node->left);
-        postorder_print_commons(T, node->right);
+        postorder_print_commons(T, node->left,files);
+        postorder_print_commons(T, node->right,files);
 
         if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
-            print_list(node->list_same_jsons);
+            print_list(node->list_same_jsons,files);
         
         print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root);
 

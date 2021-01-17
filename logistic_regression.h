@@ -37,13 +37,10 @@ double norm(logistic_regression *model);
 void train(HashTable *files, logistic_regression *model);
 
 /* calls derivative_error_function() for every component */
-double *nabla(logistic_regression *model, struct node *file1, struct node *file2, int y);
 
 /* p(x) = 1 / (1 + e^-f(x)) */
 double px(double fx_val);
 
-/* for every component calculates w^t+1 = w^t - learning_rate * nabla() */
-void calculate_optimal_weights(logistic_regression *model, struct node *file1, struct node *file2, int y, double learning_rate);
 
 /* absolute value */
 double absolute(double val);

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <pthread.h>
 
 #include "list.h"
 #include "jsonParser.h"
@@ -12,7 +12,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
-
+#include "thread.h"
 
 /* Creating new list */
 list * new_list(void)
@@ -111,12 +111,16 @@ void delete_list_node(list * List)
 
 
 /* Printing matching json files - basic printing */
-void print_list(list * mylist)
+void print_list(list * mylist , HashTable * files)
 {
    
     FILE * fp = fopen("output.csv", "a");    
     lnode * temp = mylist->start;
     lnode * temp_next;
+    int index1;
+    int index2;
+    struct node * temp_node1;
+    struct node * temp_node2;
     
     /* Main loop */
     /* Printing basic node, and all matching nodes, that are after this node in the list */
@@ -130,8 +134,18 @@ void print_list(list * mylist)
 
         while (temp_next != NULL)
         {
+            /* find hash indexes */
+            index1 = hash1(temp->json_name, files->size);
+            index2 = hash1(temp_next->json_name, files->size);
+            
+            /* find nodes-json files */
+            temp_node1 = find_key_RBtree(files->Trees[index1], temp->json_name);
+            temp_node2 = find_key_RBtree(files->Trees[index2], temp_next->json_name);
             
             train_data * temp_data = new_train_data(temp->json_name, temp_next->json_name , 1);
+            temp_data->file1_node = temp_node1;
+            temp_data->file2_node = temp_node2;
+            
             lnode_data * node_data =new_lnode_data( temp_data);
 
             if (cnt==5){

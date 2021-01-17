@@ -32,5 +32,9 @@ json_list * Parser(char * file , HashTable * stopwords , HashTable * bow_tf , in
 void initialize_bow_tf_idf(struct node * file, HashTable *diffWords);
 void postorder_initialize_bow_tfidf(struct RBTree * Tree, struct node *root,HashTable *diffWords);
 void create_tfidf_bow(HashTable *files, HashTable *different_words);
+void print_list(list * mylist , HashTable * files);
+
+void postorder_print_commons(struct RBTree *T, struct node *node, HashTable * files);
+
 
 #endif /* HashTable_h */

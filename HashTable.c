@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <pthread.h>
+
 #include "list.h"
 #include "jsonParser.h"
 #include "RBtree.h"
@@ -10,6 +12,7 @@
 #include "helpFunctions.h"
 #include "dataList.h"
 #include "logistic_regression.h"
+#include "thread.h"
 
 
 /* Create new HashTable */
@@ -280,7 +283,7 @@ void print_commons(HashTable * table )
     for(int i=0 ;i<table->size ; i++)
     {
         if( table->Trees[i]!=NULL)
-            postorder_print_commons(table->Trees[i], table->Trees[i]->root);
+            postorder_print_commons(table->Trees[i], table->Trees[i]->root,table);
 
     }
 }
