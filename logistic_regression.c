@@ -203,10 +203,15 @@ double *nabla(logistic_regression *model, job* Job)
     
     while(temp!=NULL)
     {
-        
+       // printf("before px\n");
         /* sum = p(f(x)) */
+        if (temp->data->file1_node==NULL || temp->data->file2_node==NULL){
+            printf("%s %s\n",temp->data->file1,temp->data->file2);
+        }
+//            printf("oof\n");
+
         double sum = px(fx(model, temp->data->file1_node, temp->data->file2_node));
-        
+       // printf("after px\n");
         /* first file case */
         for (int j = 0; j < temp->data->file1_node->number_of_words; j++)
         {

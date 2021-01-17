@@ -448,19 +448,19 @@ struct node *find_key_RBtree(struct RBTree *T, char *key)
 
 
 /* prints all different relations between the cliques */
-void print_different(list *clique, struct RBTree *Tree_different_cliques, struct node *recursion_root)
+void print_different(list *clique, struct RBTree *Tree_different_cliques, struct node *recursion_root, HashTable * files)
 {
     if (recursion_root == Tree_different_cliques->NIL)
         return;
-    print_different(clique, Tree_different_cliques, recursion_root->right);
-    print_different(clique, Tree_different_cliques, recursion_root->left);
+    print_different(clique, Tree_different_cliques, recursion_root->right,files);
+    print_different(clique, Tree_different_cliques, recursion_root->left, files);
 
     struct node *check = find_key_RBtree(clique->printed_different_cliques, recursion_root->self_node->list_same_jsons->start->json_name);
     struct node *check2 = find_key_RBtree(recursion_root->self_node->list_same_jsons->printed_different_cliques, clique->start->json_name);
     if (check == NULL && check2 == NULL)        // check if we already have printing the given relation
     {
         // store in trees so we dont print the same relation more than one time
-        print_two_lists(clique, recursion_root->self_node->list_same_jsons);
+        print_two_lists(clique, recursion_root->self_node->list_same_jsons,files);
         int res = -1;
         struct node *temp1 = new_node(recursion_root->self_node->list_same_jsons->start->json_name, NULL, DIFFERENT_CLIQUES, NO_PARAMETER);
         res = RBTinsert(clique->printed_different_cliques, temp1);
@@ -492,7 +492,7 @@ void postorder_print_commons(struct RBTree *T, struct node *node, HashTable * fi
         if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
             print_list(node->list_same_jsons,files);
         
-        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root);
+        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root,files);
 
     }
 }
@@ -514,15 +514,15 @@ void postorder_remove_duplicates(struct RBTree *T, struct node *node)
     }
 }
 
-void postorder_print_different(struct RBTree *Tree, struct node *node)
+void postorder_print_different(struct RBTree *Tree, struct node *node, HashTable * files)
 {
 
     if (node != Tree->NIL)
     {
-        postorder_print_different(Tree, node->left);
-        postorder_print_different(Tree, node->right);
+        postorder_print_different(Tree, node->left,files);
+        postorder_print_different(Tree, node->right,files);
 
-        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root);
+        print_different(node->list_same_jsons, node->list_same_jsons->different_cliques, node->list_same_jsons->different_cliques->root, files);
     }
 }
 

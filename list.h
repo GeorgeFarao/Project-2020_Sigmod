@@ -42,7 +42,7 @@ void delete_list( list * list); /* Deleting list */
 void delete_list_node(list * List); /* Deleting first node of list */
 
 
-void print_two_lists(list * mylist1 ,list * mylist2);
+
 
 
 

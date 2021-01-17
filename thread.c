@@ -150,7 +150,7 @@ jobScheduler * initialize_scheduler(logistic_regression * model)
     
     scheduler->readers = 0;
     scheduler->writers = 0;
-    
+    scheduler->numWriters = 0;
     scheduler->Matrix_w=malloc(sizeof(double *)* (NUMBER_OF_THREADS) );
     scheduler->N= model->N;
     scheduler->index=0;
@@ -190,13 +190,13 @@ void Reader(logistic_regression * model,double learning_rate )        //na sbhso
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
         }
         
-        printf("i just started calculating\n");
+       // printf("i just started calculating\n");
         scheduler->readers = scheduler->readers +1;
         pthread_mutex_unlock(&scheduler->mtx);
         //Critical Section
         //Calculate average and find new W
         calculate_optimal_weights(model, learning_rate, scheduler);
-        printf("i just calculated\n");
+       // printf("i just calculated\n");
         
         scheduler->index=0;
         scheduler->numWriters=0;
@@ -264,6 +264,7 @@ void * Writer(void *modl)
         
         pthread_mutex_unlock(&scheduler->mtx);
         //Critical Section
+       // printf("Poping a job %d\n",iterations);
         job * Job=pop(scheduler->queue);
 
         //Quit critical Section
@@ -276,9 +277,11 @@ void * Writer(void *modl)
         pthread_mutex_unlock(&scheduler->mtx);
         
         //DO some work
-        if(Job!=NULL)
+        if(Job!=NULL) {
+            printf("nabla %d\n",iterations);
             nabla(model, Job);
-
+        }
+       // printf("end of nabla %d\n",iterations);
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
         while(scheduler->readers>0 || scheduler->writers>0)
@@ -288,6 +291,7 @@ void * Writer(void *modl)
 
 
         //Critical Section
+        //printf("second crit %d\n",iterations);
         if(Job!=NULL)
             scheduler->Matrix_w[scheduler->index ] = Job->w;
         else

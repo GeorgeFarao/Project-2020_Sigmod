@@ -174,14 +174,18 @@ void print_list(list * mylist , HashTable * files)
 
 
 
-void print_two_lists(list * mylist1 ,list * mylist2)
+void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
 {
     FILE * fp = fopen("different.csv", "a");
 
     lnode * temp = mylist1->start;
     lnode * temp_next ;
     int cnt= rand()%6;
-    
+    int index1;
+    int index2;
+    struct node * temp_node1;
+    struct node * temp_node2;
+
     while (temp != NULL)
     {
         temp_next = mylist2->start;
@@ -189,8 +193,17 @@ void print_two_lists(list * mylist1 ,list * mylist2)
         while (temp_next != NULL)
         {
             //printf( "second here %s, %s\n", temp->json_name , temp_next->json_name);
-            
+            /* find hash indexes */
+            index1 = hash1(temp->json_name, files->size);
+            index2 = hash1(temp_next->json_name, files->size);
+
+            /* find nodes-json files */
+            temp_node1 = find_key_RBtree(files->Trees[index1], temp->json_name);
+            temp_node2 = find_key_RBtree(files->Trees[index2], temp_next->json_name);
+
             train_data * temp_data = new_train_data(temp->json_name, temp_next->json_name , 0);
+            temp_data->file1_node = temp_node1;
+            temp_data->file2_node = temp_node2;
             lnode_data * node_data =new_lnode_data( temp_data);
 
             if (cnt==5){
