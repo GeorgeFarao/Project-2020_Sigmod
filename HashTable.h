@@ -37,6 +37,12 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files);
 void print_different(list *clique, struct RBTree *Tree_different_cliques, struct node *recursion_root, HashTable * files);
 void postorder_print_different(struct RBTree *Tree, struct node *node, HashTable * files);
 void postorder_print_commons(struct RBTree *T, struct node *node, HashTable * files);
+void postorder_getAllRecords(struct RBTree * Tree, struct node * root, HashTable * newTable);
+
+HashTable * CloneTable(HashTable * table);
+
+int checkIfelementinClique(list * clique, char * element);
+void insert_Record_clone (char * Record , HashTable * table, json_list * jsonList,int words_count, struct node * selfnode);
 
 
 #endif /* HashTable_h */

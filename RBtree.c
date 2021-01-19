@@ -655,3 +655,87 @@ void postorder_initialize_bow_tfidf(struct RBTree *Tree, struct node *root, Hash
 
     initialize_bow_tf_idf(root, diffWords);
 }
+
+
+
+void postorder_getAllRecords(struct RBTree * Tree, struct node * root, HashTable * newTable)
+{
+    
+    if(root == Tree->NIL)
+        return ;
+    
+    postorder_getAllRecords(Tree, root->right,newTable);
+    postorder_getAllRecords(Tree, root->left, newTable);
+    
+    insert_Record_clone(root->key, newTable, NULL, 0,root);
+    
+}
+
+
+
+
+
+
+
+
+void postorder_checkifElementinDifferentCliques(struct RBTree * Tree, struct node * root , char * element,int * flag )
+{
+    if (root == Tree->NIL ||*flag==1)
+        return ;
+    
+    postorder_checkifElementinDifferentCliques(Tree,root->left,element,flag);
+    postorder_checkifElementinDifferentCliques(Tree,root->right,element,flag);
+    
+    if(strcmp(root->key, element)==0)
+        *flag=1;
+    
+
+}
+
+
+void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTable * files ,logistic_regression * model)
+{
+    if (node == T->NIL)
+        return ;
+    
+    
+    postorder_findCliques_conflicts(T, node->left,files,model);
+    postorder_findCliques_conflicts(T, node->right,files,model);
+    
+    int flag=0;
+
+    
+    
+    if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
+    {
+        node->list_same_jsons->print_flag=1;
+        lnode * start = node->list_same_jsons->start;
+        while(start!=NULL)
+        {
+            postorder_checkifElementinDifferentCliques(node->list_same_jsons->different_cliques,
+                                                       node->list_same_jsons->different_cliques->root, start->json_name, &flag);
+            
+            if(flag==1)
+                break;
+                
+            
+            
+            start = start->next;
+        }
+        if(flag==1)
+        
+            fixConflicts(files, node->list_same_jsons, model);
+        
+        
+        
+        
+    }
+
+        
+    
+}
+
+
+
+
+

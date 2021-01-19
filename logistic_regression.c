@@ -203,7 +203,7 @@ double *nabla(logistic_regression *model, job* Job)
             /* calculate only tfidf values that are greater than zero */
             if (temp->data->file1_node->non_zero_values[j] != 0)
             {
-                printf("%f\n",sum);
+                
                 nabla_array[temp->data->file1_node->non_zero_values[j]] += derivative_error_function(model, temp->data->file1_node->tf_idf, temp->data->file2_node->tf_idf,
                                                                     temp->data->file1_node->non_zero_values[j], temp->data->match_flag, sum);
             }
@@ -219,7 +219,7 @@ double *nabla(logistic_regression *model, job* Job)
             
             /* calculate only tfidf values that are greater than zero */
             if (temp->data->file2_node->non_zero_values[j] != 0)
-            {printf("%f\n",sum);
+            {
                 nabla_array[temp->data->file2_node->non_zero_values[j] + model->N / 2] +=
                 derivative_error_function(model,  temp->data->file1_node->tf_idf, temp->data->file2_node->tf_idf, temp->data->file2_node->non_zero_values[j] + model->N / 2, temp->data->match_flag, sum);
             }
@@ -269,7 +269,7 @@ void calculate_optimal_weights(logistic_regression *model, double learning_rate,
     for (int j=0 ; j<model->N;j++)
     {
 
-            averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
+            //averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
             model->w[j] = model->w[j] - averageW[j]*learning_rate;
     }
         
@@ -284,4 +284,146 @@ void destroy_model(logistic_regression *model)
 {
     free(model->w);
     free(model);
+}
+
+
+
+
+
+
+void fixConflicts(HashTable * files , list * clique, logistic_regression * model)
+{
+    
+    double total_prob =0.0;
+    int MO =0;
+    
+    
+
+    
+    
+    
+    validation_fix_weight ** probs = malloc(sizeof(validation_fix_weight *) * clique->size);
+    for(int i =0 ;i<clique->size; i++ )
+    {
+        probs[i] = malloc(sizeof(validation_fix_weight )*clique->size);
+        for (int j=0; j<clique->size; j++)
+            probs[i][j].prob =0;
+        
+        
+    }
+
+    
+    
+    
+    int index1;
+    int index2;
+    
+    struct node * temp_node1;
+    struct node * temp_node2;
+    
+    
+    
+    lnode * temp=clique->start;
+    lnode * temp_next;
+    
+    int i=0;
+    int j=1;
+    
+    while (temp->next != NULL)
+    {
+        temp_next = temp->next;
+        
+        
+        
+        while (temp_next != NULL)
+        {
+            /* find hash indexes */
+            index1 = hash1(temp->json_name, files->size);
+            index2 = hash1(temp_next->json_name, files->size);
+            
+            /* find nodes-json files */
+            temp_node1 = find_key_RBtree(files->Trees[index1], temp->json_name);
+            temp_node2 = find_key_RBtree(files->Trees[index2], temp_next->json_name);
+            temp_node1 = temp_node1->self_node;
+            temp_node2 = temp_node2->self_node;
+            
+            probs[i][j].file1 = temp_node1;
+            probs[i][j].file2 = temp_node2;
+            
+            probs[j][i].file1 = temp_node1;
+            probs[j][i].file2 = temp_node2;
+            
+            
+            probs[i][j].prob = px(fx(model, temp_node1, temp_node2));
+            probs[j][i].prob = probs[i][j].prob;
+            probs[i][i].prob = probs[i][i].prob+ probs[i][j].prob;
+            probs[j][j].prob = probs[j][j].prob + probs[j][i].prob;
+            
+            total_prob = total_prob + probs[i][j].prob;
+            MO++;
+            
+            temp_next = temp_next->next;
+            j++;
+        }
+        
+        temp=temp->next;
+        i++;
+        j=i+1;
+    }
+    
+    total_prob = total_prob/(double)MO;
+    if(total_prob > 0.5)                    //
+    {
+        int i=0;
+        int j=1;
+        while (i!=clique->size-1)
+        {
+ 
+            while (j!=clique->size)
+            {
+                /* find hash indexes */
+                if(probs[i][j].prob <0.5)
+                {
+                    train_data * temp_data = new_train_data(probs[i][j].file1->key, probs[i][j].file2->key , 1);
+                    temp_data->file1_node = probs[i][j].file1;
+                    temp_data->file2_node = probs[i][j].file2;
+                    
+                    lnode_data * node_data =new_lnode_data( temp_data);
+                    insert_lnode_data(validation_to_train,node_data);
+                }
+                
+                j++;
+            }
+            i++;
+            j=i+1;
+        }
+    }
+    else
+    {
+        for(int i=0 ;i<clique->size;i++)
+        {
+            probs[i][i].prob = probs[i][i].prob/ (clique->size-1);
+            if(probs[i][i].prob < 0.5)
+            {
+                for (int j=0; j<clique->size-1; j++)
+                    if(j!=i)
+                    {
+                        train_data * temp_data = new_train_data(probs[i][j].file1->key, probs[i][j].file2->key , 0);
+                        temp_data->file1_node = probs[i][j].file1;
+                        temp_data->file2_node = probs[i][j].file2;
+                        
+                        lnode_data * node_data =new_lnode_data( temp_data);
+                        insert_lnode_data(validation_to_train,node_data);
+                        
+                    }
+                
+                
+            }
+            
+        }
+        
+    }
+    
+    
+    
 }

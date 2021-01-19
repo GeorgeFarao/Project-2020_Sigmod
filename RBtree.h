@@ -80,3 +80,4 @@ void postorder_remove_duplicates(struct RBTree *T, struct node *node);
 int isHeightBalanced(struct RBTree *tree, struct node *root, int *rootMax);
 
 int RBTinsert_bow_tf(struct RBTree *T, struct node *z, int total_files);
+void postorder_checkifElementinDifferents(struct RBTree  * Tree, struct node * root,char * element,int * flag);

@@ -20,6 +20,18 @@ typedef struct logistic_regression
 
 } logistic_regression;
 
+
+
+typedef struct validation_fix_weight{
+    double prob;
+    struct node * file1;
+    struct node * file2;
+    
+    
+}validation_fix_weight;
+
+
+
 /* initialize model */
 logistic_regression *new_model(int n, double b, double tolerance, int epoch);
 
@@ -47,5 +59,13 @@ double absolute(double val);
 
 /* free allocated memory */
 void destroy_model(logistic_regression *model);
+
+void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTable * files ,logistic_regression * model);
+void fixConflicts(HashTable * files , list * clique, logistic_regression * model);
+void find_conflicts(HashTable * table,logistic_regression * model );
+
+
+
+
 
 #endif /* logistic_regression_h */

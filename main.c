@@ -29,6 +29,8 @@ int main(int argc, char *argv[])
     data = new_list_data();
     test = new_list_data();
     validation = new_list_data();
+    validation_to_train = new_list_data();
+    
 
     char *directory_name = NULL;
     char *file_name = NULL;
@@ -80,9 +82,9 @@ int main(int argc, char *argv[])
 
     /* trainning our model */
     logistic_regression *model;
-    model = new_model(global_total_words * 2, 0, 0.00000001, 15);
+    model = new_model(global_total_words * 2, 0, 0.00000001, 1);
+    HashTable * new_table = CloneTable(Table);
 
-    
     
     scheduler = initialize_scheduler(model);
     CreateJobs();
@@ -91,7 +93,13 @@ int main(int argc, char *argv[])
     
     Reader(model, 0.01);
     
-    test_model(Table,model);
+    //test_model(Table,model);
+    
+    
+    
+    
+    
+    
     
     //pthread_join
     /* Free allocated memory */

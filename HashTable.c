@@ -76,6 +76,47 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList,int 
     }
 }
 
+
+void insert_Record_clone (char * Record , HashTable * table, json_list * jsonList,int words_count, struct node * selfnode)
+{
+    if (table==NULL)
+    {
+        printf("Table is NULL programm will exit");
+        exit(1);
+    }
+    
+    /* Find correct bucket for the Record */
+    int hash_index = hash1(Record, table->size);
+    
+    struct node * temp;
+    
+    
+    
+    if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
+    {
+        table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
+        
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        //temp->bow_tf_idf_index=global_index;
+        //temp->number_of_words= words_count;
+        temp->self_node = selfnode;
+        RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
+    }
+    else            /* tree exits */
+    {
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        //temp->bow_tf_idf_index=global_index;
+        //temp->number_of_words=words_count;
+        temp->self_node = selfnode;
+        RBTinsert(table->Trees[ hash_index ], temp );
+        
+        
+        /* We create and insert a node to the tree */
+    }
+}
+
+
+
 void insert_bow (char * Record , HashTable * table, int total_files)
 {
     if (table==NULL)
@@ -276,6 +317,54 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
     }
 }
 
+int checkIfelementinClique(list * clique, char * element)
+{
+    
+    lnode * lnode_temp = clique->start;
+    while(lnode_temp !=NULL)
+    {
+        if(strcmp(lnode_temp->json_name, element)==0)
+            return 1;
+        
+        lnode_temp = lnode_temp->next;
+    }
+    return 0;
+}
+
+
+int checkIfConflict(HashTable* table, struct node * node1, struct node * node2, int matchflag)
+{
+    int flag=0;
+
+    
+
+        lnode * lnode_temp = node1->list_same_jsons->start;
+        while (lnode_temp !=NULL)
+        {
+            if(strcmp(lnode_temp->json_name, node2->key)==0)
+                return 1;
+            
+            lnode_temp =lnode_temp->next;
+        }
+        
+    
+    
+    
+    return 0;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Prints all the pairs */
 void print_commons(HashTable * table )
@@ -287,6 +376,20 @@ void print_commons(HashTable * table )
 
     }
 }
+
+
+void find_conflicts(HashTable * table,logistic_regression * model )
+{
+    for(int i=0 ;i<table->size ; i++)
+    {
+        if( table->Trees[i]!=NULL)
+            postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
+    }
+}
+
+
+
+
 
 /* Deletes HashTable */
 void delete_hashtable(HashTable * table)
@@ -411,3 +514,22 @@ void create_tfidf_bow(HashTable *files, HashTable *different_words)
         }
     }
 }
+
+
+
+HashTable * CloneTable(HashTable * table)
+{
+    HashTable * newTable = newHashTable(table->size);
+    
+    for (int i=0 ;i<table->size;i++)
+        postorder_getAllRecords(table->Trees[i], table->Trees[i]->root, newTable);
+    
+    
+    return newTable;
+    
+    
+}
+
+
+
+
