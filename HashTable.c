@@ -382,8 +382,9 @@ void find_conflicts(HashTable * table,logistic_regression * model )
 {
     for(int i=0 ;i<table->size ; i++)
     {
-        if( table->Trees[i]!=NULL)
+        if( table->Trees[i]!=NULL){
             postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
+        }
     }
 }
 

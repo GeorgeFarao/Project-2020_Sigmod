@@ -40,7 +40,7 @@ extern list_data *data;
 extern list_data *test;
 extern list_data *validation;
 extern list_data * validation_to_train;
-
+extern int conflicts;
 
 list_data *new_list_data(void);
 lnode_data *new_lnode_data(train_data *data);

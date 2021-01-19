@@ -99,6 +99,69 @@ double norm(logistic_regression *model)
     return sqrt(new_norm);
 }
 
+
+void test_validation(HashTable *files, logistic_regression *model)
+{
+    int index1;
+    int index2;
+
+    struct node *temp;
+    struct node *temp2;
+
+
+    /* train model */
+
+    int count = 0;                   /* total number of test data */
+
+    int number_of_correct_1=0;
+    int number_of_correct_0=0;
+    int count0=0;
+    int count1=0;
+
+
+
+    lnode_data *start; /* first node of our trainning data-nodes */
+
+    double p; /* probability obtained by our model */
+    start = data->start; /* indicates to first node of our test data-nodes */
+
+    /* for every node */
+    printf("Start\n");
+    while (start != NULL)
+    {
+        /* find hash indexes */
+        index1 = hash1(start->data->file1, files->size);
+        index2 = hash1(start->data->file2, files->size);
+
+        /* find nodes-json files */
+        temp = find_key_RBtree(files->Trees[index1], start->data->file1);
+        temp= temp->self_node;
+        temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
+        temp2 = temp2->self_node;
+
+        /* calculate probability */
+        p = px(fx(model, temp, temp2));
+
+
+        if (p < 0.5 ) {
+           // printf("Matching diff %f\n",p);
+            match_different_products(files, temp->key, temp2->key);
+        }
+        else if (p >= 0.5) {
+           // printf("Matching same %f\n",p);
+            match_same_products(files, temp->key, temp2->key);
+        }
+
+
+        /* update pointer */
+        start = start->next;
+    }
+    printf("Find conflicts\n");
+    find_conflicts(files, model);
+    printf("Conflicts %d\n", conflicts);
+
+}
+
 /* main function that trains our model */
 void test_model(HashTable *files, logistic_regression *model)
 {
@@ -109,9 +172,8 @@ void test_model(HashTable *files, logistic_regression *model)
     struct node *temp2;
 
 
-    /* train mode "epoch" times */
-    for (int ep = 0; ep < model->epoch; ++ep)
-    {
+    /* train model */
+
         int count = 0;                   /* total number of test data */
 
         int number_of_correct_1=0;
@@ -164,7 +226,7 @@ void test_model(HashTable *files, logistic_regression *model)
         printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
         //printf("%d %d\n",count0 , count1);
 
-    }
+
 }
 
 
@@ -272,11 +334,7 @@ void calculate_optimal_weights(logistic_regression *model, double learning_rate,
             //averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
             model->w[j] = model->w[j] - averageW[j]*learning_rate;
     }
-        
-  
-    
 
- 
 }
 
 /* free allocated memory */
@@ -289,19 +347,12 @@ void destroy_model(logistic_regression *model)
 
 
 
-
-
 void fixConflicts(HashTable * files , list * clique, logistic_regression * model)
 {
     
     double total_prob =0.0;
     int MO =0;
-    
-    
 
-    
-    
-    
     validation_fix_weight ** probs = malloc(sizeof(validation_fix_weight *) * clique->size);
     for(int i =0 ;i<clique->size; i++ )
     {
@@ -312,16 +363,11 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
         
     }
 
-    
-    
-    
     int index1;
     int index2;
     
     struct node * temp_node1;
     struct node * temp_node2;
-    
-    
     
     lnode * temp=clique->start;
     lnode * temp_next;
@@ -332,9 +378,7 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
     while (temp->next != NULL)
     {
         temp_next = temp->next;
-        
-        
-        
+
         while (temp_next != NULL)
         {
             /* find hash indexes */
@@ -352,7 +396,6 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
             
             probs[j][i].file1 = temp_node1;
             probs[j][i].file2 = temp_node2;
-            
             
             probs[i][j].prob = px(fx(model, temp_node1, temp_node2));
             probs[j][i].prob = probs[i][j].prob;
@@ -423,7 +466,5 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
         }
         
     }
-    
-    
-    
+
 }

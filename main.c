@@ -92,8 +92,9 @@ int main(int argc, char *argv[])
         pthread_create(&scheduler->threadIds[i], NULL, Writer, (void * ) model );
     
     Reader(model, 0.01);
-    
-    //test_model(Table,model);
+    printf("End of training \n");
+    test_validation(new_table,model);
+    test_model(Table,model);
     
     
     

@@ -667,7 +667,7 @@ void postorder_getAllRecords(struct RBTree * Tree, struct node * root, HashTable
     postorder_getAllRecords(Tree, root->right,newTable);
     postorder_getAllRecords(Tree, root->left, newTable);
     
-    insert_Record_clone(root->key, newTable, NULL, 0,root);
+    insert_Record_clone(root->key, newTable, root->json_info, 0,root);
     
 }
 
@@ -688,7 +688,6 @@ void postorder_checkifElementinDifferentCliques(struct RBTree * Tree, struct nod
     
     if(strcmp(root->key, element)==0)
         *flag=1;
-    
 
 }
 
@@ -697,15 +696,12 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
 {
     if (node == T->NIL)
         return ;
-    
-    
+
     postorder_findCliques_conflicts(T, node->left,files,model);
     postorder_findCliques_conflicts(T, node->right,files,model);
     
     int flag=0;
-
-    
-    
+    printf("%d %d\n",node->list_same_jsons->print_flag, node->list_same_jsons->size);
     if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
     {
         node->list_same_jsons->print_flag=1;
@@ -714,24 +710,18 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
         {
             postorder_checkifElementinDifferentCliques(node->list_same_jsons->different_cliques,
                                                        node->list_same_jsons->different_cliques->root, start->json_name, &flag);
-            
+
             if(flag==1)
                 break;
-                
-            
-            
+
             start = start->next;
         }
-        if(flag==1)
-        
+        if(flag==1) {
+            printf("Found conflict\n");
+            conflicts++;
             fixConflicts(files, node->list_same_jsons, model);
-        
-        
-        
-        
+        }
     }
-
-        
     
 }
 
