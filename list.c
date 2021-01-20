@@ -238,7 +238,7 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
 
 void create_validation_list(list * mylist )
 {
-    
+    int i=0;
     lnode * temp = mylist->start;
     lnode * temp_next;
     int index1;
@@ -257,24 +257,24 @@ void create_validation_list(list * mylist )
         
         while (temp_next != NULL)
         {
-
-            /* find nodes-json files */
-            temp_node1 = temp->file_node;
-            temp_node2 =  temp_next->file_node;
-            
-            train_data * temp_data = new_train_data(temp->json_name, temp_next->json_name , 1);
-            temp_data->file1_node = temp_node1;
-            temp_data->file2_node = temp_node2;
-            
-            lnode_data * node_data =new_lnode_data( temp_data);
-            
-            insert_lnode_data(validation,node_data);
-            if(validation->size%1000000==0)
-                printf("size %d\n",validation->size);
-            if(validation->size>=VALIDATION_MAX_SIZE)
-                return;
-            
+            if(i%500==0)
+            {            /* find nodes-json files */
+                temp_node1 = temp->file_node;
+                temp_node2 =  temp_next->file_node;
+        
+                train_data * temp_data = new_train_data(temp->json_name, temp_next->json_name , 1);
+                temp_data->file1_node = temp_node1;
+                temp_data->file2_node = temp_node2;
+        
+                lnode_data * node_data =new_lnode_data( temp_data);
+                insert_lnode_data(validation,node_data);
+                if(validation->size%5000==0)
+                    printf("size %d\n",validation->size);
+                if(i>=VALIDATION_MAX_SIZE)
+                    return;
+            }
             temp_next = temp_next->next;
+            i++;
         }
         
         temp=temp->next;

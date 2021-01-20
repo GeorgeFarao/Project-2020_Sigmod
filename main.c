@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     
     /* trainning our model */
     logistic_regression *model;
-    model = new_model(global_total_words * 2, 0, 0.00000001, 2);
+    model = new_model(global_total_words * 2, 0, 0.00000001, 8);
 
     printf("Clone\n");
     scheduler = initialize_scheduler(model);

@@ -122,20 +122,14 @@ void test_validation(HashTable *files, logistic_regression *model)
     printf("Start\n");
     while (start != NULL)
     {
-        printf("1\n");
-        /* find hash indexes */
-        index1 = hash1(start->data->file1, files->size);
-        index2 = hash1(start->data->file2, files->size);
 
-        /* find nodes-json files */
-        temp = find_key_RBtree(files->Trees[index1], start->data->file1);
-        temp= temp->self_node;
-        temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
-        temp2 = temp2->self_node;
+        temp= start->data->file1_node;
+        temp2 = start->data->file2_node;
 
         /* calculate probability */
         p = px(fx(model, temp, temp2));
 
+        printf("wtf %d 1 \n",wtf);
         if (p < 0.5 ) {
            // printf("Matching diff %f\n",p);
             match_different_products(files, temp->key, temp2->key);
@@ -144,7 +138,8 @@ void test_validation(HashTable *files, logistic_regression *model)
            // printf("Matching same %f\n",p);
             match_same_products(files, temp->key, temp2->key);
         }
-
+        printf("wtf %d 2\n",wtf);
+        
         wtf++;
         if(wtf % 10000==0)
             printf("wtf %d\n",wtf);

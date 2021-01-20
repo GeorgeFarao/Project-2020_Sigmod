@@ -183,7 +183,7 @@ void submit_job(jobScheduler * scheduler,job * Job)
 
 void Reader(logistic_regression * model,double learning_rate , HashTable * new_table )        //na sbhsoume to scheduler
 {
-    int i =1;
+    int i =2;
     HashTable * original_table = new_table;
     
     int iterations = data->size/MINI_BATCH_M;
@@ -244,7 +244,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
             {
                 printf("douleia\n");
                 new_table =CloneTable(original_table);
-
+                validation_to_train = new_list_data();
                 test_validation(new_table, model);
                 CreateJobs(2);
                 scheduler->jobExists=1;
