@@ -19,6 +19,8 @@ list_data *data;
 list_data *test;
 list_data *validation;
 list_data * validation_to_train;
+list * allfiles;
+
 int conflicts;
 
 jobScheduler * scheduler;

@@ -40,7 +40,7 @@ unsigned int hash1(char *str, unsigned int HASHSIZE)    // hash function by Dan 
 }
 
 /* Insert record to the table */
-void insert_Record (char * Record , HashTable * table, json_list * jsonList,int words_count)
+void other_insert_Record (char * Record , HashTable * table, json_list * jsonList,int words_count)
 {
     if (table==NULL)
     {
@@ -62,6 +62,12 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList,int 
         temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
         temp->bow_tf_idf_index=global_index;
         temp->number_of_words= words_count;
+        
+        
+        lnode * all_file = new_lnode(temp->key);
+        all_file->file_node =temp;
+        insert_lnode(allfiles, all_file);
+        
         RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
     }
     else            /* tree exits */
@@ -69,12 +75,64 @@ void insert_Record (char * Record , HashTable * table, json_list * jsonList,int 
         temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
         temp->bow_tf_idf_index=global_index;
         temp->number_of_words=words_count;
+        
+        
+        lnode * all_file = new_lnode(temp->key);
+        all_file->file_node =temp;
+        insert_lnode(allfiles, all_file);
+        
         RBTinsert(table->Trees[ hash_index ], temp );
         
         
         /* We create and insert a node to the tree */
     }
 }
+
+
+/* Insert record to the table */
+void insert_Record (char * Record , HashTable * table, json_list * jsonList,int words_count)
+{
+    if (table==NULL)
+    {
+        printf("Table is NULL programm will exit");
+        exit(1);
+    }
+    
+    /* Find correct bucket for the Record */
+    int hash_index = hash1(Record, table->size);
+    
+    struct node * temp;
+    
+    
+    
+    if(table->Trees[ hash_index ] ==NULL)                   /* If tree does not exist */
+    {
+        table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
+        
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        temp->bow_tf_idf_index=global_index;
+        temp->number_of_words= words_count;
+        
+        
+        RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
+    }
+    else            /* tree exits */
+    {
+        temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
+        temp->bow_tf_idf_index=global_index;
+        temp->number_of_words=words_count;
+        
+        RBTinsert(table->Trees[ hash_index ], temp );
+        
+        
+        /* We create and insert a node to the tree */
+    }
+}
+
+
+
+
+
 
 
 void insert_Record_clone (char * Record , HashTable * table, json_list * jsonList,int words_count, struct node * selfnode)
@@ -381,12 +439,14 @@ void print_commons(HashTable * table )
 
 void find_conflicts(HashTable * table,logistic_regression * model )
 {
+    conflicts =0;
     for(int i=0 ;i<table->size ; i++)
     {
         if( table->Trees[i]!=NULL){
             postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
         }
     }
+    printf("Conflicts found %d\n",conflicts);
 }
 
 

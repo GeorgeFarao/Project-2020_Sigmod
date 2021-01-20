@@ -44,5 +44,6 @@ HashTable * CloneTable(HashTable * table);
 int checkIfelementinClique(list * clique, char * element);
 void insert_Record_clone (char * Record , HashTable * table, json_list * jsonList,int words_count, struct node * selfnode);
 
+void other_insert_Record (char * Record , HashTable * table, json_list * jsonList,int words_count);
 
 #endif /* HashTable_h */

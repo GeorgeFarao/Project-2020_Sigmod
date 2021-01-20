@@ -29,7 +29,6 @@ list * new_list(void)
     
     
     
-    
     return mylist;
 }
 
@@ -42,6 +41,7 @@ lnode * new_lnode(char * jsonName)
     strcpy(node->json_name,jsonName);
     
     node->next = NULL;
+    node->file_node=NULL;
     
     return node;
 }
@@ -150,12 +150,12 @@ void print_list(list * mylist , HashTable * files)
 
             if (cnt==5){
                 insert_lnode_data(test,node_data);
-                //cnt =0 ;
+                cnt =0 ;
             }
-            else if(cnt==10){
-                insert_lnode_data(validation,node_data);
-                cnt=0;
-            }
+//            else if(cnt==10){
+//                insert_lnode_data(validation,node_data);
+//                cnt=0;
+//            }
             else
                 insert_lnode_data (data,node_data);
             cnt++;
@@ -209,13 +209,13 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
             if (cnt==5){
                 //printf("OK\n");
                 insert_lnode_data(test,node_data);
-                //cnt = 0;
+                cnt = 0;
 
             }
-            else if(cnt==10){
-                insert_lnode_data(validation,node_data);
-                cnt=0;
-            }
+//            else if(cnt==10){
+//                insert_lnode_data(validation,node_data);
+//                cnt=0;
+//            }
             else
                 insert_lnode_data (data,node_data);
             cnt++;
@@ -234,3 +234,62 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
 }
     
 
+
+
+void create_validation_list(list * mylist )
+{
+    
+    lnode * temp = mylist->start;
+    lnode * temp_next;
+    int index1;
+    int index2;
+    struct node * temp_node1;
+    struct node * temp_node2;
+    
+    /* Main loop */
+    /* Printing basic node, and all matching nodes, that are after this node in the list */
+    /* Move basic node so corresponding pointer indicates to the next node */
+    /* Continue till basic node is null */
+    
+    while (temp->next != NULL)
+    {
+        temp_next = temp->next;
+        
+        while (temp_next != NULL)
+        {
+
+            /* find nodes-json files */
+            temp_node1 = temp->file_node;
+            temp_node2 =  temp_next->file_node;
+            
+            train_data * temp_data = new_train_data(temp->json_name, temp_next->json_name , 1);
+            temp_data->file1_node = temp_node1;
+            temp_data->file2_node = temp_node2;
+            
+            lnode_data * node_data =new_lnode_data( temp_data);
+            
+            insert_lnode_data(validation,node_data);
+            if(validation->size%1000000==0)
+                printf("size %d\n",validation->size);
+            if(validation->size>=VALIDATION_MAX_SIZE)
+                return;
+            
+            temp_next = temp_next->next;
+        }
+        
+        temp=temp->next;
+    }
+    
+    mylist->print_flag = 1; /* So other nodes pointing to list know current list is being printed */
+}
+
+void printval()
+{
+    lnode_data * temp = validation->start;
+    while(temp!=NULL)
+    {
+        printf("%s %s \n",temp->data->file1,temp->data->file2);
+        temp=temp->next;
+    }
+    
+}

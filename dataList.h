@@ -40,6 +40,7 @@ extern list_data *data;
 extern list_data *test;
 extern list_data *validation;
 extern list_data * validation_to_train;
+extern list * allfiles;
 extern int conflicts;
 
 list_data *new_list_data(void);

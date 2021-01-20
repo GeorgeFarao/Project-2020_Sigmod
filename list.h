@@ -8,7 +8,8 @@
 typedef struct lnode {
     struct lnode * next;
     char * json_name;
-    
+    struct node * file_node;
+
 }lnode;
 
 
@@ -20,7 +21,6 @@ typedef struct list {
     lnode * end;
     struct RBTree * different_cliques;
     struct RBTree * printed_different_cliques;
-    
     
     
     int print_flag; /* 1 when list is being printed, else 0 */
@@ -42,9 +42,10 @@ void delete_list( list * list); /* Deleting list */
 void delete_list_node(list * List); /* Deleting first node of list */
 
 
+void create_validation_list(list * mylist );
 
 
-
+void printval();
 
 
 

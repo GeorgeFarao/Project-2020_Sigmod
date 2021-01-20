@@ -110,18 +110,19 @@ void test_validation(HashTable *files, logistic_regression *model)
 
 
     /* train model */
-
+    static int wtf=0;
 
 
     lnode_data *start; /* first node of our trainning data-nodes */
 
     double p; /* probability obtained by our model */
-    start = test->start; /* indicates to first node of our test data-nodes */
+    start = validation->start; /* indicates to first node of our test data-nodes */
 
     /* for every node */
     printf("Start\n");
     while (start != NULL)
     {
+        printf("1\n");
         /* find hash indexes */
         index1 = hash1(start->data->file1, files->size);
         index2 = hash1(start->data->file2, files->size);
@@ -135,7 +136,6 @@ void test_validation(HashTable *files, logistic_regression *model)
         /* calculate probability */
         p = px(fx(model, temp, temp2));
 
-
         if (p < 0.5 ) {
            // printf("Matching diff %f\n",p);
             match_different_products(files, temp->key, temp2->key);
@@ -145,7 +145,9 @@ void test_validation(HashTable *files, logistic_regression *model)
             match_same_products(files, temp->key, temp2->key);
         }
 
-
+        wtf++;
+        if(wtf % 10000==0)
+            printf("wtf %d\n",wtf);
         /* update pointer */
         start = start->next;
     }

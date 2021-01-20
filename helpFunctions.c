@@ -108,7 +108,7 @@ void reading_directory (char * directory_name, HashTable * Table , HashTable * s
                     json_list * jsonList = Parser(second_full_path, stopwords, bow_tf, total_files, &words_count);
 
                     /* Inset json record to our structures */
-                    insert_Record(name, Table, jsonList, words_count);
+                    other_insert_Record(name, Table, jsonList, words_count);
                     //printf("%d\n",global_index);
                     global_index++;
                     free(second_full_path);

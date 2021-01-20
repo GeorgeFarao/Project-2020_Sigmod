@@ -9,6 +9,7 @@
 #define TESTING 1
 #define TERMINATE 2
 #define NOJOB 3
+#define VALIDATION_MAX_SIZE 80000000
 
 extern int global_index;
 extern int global_total_words;

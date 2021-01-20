@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     test = new_list_data();
     validation = new_list_data();
     validation_to_train = new_list_data();
+    allfiles =new_list();
     
 
     char *directory_name = NULL;
@@ -79,11 +80,13 @@ int main(int argc, char *argv[])
     create_tfidf_bow(Table, bow_tfidf);
 
     printf("data size: %d, test_size: %d\n", data->size, test->size);
+    printf("jobs created %d \n",allfiles->size);
 
+    create_validation_list(allfiles);
+    
     /* trainning our model */
     logistic_regression *model;
     model = new_model(global_total_words * 2, 0, 0.00000001, 2);
-    HashTable * new_table = CloneTable(Table);
 
     printf("Clone\n");
     scheduler = initialize_scheduler(model);
@@ -92,14 +95,13 @@ int main(int argc, char *argv[])
     for (int i=0 ; i<model->epoch;i++)
         CreateJobs(1);
 
-    printf("jobs created\n");
     printf("q size before threads %d\n",scheduler->queue->size);
     for (int i=0 ;i<NUMBER_OF_THREADS;i++)
         pthread_create(&scheduler->threadIds[i], NULL, Writer, (void * ) model );
     printf("q size after threads %d\n",scheduler->queue->size);
     printf("reader\n");
-    Reader(model, 0.01,new_table);
-    //printf("End of training \n");
+    Reader(model, 0.01,Table);
+    printf("End of training \n");
     //test_validation(new_table,model);
     //find_conflicts(Table, model);
     

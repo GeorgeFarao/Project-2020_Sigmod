@@ -183,17 +183,18 @@ void submit_job(jobScheduler * scheduler,job * Job)
 
 void Reader(logistic_regression * model,double learning_rate , HashTable * new_table )        //na sbhsoume to scheduler
 {
+    int i =1;
+    HashTable * original_table = new_table;
+    
     int iterations = data->size/MINI_BATCH_M;
     //iterations--;
 
    if(data->size % MINI_BATCH_M!=0)
         iterations++;
     
-    printf("iter %d\n",iterations);
     int mod_res= iterations % NUMBER_OF_THREADS;
     if (mod_res !=0 )
         iterations+= mod_res;
-    printf("iter %d\n",iterations);
     iterations++;
     iterations = iterations*model->epoch;
 
@@ -225,26 +226,29 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     }
 
     scheduler->index =NUMBER_OF_THREADS;
-    printf("%d\n",scheduler->jobExists);
+    //printf("%d\n",scheduler->jobExists);
     while(1)
     {
        // printf("to x einai %d, index %d\n",iterations, scheduler->index);
         pthread_mutex_lock(&scheduler->mtx);
-        printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
+        //printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
         while(scheduler->writers >0 || scheduler->index <(NUMBER_OF_THREADS)  )
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
         scheduler->readers = scheduler->readers +1;
         pthread_mutex_unlock(&scheduler->mtx);
 
-        printf("jobExists %d, q size %d\n",scheduler->jobExists,scheduler->queue->size);
+        //printf("jobExists %d, q size %d\n",scheduler->jobExists,scheduler->queue->size);
         if(scheduler->jobExists == 0)
         {
-            if(rand()%4!=0)
+            if(i!=0)
             {
                 printf("douleia\n");
+                new_table =CloneTable(original_table);
+
                 test_validation(new_table, model);
-                CreateJobs(1);
+                CreateJobs(2);
                 scheduler->jobExists=1;
+                i--;
                 
             }
             else
@@ -256,9 +260,9 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
         }
         else
         {
-            printf("calculate opt\n");
+            //printf("calculate opt\n");
             calculate_optimal_weights(model, learning_rate, scheduler);
-            printf("calculate opt meta\n");
+            //printf("calculate opt meta\n");
 
             if(scheduler->queue->size==0) {
                 scheduler->jobExists = 0;
@@ -281,6 +285,9 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
 
     CreateJobs(3);
     scheduler->jobExists=1;
+    scheduler->numWriters=0;
+    scheduler->index=0;
+    
     pthread_mutex_lock(&scheduler->mtx);
     scheduler->readers = scheduler->readers-1;
     pthread_cond_signal(&scheduler->writeCond);
@@ -299,6 +306,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     scheduler->readers = scheduler->readers-1;
     pthread_cond_signal(&scheduler->writeCond);
     pthread_mutex_unlock(&scheduler->mtx);
+    printf("exit reader\n");
 }
 
 
