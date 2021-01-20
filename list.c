@@ -150,12 +150,12 @@ void print_list(list * mylist , HashTable * files)
 
             if (cnt==5){
                 insert_lnode_data(test,node_data);
-                cnt =0 ;
+              //  cnt =0 ;
             }
-//            else if(cnt==10){
-//                insert_lnode_data(validation,node_data);
-//                cnt=0;
-//            }
+            else if(cnt==10){
+               insert_lnode_data(validation,node_data);
+                cnt=0;
+            }
             else
                 insert_lnode_data (data,node_data);
             cnt++;
@@ -209,13 +209,13 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
             if (cnt==5){
                 //printf("OK\n");
                 insert_lnode_data(test,node_data);
-                cnt = 0;
+               // cnt = 0;
 
             }
-//            else if(cnt==10){
-//                insert_lnode_data(validation,node_data);
-//                cnt=0;
-//            }
+           else if(cnt==10){
+               insert_lnode_data(validation,node_data);
+                cnt=0;
+            }
             else
                 insert_lnode_data (data,node_data);
             cnt++;

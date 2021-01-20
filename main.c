@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     printf("data size: %d, test_size: %d\n", data->size, test->size);
     printf("jobs created %d \n",allfiles->size);
 
-    create_validation_list(allfiles);
+    //create_validation_list(allfiles);
     
     /* trainning our model */
     logistic_regression *model;
@@ -107,13 +107,15 @@ int main(int argc, char *argv[])
     
     
     //test_model(Table,model);
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+    for (int i = 0; i < NUMBER_OF_THREADS; ++i)
+         pthread_join(*(scheduler->threadIds + i), NULL);
+
     //pthread_join
     /* Free allocated memory */
     delete_hashtable(Table);

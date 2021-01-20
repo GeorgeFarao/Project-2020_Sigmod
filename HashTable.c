@@ -416,15 +416,6 @@ int checkIfConflict(HashTable* table, struct node * node1, struct node * node2, 
 
 
 
-
-
-
-
-
-
-
-
-
 /* Prints all the pairs */
 void print_commons(HashTable * table )
 {

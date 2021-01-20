@@ -129,7 +129,7 @@ void test_validation(HashTable *files, logistic_regression *model)
         /* calculate probability */
         p = px(fx(model, temp, temp2));
 
-        printf("wtf %d 1 \n",wtf);
+        //printf("wtf %d 1 \n",wtf);
         if (p < 0.5 ) {
            // printf("Matching diff %f\n",p);
             match_different_products(files, temp->key, temp2->key);
@@ -138,7 +138,7 @@ void test_validation(HashTable *files, logistic_regression *model)
            // printf("Matching same %f\n",p);
             match_same_products(files, temp->key, temp2->key);
         }
-        printf("wtf %d 2\n",wtf);
+      //  printf("wtf %d 2\n",wtf);
         
         wtf++;
         if(wtf % 10000==0)
@@ -329,7 +329,7 @@ void calculate_optimal_weights(logistic_regression *model, double learning_rate,
             //averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
             model->w[j] = model->w[j] - averageW[j]*learning_rate;
     }
-
+    free(averageW);
 }
 
 /* free allocated memory */
@@ -463,4 +463,9 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
         
     }
 
+
+    for (int k = 0; k < clique->size; ++k) {
+        free(probs[k]);
+    }
+    free(probs);
 }

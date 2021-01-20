@@ -211,7 +211,10 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
         //Critical Section
         //Calculate average and find new W
         calculate_optimal_weights(model, learning_rate, scheduler);
-
+        for (int j = 0; j < NUMBER_OF_THREADS; ++j) {
+            if (scheduler->Matrix_w[j]);
+                free(scheduler->Matrix_w[j]);
+        }
         
         scheduler->index=0;
         scheduler->numWriters=0;
@@ -422,6 +425,7 @@ void * Writer(void *modl)
         //DO some work
         int total_checked;
         int num_of_correct;
+        printf("%p\n", Job);
         if(Job->typeofJob != NOJOB)
         {
             if (Job->typeofJob == TRAINING)
@@ -466,7 +470,11 @@ void * Writer(void *modl)
         pthread_mutex_unlock(&scheduler->mtx);
         
         iterations--;
-        if (Job->typeofJob == TESTING)
+        int type=Job->typeofJob;
+
+        delete_dataList(Job->data);
+        free(Job);
+        if (type == TESTING)
             break;
     }
     printf("writer exit\n");
