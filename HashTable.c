@@ -286,7 +286,8 @@ void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 )
 
     combine_trees(tree_node2->list_same_jsons->different_cliques,
                   tree_node2->list_same_jsons->different_cliques->root,tree_node1->list_same_jsons->different_cliques);
-   // destroy_diffRBTree(tree_node2->list_same_jsons->different_cliques, tree_node2->list_same_jsons->different_cliques->root);
+
+
     /* Make first node's end point to the start of second node's list  and it's end to the second's end*/
     tree_node1->list_same_jsons->end->next = tree_node2->list_same_jsons->start;
     tree_node1->list_same_jsons->end = tree_node2->list_same_jsons->end;

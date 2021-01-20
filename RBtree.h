@@ -6,6 +6,9 @@
 #define MINI_BATCH_M 512
 #define NUMBER_OF_THREADS 8
 #define TRAINING 0
+#define TESTING 1
+#define TERMINATE 2
+#define NOJOB 3
 
 extern int global_index;
 extern int global_total_words;

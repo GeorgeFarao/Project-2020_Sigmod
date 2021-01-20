@@ -46,7 +46,7 @@ double derivative_error_function(logistic_regression *model, double *tf_idf1, do
 double norm(logistic_regression *model);
 
 /* main function that trains our model */
-void test_model(HashTable *files, logistic_regression *model);
+
 
 /* calls derivative_error_function() for every component */
 

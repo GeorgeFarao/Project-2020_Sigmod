@@ -53,8 +53,10 @@ typedef struct jobScheduler{
     double ** Matrix_w;
     int index;
     int numWriters;
-    
-    
+    int jobExists;
+
+    int total_tested;
+    int total_correct;
     int N;
     
     
@@ -89,9 +91,9 @@ double *nabla(logistic_regression *model, job* Job);
 void calculate_optimal_weights(logistic_regression *model, double learning_rate,jobScheduler * scheduler);
 
 void *Writer(void *modl);
-void Reader(logistic_regression * model,double learning_rate );        //na sbhsoume to scheduler
-void CreateJobs(void);
-
+void Reader(logistic_regression * model,double learning_rate , HashTable * new_table );
+void CreateJobs(int flag);
+int test_model(job *Job, logistic_regression *model,int *total_checked);
 extern jobScheduler * scheduler;
 
 

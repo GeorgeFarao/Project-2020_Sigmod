@@ -111,19 +111,12 @@ void test_validation(HashTable *files, logistic_regression *model)
 
     /* train model */
 
-    int count = 0;                   /* total number of test data */
-
-    int number_of_correct_1=0;
-    int number_of_correct_0=0;
-    int count0=0;
-    int count1=0;
-
 
 
     lnode_data *start; /* first node of our trainning data-nodes */
 
     double p; /* probability obtained by our model */
-    start = data->start; /* indicates to first node of our test data-nodes */
+    start = test->start; /* indicates to first node of our test data-nodes */
 
     /* for every node */
     printf("Start\n");
@@ -157,13 +150,14 @@ void test_validation(HashTable *files, logistic_regression *model)
         start = start->next;
     }
     printf("Find conflicts\n");
+    remove_duplicates(files);
     find_conflicts(files, model);
     printf("Conflicts %d\n", conflicts);
 
 }
 
 /* main function that trains our model */
-void test_model(HashTable *files, logistic_regression *model)
+int test_model(job * Job, logistic_regression *model, int *total_checked)
 {
     int index1;
     int index2;
@@ -186,18 +180,20 @@ void test_model(HashTable *files, logistic_regression *model)
         lnode_data *start; /* first node of our trainning data-nodes */
 
         double p; /* probability obtained by our model */
-        start = test->start; /* indicates to first node of our test data-nodes */
+        start = Job->data->start; /* indicates to first node of our test data-nodes */
 
         /* for every node */
         while (start != NULL)
         {
             /* find hash indexes */
-            index1 = hash1(start->data->file1, files->size);
-            index2 = hash1(start->data->file2, files->size);
+            //index1 = hash1(start->data->file1, files->size);
+           // index2 = hash1(start->data->file2, files->size);
 
             /* find nodes-json files */
-            temp = find_key_RBtree(files->Trees[index1], start->data->file1);
-            temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
+           // temp = find_key_RBtree(files->Trees[index1], start->data->file1);
+            temp = start->data->file1_node;
+            temp2 = start->data->file2_node;
+            //temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
 
             /* calculate probability */
             p = px(fx(model, temp, temp2));
@@ -219,13 +215,15 @@ void test_model(HashTable *files, logistic_regression *model)
             start = start->next;
         }
 
-        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
-
-         printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
-
-        printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
+//        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
+//
+//         printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
+//
+//        printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
         //printf("%d %d\n",count0 , count1);
 
+        *total_checked= count;
+    return number_of_correct_1+number_of_correct_0;
 
 }
 
@@ -413,6 +411,7 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
         i++;
         j=i+1;
     }
+    
     
     total_prob = total_prob/(double)MO;
     if(total_prob > 0.5)                    //

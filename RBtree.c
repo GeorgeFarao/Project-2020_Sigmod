@@ -683,11 +683,18 @@ void postorder_checkifElementinDifferentCliques(struct RBTree * Tree, struct nod
     if (root == Tree->NIL ||*flag==1)
         return ;
     
+    
+    if(strcmp(root->key, element)==0)
+    {
+        *flag=1;
+    }
+    
+    
+    
     postorder_checkifElementinDifferentCliques(Tree,root->left,element,flag);
     postorder_checkifElementinDifferentCliques(Tree,root->right,element,flag);
     
-    if(strcmp(root->key, element)==0)
-        *flag=1;
+    
 
 }
 
@@ -701,9 +708,10 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
     postorder_findCliques_conflicts(T, node->right,files,model);
     
     int flag=0;
-    printf("%d %d\n",node->list_same_jsons->print_flag, node->list_same_jsons->size);
+    
     if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
     {
+        
         node->list_same_jsons->print_flag=1;
         lnode * start = node->list_same_jsons->start;
         while(start!=NULL)
@@ -719,7 +727,9 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
         if(flag==1) {
             printf("Found conflict\n");
             conflicts++;
+            printf("1\n");
             fixConflicts(files, node->list_same_jsons, model);
+            printf("2\n");
         }
     }
     

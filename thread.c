@@ -28,14 +28,14 @@
 
 queue * new_queue(void) /* Creating new list */
 {
-    queue * queue = malloc(sizeof( queue));
-    queue->start = NULL;
-    queue->end = NULL;
-    queue->size=0;
-    queue->Removed_duplicates=0;
+    queue * temp_queue = malloc(sizeof( queue));
+    temp_queue->start = NULL;
+    temp_queue->end = NULL;
+    temp_queue->size=0;
+    temp_queue->Removed_duplicates=0;
     
     
-    return queue;
+    return temp_queue;
 }
 
 
@@ -130,6 +130,9 @@ job * pop (queue * Queue)
 
     
     Queue->size--; /* Updating size */
+//    if(Queue->size==0)
+//        scheduler->jobExists=0;
+    
     return Job;
 }
 
@@ -154,6 +157,9 @@ jobScheduler * initialize_scheduler(logistic_regression * model)
     scheduler->Matrix_w=malloc(sizeof(double *)* (NUMBER_OF_THREADS) );
     scheduler->N= model->N;
     scheduler->index=0;
+    scheduler->jobExists = 0;
+    scheduler->total_tested = 0;
+    scheduler->total_correct = 0;
     
     for (int i=0; i<(NUMBER_OF_THREADS); i++)
     {
@@ -174,32 +180,42 @@ void submit_job(jobScheduler * scheduler,job * Job)
 }
 
 
-void Reader(logistic_regression * model,double learning_rate )        //na sbhsoume to scheduler
-{
 
+void Reader(logistic_regression * model,double learning_rate , HashTable * new_table )        //na sbhsoume to scheduler
+{
     int iterations = data->size/MINI_BATCH_M;
-    if(data->size % MINI_BATCH_M!=0)
+    //iterations--;
+
+   if(data->size % MINI_BATCH_M!=0)
         iterations++;
     
-    while(iterations)
+    printf("iter %d\n",iterations);
+    int mod_res= iterations % NUMBER_OF_THREADS;
+    if (mod_res !=0 )
+        iterations+= mod_res;
+    printf("iter %d\n",iterations);
+    iterations++;
+    iterations = iterations*model->epoch;
+
+    while(iterations )
     {
         printf("Reader %d\n",iterations);
         pthread_mutex_lock(&scheduler->mtx);
         while(scheduler->writers >0 || scheduler->index<(NUMBER_OF_THREADS)  )
-        {
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
-        }
         
-       // printf("i just started calculating\n");
+        
         scheduler->readers = scheduler->readers +1;
         pthread_mutex_unlock(&scheduler->mtx);
         //Critical Section
         //Calculate average and find new W
         calculate_optimal_weights(model, learning_rate, scheduler);
-       // printf("i just calculated\n");
+
         
         scheduler->index=0;
         scheduler->numWriters=0;
+        if(iterations ==1)
+            scheduler->jobExists=0;
         
         pthread_mutex_lock(&scheduler->mtx);
         scheduler->readers = scheduler->readers-1;
@@ -207,40 +223,157 @@ void Reader(logistic_regression * model,double learning_rate )        //na sbhso
         pthread_mutex_unlock(&scheduler->mtx);
         iterations--;
     }
+
+    scheduler->index =NUMBER_OF_THREADS;
+    printf("%d\n",scheduler->jobExists);
+    while(1)
+    {
+       // printf("to x einai %d, index %d\n",iterations, scheduler->index);
+        pthread_mutex_lock(&scheduler->mtx);
+        printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
+        while(scheduler->writers >0 || scheduler->index <(NUMBER_OF_THREADS)  )
+            pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
+        scheduler->readers = scheduler->readers +1;
+        pthread_mutex_unlock(&scheduler->mtx);
+
+        printf("jobExists %d, q size %d\n",scheduler->jobExists,scheduler->queue->size);
+        if(scheduler->jobExists == 0)
+        {
+            if(rand()%4!=0)
+            {
+                printf("douleia\n");
+                test_validation(new_table, model);
+                CreateJobs(1);
+                scheduler->jobExists=1;
+                
+            }
+            else
+            {
+                printf("katastrofh\n");
+                scheduler->jobExists = 0;
+                break;
+            }
+        }
+        else
+        {
+            printf("calculate opt\n");
+            calculate_optimal_weights(model, learning_rate, scheduler);
+            printf("calculate opt meta\n");
+
+            if(scheduler->queue->size==0) {
+                scheduler->jobExists = 0;
+                scheduler->index =NUMBER_OF_THREADS;
+
+            }
+
+        }
+        if(scheduler->queue->size!=0)
+            scheduler->index =0;
+        scheduler->numWriters=0;
+        
+        pthread_mutex_lock(&scheduler->mtx);
+        scheduler->readers = scheduler->readers-1;
+        pthread_cond_signal(&scheduler->writeCond);
+        pthread_mutex_unlock(&scheduler->mtx);
+        
+        iterations--;
+    }
+
+    CreateJobs(3);
+    scheduler->jobExists=1;
+    pthread_mutex_lock(&scheduler->mtx);
+    scheduler->readers = scheduler->readers-1;
+    pthread_cond_signal(&scheduler->writeCond);
+    pthread_mutex_unlock(&scheduler->mtx);
+
+    pthread_mutex_lock(&scheduler->mtx);
+    printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
+    while(scheduler->writers >0 || scheduler->index <(NUMBER_OF_THREADS)  )
+        pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
+    scheduler->readers = scheduler->readers +1;
+    pthread_mutex_unlock(&scheduler->mtx);
+    printf("Test Accuracy %d, %d\n", scheduler->total_tested, scheduler->total_correct);
+    printf("Accuracy : %f %%\n", (double)(scheduler->total_correct) * 100 / (double)scheduler->total_tested);
+
+    pthread_mutex_lock(&scheduler->mtx);
+    scheduler->readers = scheduler->readers-1;
+    pthread_cond_signal(&scheduler->writeCond);
+    pthread_mutex_unlock(&scheduler->mtx);
 }
 
 
-void CreateJobs(void)
+
+
+void CreateJobs(int flag)
 {
-    lnode_data * temp = data->start;
+    lnode_data * temp;
+    
+    if(flag ==1)
+    {
+        scheduler->jobExists=1;
+        temp = data->start;
+    }
+    else if (flag==2)
+        temp = validation_to_train->start;
+    else if (flag==3)
+        temp = test->start;
+    
     int i=0;
     job * tempJob = NULL;
-    
-    
-    while(temp!=NULL)
-    {
-        if(i==0 || i %(MINI_BATCH_M/NUMBER_OF_THREADS) ==0)
-        {
-            tempJob = malloc(sizeof(job));
-            tempJob->data =new_list_data();
-            tempJob->typeofJob =TRAINING;
+    if (flag ==1 || flag == 2) {
+        int numberofjobs = 0;
+        while (temp != NULL) {
+            if (i == 0 || i % (MINI_BATCH_M / NUMBER_OF_THREADS) == 0) {
+                tempJob = malloc(sizeof(job));
+                tempJob->data = new_list_data();
+                tempJob->typeofJob = TRAINING;
+            }
+
+            lnode_data *temp_node = new_lnode_data(temp->data);
+            insert_lnode_data(tempJob->data, temp_node);
+
+            if (i % ((MINI_BATCH_M / NUMBER_OF_THREADS) - 1) == 0 || temp->next == NULL) {
+                submit_job(scheduler, tempJob);
+                numberofjobs++;
+            }
+
+            temp = temp->next;
+            i++;
         }
-        
-        lnode_data* temp_node=new_lnode_data(temp->data);
-        insert_lnode_data(tempJob->data, temp_node);
-        
-        if(i%  ((MINI_BATCH_M/NUMBER_OF_THREADS)-1)  ==0 ||temp->next==NULL)
+
+        while (numberofjobs % NUMBER_OF_THREADS != 0) {
+            tempJob = malloc(sizeof(job));
+            tempJob->typeofJob = NOJOB;
             submit_job(scheduler, tempJob);
-        
-        temp = temp->next;
-        i++;
+            numberofjobs++;
+
+        }
     }
+    else if (flag == 3){
+        job ** Job= malloc(sizeof(job *)*NUMBER_OF_THREADS);
+        for (int i=0;i<NUMBER_OF_THREADS;i++){
+            Job[i]= malloc(sizeof(job));
+            Job[i]->data=new_list_data();
+            Job[i]->typeofJob= TESTING;
+        }
+        int indexjob=0;
+        while (temp!=NULL){
+            lnode_data *temp_node = new_lnode_data(temp->data);
+            insert_lnode_data(Job[indexjob]->data, temp_node);
+            indexjob++;
+            if (indexjob == NUMBER_OF_THREADS)
+                indexjob=0;
+            temp= temp->next;
+        }
+        for (int i=0; i<NUMBER_OF_THREADS;i++){
+            submit_job(scheduler, Job[i]);
+        }
+    }
+
+    //printf("numberofjobs %d \n",numberofjobs);
+    
     
 }
-
-
-
-
 
 
 
@@ -252,12 +385,15 @@ void * Writer(void *modl)
     if(data->size % MINI_BATCH_M!=0)
         iterations++;
     
+    while (iterations % NUMBER_OF_THREADS !=0 )
+        iterations++;
     
-    while(iterations)
+    iterations = iterations *model->epoch;
+    while(1)
     {
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
-        while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS )
+        while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS || scheduler->jobExists==0 )
             pthread_cond_wait(&scheduler->writeCond, &scheduler->mtx);
         scheduler->writers = scheduler->writers+1;
         scheduler->numWriters =scheduler->numWriters+1;
@@ -273,15 +409,21 @@ void * Writer(void *modl)
         
         if(scheduler->index<NUMBER_OF_THREADS)
             pthread_cond_signal(&scheduler->writeCond);
-        
         pthread_mutex_unlock(&scheduler->mtx);
         
         //DO some work
-        if(Job!=NULL) {
-           // printf("nabla %d\n",iterations);
-            Job->w=nabla(model, Job);
+        int total_checked;
+        int num_of_correct;
+        if(Job->typeofJob != NOJOB)
+        {
+            if (Job->typeofJob == TRAINING)
+                Job->w=nabla(model, Job);
+            else if(Job->typeofJob == TESTING)
+                num_of_correct = test_model(Job,model, &total_checked);
         }
-       // printf("end of nabla %d\n",iterations);
+//        if(Job->typeofJob == TERMINATE)
+//            break ;
+
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
         while(scheduler->readers>0 || scheduler->writers>0)
@@ -292,8 +434,16 @@ void * Writer(void *modl)
 
         //Critical Section
         //printf("second crit %d\n",iterations);
-        if(Job!=NULL)
-            scheduler->Matrix_w[scheduler->index ] = Job->w;
+        if(Job->typeofJob != NOJOB) {
+            if (Job->typeofJob == TRAINING)
+                scheduler->Matrix_w[scheduler->index] = Job->w;
+            else if(Job->typeofJob == TESTING)
+            {
+                printf("Tested\n");
+                scheduler->total_correct += num_of_correct;
+                scheduler->total_tested += total_checked;
+            }
+        }
         else
             scheduler->Matrix_w[scheduler->index ] =NULL;
         scheduler->index++;
@@ -308,7 +458,10 @@ void * Writer(void *modl)
         pthread_mutex_unlock(&scheduler->mtx);
         
         iterations--;
+        if (Job->typeofJob == TESTING)
+            break;
     }
+    printf("writer exit\n");
     return NULL;
 }
 
