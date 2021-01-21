@@ -72,7 +72,7 @@ void combine_trees(struct RBTree *Tree1, struct node *recursion_root, struct RBT
 void destroy_diffRBTree(struct RBTree *T, struct node *recursion_root);
 /*  Traversing tree in postorder and deleting each node */
 void destroyRBTree(struct RBTree *T, struct node *node);
-
+void destroyRBTree_cloned(struct RBTree *T, struct node *recursion_root);
 /* Returns node with specidied key */
 /* If not found return NULL */
 struct node *find_key_RBtree(struct RBTree *T, char *key);

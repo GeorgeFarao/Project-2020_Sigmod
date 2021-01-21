@@ -424,6 +424,38 @@ void destroyRBTree(struct RBTree *T, struct node *recursion_root)
     free(recursion_root);
 }
 
+void destroyRBTree_cloned(struct RBTree *T, struct node *recursion_root)
+{
+    if (recursion_root == T->NIL)
+        return;
+
+    destroyRBTree_cloned(T, recursion_root->left);
+    destroyRBTree_cloned(T, recursion_root->right);
+
+    if (recursion_root == T->root)
+    {
+        free(T->NIL);
+        free(T->directory_name);
+        free(T);
+    }
+
+    free(recursion_root->key);
+
+    if (recursion_root->list_same_jsons != NULL && recursion_root->list_same_jsons->size != -1)
+    {
+        delete_list_node(recursion_root->list_same_jsons);
+        if (recursion_root->list_same_jsons->size == 0)
+        {
+            destroy_diffRBTree(recursion_root->list_same_jsons->different_cliques, recursion_root->list_same_jsons->different_cliques->root);
+            destroy_diffRBTree(recursion_root->list_same_jsons->printed_different_cliques, recursion_root->list_same_jsons->printed_different_cliques->root);
+            free(recursion_root->list_same_jsons);
+        }
+        recursion_root->list_same_jsons = NULL;
+    }
+
+    free(recursion_root);
+}
+
 /* Returns node with specidied key */
 /* If not found return NULL */
 struct node *find_key_RBtree(struct RBTree *T, char *key)

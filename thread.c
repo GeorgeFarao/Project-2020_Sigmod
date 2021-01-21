@@ -160,7 +160,7 @@ jobScheduler * initialize_scheduler(logistic_regression * model)
     scheduler->jobExists = 0;
     scheduler->total_tested = 0;
     scheduler->total_correct = 0;
-    
+    scheduler->otherWriters=0;
     for (int i=0; i<(NUMBER_OF_THREADS); i++)
     {
         scheduler->Matrix_w[i]=NULL;
@@ -248,7 +248,8 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
                 CreateJobs(2);
                 scheduler->jobExists=1;
                 i--;
-                
+                delete_dataList_val(validation_to_train);
+                delete_hashtable_cloned(new_table);
             }
             else
             {
@@ -262,8 +263,9 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
             //printf("calculate opt\n");
             calculate_optimal_weights(model, learning_rate, scheduler);
             //printf("calculate opt meta\n");
-
+            //delete_dataList(validation_to_train);
             if(scheduler->queue->size==0) {
+
                 scheduler->jobExists = 0;
                 scheduler->index =NUMBER_OF_THREADS;
 
@@ -283,6 +285,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     }
 
     CreateJobs(3);
+    printf("mege8os oura %d\n",scheduler->queue->size);
     scheduler->jobExists=1;
     scheduler->numWriters=0;
     scheduler->index=0;
@@ -381,6 +384,7 @@ void CreateJobs(int flag)
         for (int i=0; i<NUMBER_OF_THREADS;i++){
             submit_job(scheduler, Job[i]);
         }
+        free(Job);
     }
 
     //printf("numberofjobs %d \n",numberofjobs);
@@ -404,8 +408,10 @@ void * Writer(void *modl)
     iterations = iterations *model->epoch;
     while(1)
     {
+        printf("NEW LOOP!!,iter: %d\n",iterations);
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
+        printf("ultra writer printf %d %d %d %d\n",scheduler->readers,scheduler->writers,scheduler->numWriters,scheduler->jobExists);
         while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS || scheduler->jobExists==0 )
             pthread_cond_wait(&scheduler->writeCond, &scheduler->mtx);
         scheduler->writers = scheduler->writers+1;
@@ -416,7 +422,7 @@ void * Writer(void *modl)
        // printf("Poping a job %d\n",iterations);
         job * Job=pop(scheduler->queue);
         
-        printf("writer %d %p\n", pthread_self(),Job);
+        printf("writer %ld %p, iter: %d\n", pthread_self(),Job,iterations);
         
         
         //Quit critical Section
@@ -442,9 +448,9 @@ void * Writer(void *modl)
 
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
-        while(scheduler->readers>0 || scheduler->writers>0)
+        while(scheduler->readers>0 || scheduler->otherWriters>0)
             pthread_cond_wait(&scheduler->otherWriter, &scheduler->mtx);
-        scheduler->writers = scheduler->writers+1;
+        scheduler->otherWriters = scheduler->otherWriters+1;
         pthread_mutex_unlock(&scheduler->mtx);
 
 
@@ -455,7 +461,7 @@ void * Writer(void *modl)
                 scheduler->Matrix_w[scheduler->index] = Job->w;
             else if(Job->typeofJob == TESTING)
             {
-                printf("Tested\n");
+                printf("Tested, iter: %d\n", iterations);
                 scheduler->total_correct += num_of_correct;
                 scheduler->total_tested += total_checked;
             }
@@ -466,9 +472,11 @@ void * Writer(void *modl)
 
         //Quit critical Section
         pthread_mutex_lock(&scheduler->mtx);
-        scheduler->writers=0;
-        if(scheduler->index>=NUMBER_OF_THREADS)
+        scheduler->otherWriters=0;
+        printf("index %d\n",scheduler->index);
+        if(scheduler->index>=NUMBER_OF_THREADS) {
             pthread_cond_signal(&scheduler->readCond);
+        }
         else
             pthread_cond_signal(&scheduler->otherWriter);
         pthread_mutex_unlock(&scheduler->mtx);
@@ -476,7 +484,7 @@ void * Writer(void *modl)
         iterations--;
         int type=Job->typeofJob;
 
-        delete_dataList(Job->data);
+       // delete_dataList_val(Job->data);
         free(Job);
         if (type == TESTING)
             break;

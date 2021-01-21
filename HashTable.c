@@ -459,6 +459,20 @@ void delete_hashtable(HashTable * table)
 
 }
 
+void delete_hashtable_cloned(HashTable * table)
+{
+    for (int i=0; i<table->size ;i++)
+    {
+        if(table->Trees[i]!=NULL)
+            destroyRBTree_cloned(table->Trees[i], table->Trees[i]->root);
+
+
+    }
+    free(table->Trees);
+    free(table);
+
+}
+
 void destroy_HashTable(HashTable * table)
 {
     for (int i=0; i<table->size ;i++)

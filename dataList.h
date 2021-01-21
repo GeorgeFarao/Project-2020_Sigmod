@@ -48,5 +48,5 @@ lnode_data *new_lnode_data(train_data *data);
 void insert_lnode_data(list_data *list_data, lnode_data *lnodedata);
 train_data *new_train_data(char *str1, char *str2, int match_val);
 void delete_dataList(list_data *data);
-
+void delete_dataList_val(list_data *dataList);
 #endif /* dataList_h */

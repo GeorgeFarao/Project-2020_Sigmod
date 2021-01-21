@@ -20,6 +20,7 @@ void match_different_products (HashTable * table , char * spec_id1 , char * spec
 void match_same_products(HashTable * table , char * spec_id1 , char * spec_id2 );
 void print_commons(HashTable * table );
 void delete_hashtable(HashTable * table);
+void delete_hashtable_cloned(HashTable * table);
 void destroy_HashTable(HashTable * table);
 void combine_tree_list (HashTable * table, struct RBTree * Tree1, struct node * recursion_root, lnode * start);
 void fix_duplicates(struct RBTree * Tree1, struct node * recursion_root , struct RBTree * Tree2 );

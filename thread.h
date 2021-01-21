@@ -58,6 +58,7 @@ typedef struct jobScheduler{
 
     int total_tested;
     int total_correct;
+    int otherWriters;
     int N;
     
     

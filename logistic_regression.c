@@ -426,7 +426,9 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
                     train_data * temp_data = new_train_data(probs[i][j].file1->key, probs[i][j].file2->key , 1);
                     temp_data->file1_node = probs[i][j].file1;
                     temp_data->file2_node = probs[i][j].file2;
-                    
+
+                    //strcpy(temp_data->file1,probs[i][j].file1->key);
+                    //strcpy(temp_data->file2,probs[i][j].file2->key);
                     lnode_data * node_data =new_lnode_data( temp_data);
                     insert_lnode_data(validation_to_train,node_data);
                 }
@@ -450,7 +452,9 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
                         train_data * temp_data = new_train_data(probs[i][j].file1->key, probs[i][j].file2->key , 0);
                         temp_data->file1_node = probs[i][j].file1;
                         temp_data->file2_node = probs[i][j].file2;
-                        
+
+                        //strcpy(temp_data->file1,probs[i][j].file1->key);
+                        //strcpy(temp_data->file2,probs[i][j].file2->key);
                         lnode_data * node_data =new_lnode_data( temp_data);
                         insert_lnode_data(validation_to_train,node_data);
                         
