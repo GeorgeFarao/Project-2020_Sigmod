@@ -155,16 +155,14 @@ void insert_Record_clone (char * Record , HashTable * table, json_list * jsonLis
         table->Trees [hash_index] = new_RBTree("char *directory_name");     /* we create tree */
         
         temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
-        //temp->bow_tf_idf_index=global_index;
-        //temp->number_of_words= words_count;
+
         temp->self_node = selfnode;
         RBTinsert(table->Trees[ hash_index ], temp );     /* We create and insert a node to the tree */
     }
     else            /* tree exits */
     {
         temp=new_node(Record, jsonList,NO_PARAMETER,NO_PARAMETER);
-        //temp->bow_tf_idf_index=global_index;
-        //temp->number_of_words=words_count;
+
         temp->self_node = selfnode;
         RBTinsert(table->Trees[ hash_index ], temp );
         
@@ -437,7 +435,7 @@ void find_conflicts(HashTable * table,logistic_regression * model )
             postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
         }
     }
-    printf("Conflicts found %d\n",conflicts);
+    printf("Conflicts found %d\n\n",conflicts);
 }
 
 

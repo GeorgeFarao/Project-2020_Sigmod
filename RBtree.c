@@ -741,7 +741,7 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
     
     int flag=0;
     
-    printf("%d %d\n", node->list_same_jsons->print_flag,node->list_same_jsons->size );
+    //printf("%d %d\n", node->list_same_jsons->print_flag,node->list_same_jsons->size );
     if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
     {
         
@@ -758,7 +758,7 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
             start = start->next;
         }
         if(flag==1) {
-            conflicts++;
+            conflicts += node->list_same_jsons->size;
             fixConflicts(files, node->list_same_jsons, model);
         }
     }

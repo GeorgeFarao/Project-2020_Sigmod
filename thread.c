@@ -72,29 +72,6 @@ void insert_lnode_thread( queue * Queue,  lnode_thread * Node)
 
 /* Deleting list */
 
-//void delete_queue( queue * Queue)
-//{
-//
-//    if (Queue->start == NULL) /* Checking if list is empty */
-//    {
-//        return;
-//    }
-//    else
-//    {
-//        lnode *prev = list->start;
-//
-//        while(list->start != NULL) /* Free allocated memory while moving prev and start pointers */
-//        {
-//            list->start = list->start->next; /* Move list->start to next node */
-//            free(prev->json_name);
-//            free(prev);
-//            prev = list->start; /* Prev indicated to previous state of list->start */
-//        }
-//    }
-//
-//    list->start = list->end = NULL;
-//    list->size = -1;      /* So other nodes indicating to the list it's being deleted */
-//}
 
 
 /* Deleting first node of list */
@@ -108,11 +85,6 @@ void delete_queue_node(queue * Queue)
     free(tmp);
     
     Queue->size--; /* Updating size */
-    
-    
-    
-    
-    
 }
 
 
@@ -130,8 +102,7 @@ job * pop (queue * Queue)
 
     
     Queue->size--; /* Updating size */
-//    if(Queue->size==0)
-//        scheduler->jobExists=0;
+
     
     return Job;
 }
@@ -183,7 +154,9 @@ void submit_job(jobScheduler * scheduler,job * Job)
 
 void Reader(logistic_regression * model,double learning_rate , HashTable * new_table )        //na sbhsoume to scheduler
 {
-    int i =2;
+    int i =500;
+    int old_conflicts=0;
+    int threshold=0;
     HashTable * original_table = new_table;
     
     int iterations = data->size/MINI_BATCH_M;
@@ -196,7 +169,6 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
 
     while(iterations )
     {
-        printf("Reader %d\n",iterations);
         pthread_mutex_lock(&scheduler->mtx);
         while(scheduler->writers >0 || scheduler->index<(NUMBER_OF_THREADS)  )
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
@@ -225,26 +197,26 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     }
 
     scheduler->index =NUMBER_OF_THREADS;
-    //printf("%d\n",scheduler->jobExists);
     while(1)
     {
-       // printf("to x einai %d, index %d\n",iterations, scheduler->index);
         pthread_mutex_lock(&scheduler->mtx);
-        //printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
         while(scheduler->writers >0 || scheduler->index <(NUMBER_OF_THREADS)  )
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
         scheduler->readers = scheduler->readers +1;
         pthread_mutex_unlock(&scheduler->mtx);
 
-        //printf("jobExists %d, q size %d\n",scheduler->jobExists,scheduler->queue->size);
         if(scheduler->jobExists == 0)
         {
-            if(i!=0)
+            if(threshold<15)
             {
-                printf("douleia\n");
                 new_table =CloneTable(original_table);
                 validation_to_train = new_list_data();
+                old_conflicts=conflicts;
                 test_validation(new_table, model);
+                if (absolute_int(conflicts-old_conflicts)<2)
+                    threshold++;
+                else
+                    threshold=0;
                 CreateJobs(2);
                 scheduler->jobExists=1;
                 i--;
@@ -253,17 +225,13 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
             }
             else
             {
-                printf("katastrofh\n");
                 scheduler->jobExists = 0;
                 break;
             }
         }
         else
         {
-            //printf("calculate opt\n");
             calculate_optimal_weights(model, learning_rate, scheduler);
-            //printf("calculate opt meta\n");
-            //delete_dataList(validation_to_train);
             if(scheduler->queue->size==0) {
 
                 scheduler->jobExists = 0;
@@ -285,7 +253,6 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     }
 
     CreateJobs(3);
-    printf("mege8os oura %d\n",scheduler->queue->size);
     scheduler->jobExists=1;
     scheduler->numWriters=0;
     scheduler->index=0;
@@ -296,19 +263,16 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     pthread_mutex_unlock(&scheduler->mtx);
 
     pthread_mutex_lock(&scheduler->mtx);
-    printf("here %d %d %d \n",scheduler->writers,scheduler->index,scheduler->jobExists);
     while(scheduler->writers >0 || scheduler->index <(NUMBER_OF_THREADS)  )
         pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
     scheduler->readers = scheduler->readers +1;
     pthread_mutex_unlock(&scheduler->mtx);
-    printf("Test Accuracy %d, %d\n", scheduler->total_tested, scheduler->total_correct);
     printf("Accuracy : %f %%\n", (double)(scheduler->total_correct) * 100 / (double)scheduler->total_tested);
 
     pthread_mutex_lock(&scheduler->mtx);
     scheduler->readers = scheduler->readers-1;
     pthread_cond_signal(&scheduler->writeCond);
     pthread_mutex_unlock(&scheduler->mtx);
-    printf("exit reader\n");
 }
 
 
@@ -387,8 +351,7 @@ void CreateJobs(int flag)
         free(Job);
     }
 
-    //printf("numberofjobs %d \n",numberofjobs);
-    
+
     
 }
 
@@ -408,10 +371,9 @@ void * Writer(void *modl)
     iterations = iterations *model->epoch;
     while(1)
     {
-        printf("NEW LOOP!!,iter: %d\n",iterations);
+
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
-        printf("ultra writer printf %d %d %d %d\n",scheduler->readers,scheduler->writers,scheduler->numWriters,scheduler->jobExists);
         while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS || scheduler->jobExists==0 )
             pthread_cond_wait(&scheduler->writeCond, &scheduler->mtx);
         scheduler->writers = scheduler->writers+1;
@@ -419,12 +381,8 @@ void * Writer(void *modl)
         
         pthread_mutex_unlock(&scheduler->mtx);
         //Critical Section
-       // printf("Poping a job %d\n",iterations);
         job * Job=pop(scheduler->queue);
-        
-        printf("writer %ld %p, iter: %d\n", pthread_self(),Job,iterations);
-        
-        
+
         //Quit critical Section
         pthread_mutex_lock(&scheduler->mtx);
         scheduler->writers=0;
@@ -443,8 +401,7 @@ void * Writer(void *modl)
             else if(Job->typeofJob == TESTING)
                 num_of_correct = test_model(Job,model, &total_checked);
         }
-//        if(Job->typeofJob == TERMINATE)
-//            break ;
+
 
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
@@ -455,13 +412,11 @@ void * Writer(void *modl)
 
 
         //Critical Section
-        //printf("second crit %d\n",iterations);
         if(Job->typeofJob != NOJOB) {
             if (Job->typeofJob == TRAINING)
                 scheduler->Matrix_w[scheduler->index] = Job->w;
             else if(Job->typeofJob == TESTING)
             {
-                printf("Tested, iter: %d\n", iterations);
                 scheduler->total_correct += num_of_correct;
                 scheduler->total_tested += total_checked;
             }
@@ -473,7 +428,6 @@ void * Writer(void *modl)
         //Quit critical Section
         pthread_mutex_lock(&scheduler->mtx);
         scheduler->otherWriters=0;
-        printf("index %d\n",scheduler->index);
         if(scheduler->index>=NUMBER_OF_THREADS) {
             pthread_cond_signal(&scheduler->readCond);
         }
@@ -484,12 +438,10 @@ void * Writer(void *modl)
         iterations--;
         int type=Job->typeofJob;
 
-       // delete_dataList_val(Job->data);
         free(Job);
         if (type == TESTING)
             break;
     }
-    printf("writer exit\n");
     return NULL;
 }
 

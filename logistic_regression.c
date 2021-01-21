@@ -108,10 +108,7 @@ void test_validation(HashTable *files, logistic_regression *model)
     struct node *temp;
     struct node *temp2;
 
-
     /* train model */
-    static int wtf=0;
-
 
     lnode_data *start; /* first node of our trainning data-nodes */
 
@@ -119,37 +116,27 @@ void test_validation(HashTable *files, logistic_regression *model)
     start = validation->start; /* indicates to first node of our test data-nodes */
 
     /* for every node */
-    printf("Start\n");
+
     while (start != NULL)
     {
-
         temp= start->data->file1_node;
         temp2 = start->data->file2_node;
 
         /* calculate probability */
         p = px(fx(model, temp, temp2));
 
-        //printf("wtf %d 1 \n",wtf);
         if (p < 0.5 ) {
-           // printf("Matching diff %f\n",p);
             match_different_products(files, temp->key, temp2->key);
         }
         else if (p >= 0.5) {
-           // printf("Matching same %f\n",p);
             match_same_products(files, temp->key, temp2->key);
         }
-      //  printf("wtf %d 2\n",wtf);
-        
-        wtf++;
-        if(wtf % 10000==0)
-            printf("wtf %d\n",wtf);
+
         /* update pointer */
         start = start->next;
     }
-    printf("Find conflicts\n");
     remove_duplicates(files);
     find_conflicts(files, model);
-    printf("Conflicts %d\n", conflicts);
 
 }
 
@@ -162,7 +149,6 @@ int test_model(job * Job, logistic_regression *model, int *total_checked)
     struct node *temp;
     struct node *temp2;
 
-
     /* train model */
 
         int count = 0;                   /* total number of test data */
@@ -172,8 +158,6 @@ int test_model(job * Job, logistic_regression *model, int *total_checked)
         int count0=0;
         int count1=0;
 
-
-
         lnode_data *start; /* first node of our trainning data-nodes */
 
         double p; /* probability obtained by our model */
@@ -182,15 +166,10 @@ int test_model(job * Job, logistic_regression *model, int *total_checked)
         /* for every node */
         while (start != NULL)
         {
-            /* find hash indexes */
-            //index1 = hash1(start->data->file1, files->size);
-           // index2 = hash1(start->data->file2, files->size);
 
             /* find nodes-json files */
-           // temp = find_key_RBtree(files->Trees[index1], start->data->file1);
             temp = start->data->file1_node;
             temp2 = start->data->file2_node;
-            //temp2 = find_key_RBtree(files->Trees[index2], start->data->file2);
 
             /* calculate probability */
             p = px(fx(model, temp, temp2));
@@ -200,7 +179,6 @@ int test_model(job * Job, logistic_regression *model, int *total_checked)
                 count0 = count0 +1;
             else
                 count1 = count1 +1;
-
 
             if (p < 0.5 && start->data->match_flag == 0)
                 number_of_correct_0++;
@@ -212,18 +190,10 @@ int test_model(job * Job, logistic_regression *model, int *total_checked)
             start = start->next;
         }
 
-//        printf("Accuracy for all: %f %%\n", (double)(number_of_correct_1+number_of_correct_0) * 100 / (double)count);
-//
-//         printf("Accuracy for 0: %f %%\n",(double)(number_of_correct_0)*100 / (double)count0  );
-//
-//        printf("Accuracy for 1: %f %%\n", (double)(number_of_correct_1)*100 / (double)count1 );
-        //printf("%d %d\n",count0 , count1);
-
         *total_checked= count;
     return number_of_correct_1+number_of_correct_0;
 
 }
-
 
 /* p(x) = 1 / (1 + e^-f(x)) */
 double px(double fx_val)
@@ -242,15 +212,13 @@ double *nabla(logistic_regression *model, job* Job)
     
     while(temp!=NULL)
     {
-       // printf("before px\n");
+
         /* sum = p(f(x)) */
         if (temp->data->file1_node==NULL || temp->data->file2_node==NULL){
             printf("%s %s\n",temp->data->file1,temp->data->file2);
         }
-//            printf("oof\n");
 
         double sum = px(fx(model, temp->data->file1_node, temp->data->file2_node));
-       // printf("after px\n");
         /* first file case */
         for (int j = 0; j < temp->data->file1_node->number_of_words; j++)
         {
@@ -301,6 +269,14 @@ double absolute(double val)
         return val;
 }
 
+int absolute_int(int val)
+{
+    if (val < 0)
+        return -val;
+    else
+        return val;
+}
+
 /* w^t+1 = w^t - learning_rate * nabla() */
 
 void calculate_optimal_weights(logistic_regression *model, double learning_rate,jobScheduler * scheduler)
@@ -315,7 +291,6 @@ void calculate_optimal_weights(logistic_regression *model, double learning_rate,
         if(scheduler->Matrix_w[i]!=NULL)
             for (int j=0 ; j<model->N;j++)
             {
-               // printf("%f\n",scheduler->Matrix_w[i][j]);
                 averageW[j] = averageW[j]+ scheduler->Matrix_w[i][j];
             }
         else
@@ -326,7 +301,6 @@ void calculate_optimal_weights(logistic_regression *model, double learning_rate,
     for (int j=0 ; j<model->N;j++)
     {
 
-            //averageW[j] = averageW[j]/(MINI_BATCH_M- (count*(MINI_BATCH_M/NUMBER_OF_THREADS))) ;
             model->w[j] = model->w[j] - averageW[j]*learning_rate;
     }
     free(averageW);
@@ -411,7 +385,7 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
     
     
     total_prob = total_prob/(double)MO;
-    if(total_prob > 0.5)                    //
+    if(total_prob > 0.5)
     {
         int i=0;
         int j=1;
@@ -427,8 +401,6 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
                     temp_data->file1_node = probs[i][j].file1;
                     temp_data->file2_node = probs[i][j].file2;
 
-                    //strcpy(temp_data->file1,probs[i][j].file1->key);
-                    //strcpy(temp_data->file2,probs[i][j].file2->key);
                     lnode_data * node_data =new_lnode_data( temp_data);
                     insert_lnode_data(validation_to_train,node_data);
                 }
@@ -453,8 +425,6 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
                         temp_data->file1_node = probs[i][j].file1;
                         temp_data->file2_node = probs[i][j].file2;
 
-                        //strcpy(temp_data->file1,probs[i][j].file1->key);
-                        //strcpy(temp_data->file2,probs[i][j].file2->key);
                         lnode_data * node_data =new_lnode_data( temp_data);
                         insert_lnode_data(validation_to_train,node_data);
                         

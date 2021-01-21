@@ -56,7 +56,7 @@ double px(double fx_val);
 
 /* absolute value */
 double absolute(double val);
-
+int absolute_int(int val);
 /* free allocated memory */
 void destroy_model(logistic_regression *model);
 
