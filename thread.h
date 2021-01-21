@@ -16,6 +16,7 @@ typedef struct job{
     list_data *data;    //Data to train or test
     double * w;
     int N;
+    int ids;
     
 }job;
 

@@ -22,7 +22,7 @@
 #include "dataList.h"
 #include "logistic_regression.h"
 #include "thread.h"
-
+int id=0;
 
 
 
@@ -192,10 +192,6 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
    if(data->size % MINI_BATCH_M!=0)
         iterations++;
     
-    int mod_res= iterations % NUMBER_OF_THREADS;
-    if (mod_res !=0 )
-        iterations+= mod_res;
-    iterations++;
     iterations = iterations*model->epoch;
 
     while(iterations )
@@ -212,7 +208,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
         //Calculate average and find new W
         calculate_optimal_weights(model, learning_rate, scheduler);
         for (int j = 0; j < NUMBER_OF_THREADS; ++j) {
-            if (scheduler->Matrix_w[j]);
+            if (scheduler->Matrix_w[j])
                 free(scheduler->Matrix_w[j]);
         }
         
@@ -317,7 +313,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
 
 void CreateJobs(int flag)
 {
-    lnode_data * temp;
+    lnode_data * temp=NULL;
     
     if(flag ==1)
     {
@@ -333,19 +329,24 @@ void CreateJobs(int flag)
     job * tempJob = NULL;
     if (flag ==1 || flag == 2) {
         int numberofjobs = 0;
+        
+        tempJob = malloc(sizeof(job));
+        tempJob->data = new_list_data();
+        tempJob->typeofJob = TRAINING;
+        
         while (temp != NULL) {
-            if (i == 0 || i % (MINI_BATCH_M / NUMBER_OF_THREADS) == 0) {
+
+            lnode_data * temp_node = new_lnode_data(temp->data);
+            insert_lnode_data(tempJob->data, temp_node);
+            
+            if(i%(MINI_BATCH_M/NUMBER_OF_THREADS) ==0 ||temp->next==NULL)
+            {
+                submit_job(scheduler, tempJob);
+                numberofjobs++;
                 tempJob = malloc(sizeof(job));
                 tempJob->data = new_list_data();
                 tempJob->typeofJob = TRAINING;
-            }
-
-            lnode_data *temp_node = new_lnode_data(temp->data);
-            insert_lnode_data(tempJob->data, temp_node);
-
-            if (i % ((MINI_BATCH_M / NUMBER_OF_THREADS) - 1) == 0 || temp->next == NULL) {
-                submit_job(scheduler, tempJob);
-                numberofjobs++;
+                
             }
 
             temp = temp->next;
@@ -355,6 +356,7 @@ void CreateJobs(int flag)
         while (numberofjobs % NUMBER_OF_THREADS != 0) {
             tempJob = malloc(sizeof(job));
             tempJob->typeofJob = NOJOB;
+            tempJob->data = new_list_data();
             submit_job(scheduler, tempJob);
             numberofjobs++;
 
@@ -413,7 +415,10 @@ void * Writer(void *modl)
         //Critical Section
        // printf("Poping a job %d\n",iterations);
         job * Job=pop(scheduler->queue);
-
+        
+        printf("writer %d %p\n", pthread_self(),Job);
+        
+        
         //Quit critical Section
         pthread_mutex_lock(&scheduler->mtx);
         scheduler->writers=0;
@@ -423,9 +428,8 @@ void * Writer(void *modl)
         pthread_mutex_unlock(&scheduler->mtx);
         
         //DO some work
-        int total_checked;
-        int num_of_correct;
-        printf("%p\n", Job);
+        int total_checked=0;
+        int num_of_correct=0;
         if(Job->typeofJob != NOJOB)
         {
             if (Job->typeofJob == TRAINING)

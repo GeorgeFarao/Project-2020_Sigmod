@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     
     /* trainning our model */
     logistic_regression *model;
-    model = new_model(global_total_words * 2, 0, 0.00000001, 8);
+    model = new_model(global_total_words * 2, 0, 0.00000001, 1);
 
     printf("Clone\n");
     scheduler = initialize_scheduler(model);
@@ -113,16 +113,24 @@ int main(int argc, char *argv[])
 
 
 
-    for (int i = 0; i < NUMBER_OF_THREADS; ++i)
-         pthread_join(*(scheduler->threadIds + i), NULL);
+//    for (int i = 0; i < NUMBER_OF_THREADS; ++i)
+//         pthread_join(*(scheduler->threadIds + i), NULL);
 
     //pthread_join
     /* Free allocated memory */
+    printf("1\n");
     delete_hashtable(Table);
+    printf("2\n");
     destroy_HashTable(stopwords);
+    printf("3\n");
     destroy_HashTable(bow_tfidf);
+    printf("4\n");
     delete_dataList(data);
+    printf("5\n");
     delete_dataList(test);
+    printf("6\n");
     delete_dataList(validation);
+    printf("7\n");
     destroy_model(model);
+    printf("8\n");
 }
