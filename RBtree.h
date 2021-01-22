@@ -3,8 +3,8 @@
 #define NO_PARAMETER 0
 #define DIFFERENT_CLIQUES 1
 #define BOW_TF_IDF 2
-#define MINI_BATCH_M 512
-#define NUMBER_OF_THREADS 8
+#define MINI_BATCH_M 1024
+#define NUMBER_OF_THREADS 16
 #define TRAINING 0
 #define TESTING 1
 #define TERMINATE 2

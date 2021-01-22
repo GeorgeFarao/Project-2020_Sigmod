@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     
     /* trainning our model */
     logistic_regression *model;
-    model = new_model(global_total_words * 2, 0, 0.00000001, 1);
+    model = new_model(global_total_words * 2, 0, 0.00000001, 5);
 
     scheduler = initialize_scheduler(model);
     
@@ -96,12 +96,8 @@ int main(int argc, char *argv[])
     for (int i=0 ;i<NUMBER_OF_THREADS;i++)
         pthread_create(&scheduler->threadIds[i], NULL, Writer, (void * ) model );
     Reader(model, 0.01,Table);
-    printf("End of training \n");
-    //test_validation(new_table,model);
-    //find_conflicts(Table, model);
-    
-    
-    //test_model(Table,model);
+    printf("End of testing \n");
+
 
 
 
@@ -111,7 +107,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i < NUMBER_OF_THREADS; ++i)
          pthread_join(*(scheduler->threadIds + i), NULL);
 
-    //pthread_join
     /* Free allocated memory */
     delete_hashtable(Table);
     destroy_HashTable(stopwords);

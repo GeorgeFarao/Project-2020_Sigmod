@@ -435,7 +435,7 @@ void find_conflicts(HashTable * table,logistic_regression * model )
             postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
         }
     }
-    printf("Conflicts found %d\n\n",conflicts);
+    printf("%d ",conflicts);
 }
 
 
