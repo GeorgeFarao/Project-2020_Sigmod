@@ -741,12 +741,13 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
     
     int flag=0;
     
-    //printf("%d %d\n", node->list_same_jsons->print_flag,node->list_same_jsons->size );
     if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
     {
         
         node->list_same_jsons->print_flag=1;
         lnode * start = node->list_same_jsons->start;
+        
+        //if some element of one clique is same with an element in different-element-tree then there is conflict
         while(start!=NULL)
         {
             postorder_checkifElementinDifferentCliques(node->list_same_jsons->different_cliques,
@@ -766,7 +767,38 @@ void postorder_findCliques_conflicts(struct RBTree *T, struct node *node, HashTa
 }
 
 
+//unit-test function / same logic as the other function but doesnt use global variables
 
+void postorder_findCliques_conflicts_test(struct RBTree *T, struct node *node, HashTable * files ,logistic_regression * model, int * flag)
+{
+    if (node == T->NIL)
+        return ;
+    
+    postorder_findCliques_conflicts_test(T, node->left,files,model,flag);
+    postorder_findCliques_conflicts_test(T, node->right,files,model,flag);
+    
+    
+    if (node->list_same_jsons->print_flag == 0 && node->list_same_jsons->size > 1)
+    {
+        
+        node->list_same_jsons->print_flag=1;
+        lnode * start = node->list_same_jsons->start;
+        while(start!=NULL)
+        {
+            postorder_checkifElementinDifferentCliques(node->list_same_jsons->different_cliques,
+                                                       node->list_same_jsons->different_cliques->root, start->json_name, flag);
+            
+            if(*flag==1)
+                break;
+            
+            start = start->next;
+        }
+        if(*flag==1) {
+            return ;
+        }
+    }
+    
+}
 
 
 

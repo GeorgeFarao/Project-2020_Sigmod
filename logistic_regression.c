@@ -385,6 +385,9 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
     
     
     total_prob = total_prob/(double)MO;
+    
+    //if average propability of all elements with all elements is higher than 0.5 we decide
+    // that we keep all elements in this clique
     if(total_prob > 0.5)
     {
         int i=0;
@@ -395,6 +398,7 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
             while (j!=clique->size)
             {
                 /* find hash indexes */
+                //and we train with 1 elements that didnt match
                 if(probs[i][j].prob <0.5)
                 {
                     train_data * temp_data = new_train_data(probs[i][j].file1->key, probs[i][j].file2->key , 1);

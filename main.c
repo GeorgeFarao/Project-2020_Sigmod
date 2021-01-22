@@ -81,7 +81,6 @@ int main(int argc, char *argv[])
 
     printf("data size: %d, validation size: %d, test size: %d\n", data->size, validation->size,test->size);
 
-    //create_validation_list(allfiles);
     
     /* trainning our model */
     logistic_regression *model;

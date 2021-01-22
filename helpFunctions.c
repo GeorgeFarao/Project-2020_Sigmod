@@ -109,7 +109,6 @@ void reading_directory (char * directory_name, HashTable * Table , HashTable * s
 
                     /* Inset json record to our structures */
                     other_insert_Record(name, Table, jsonList, words_count);
-                    //printf("%d\n",global_index);
                     global_index++;
                     free(second_full_path);
                 }

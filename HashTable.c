@@ -435,9 +435,20 @@ void find_conflicts(HashTable * table,logistic_regression * model )
             postorder_findCliques_conflicts(table->Trees[i], table->Trees[i]->root, table, model);
         }
     }
-    printf("%d ",conflicts);
+    printf("Conflicts Found: %d\n",conflicts);
 }
 
+int find_conflicts_test(HashTable * table,logistic_regression * model )
+{
+    conflicts =0;
+    for(int i=0 ;i<table->size ; i++)
+    {
+        if( table->Trees[i]!=NULL){
+            postorder_findCliques_conflicts_test(table->Trees[i], table->Trees[i]->root, table, model,&conflicts);
+        }
+    }
+    return  conflicts;
+}
 
 
 
@@ -581,7 +592,8 @@ void create_tfidf_bow(HashTable *files, HashTable *different_words)
 }
 
 
-
+//This function copies all nodes of a hash table to a new one without copying the cliques so
+//that we create new ones
 HashTable * CloneTable(HashTable * table)
 {
     HashTable * newTable = newHashTable(table->size);

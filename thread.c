@@ -170,6 +170,8 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
     while(iterations )
     {
         pthread_mutex_lock(&scheduler->mtx);
+        
+        //Reader waits for ALL writers to finish
         while(scheduler->writers >0 || scheduler->index<(NUMBER_OF_THREADS)  )
             pthread_cond_wait(&scheduler->readCond, &scheduler->mtx);
         
@@ -189,6 +191,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
         if(iterations ==1)
             scheduler->jobExists=0;
         
+        //writers start
         pthread_mutex_lock(&scheduler->mtx);
         scheduler->readers = scheduler->readers-1;
         pthread_cond_signal(&scheduler->writeCond);
@@ -207,6 +210,7 @@ void Reader(logistic_regression * model,double learning_rate , HashTable * new_t
 
         if(scheduler->jobExists == 0)
         {
+            //Sigklish
             if(threshold<15)
             {
                 new_table =CloneTable(original_table);
@@ -374,6 +378,8 @@ void * Writer(void *modl)
 
         //Enter critical section
         pthread_mutex_lock(&scheduler->mtx);
+        
+        //Writers wait for jobs to be created in order to get a job || or they wait on other writers
         while(scheduler->readers>0 || scheduler->writers>0  ||scheduler->numWriters>=NUMBER_OF_THREADS || scheduler->jobExists==0 )
             pthread_cond_wait(&scheduler->writeCond, &scheduler->mtx);
         scheduler->writers = scheduler->writers+1;

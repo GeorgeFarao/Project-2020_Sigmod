@@ -65,6 +65,8 @@ void fixConflicts(HashTable * files , list * clique, logistic_regression * model
 void find_conflicts(HashTable * table,logistic_regression * model );
 void test_validation(HashTable *files, logistic_regression *model);
 
+void postorder_findCliques_conflicts_test(struct RBTree *T, struct node *node, HashTable * files ,logistic_regression * model, int * flag);
+int find_conflicts_test(HashTable * table,logistic_regression * model );
 
 
 

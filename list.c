@@ -192,7 +192,6 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
 
         while (temp_next != NULL)
         {
-            //printf( "second here %s, %s\n", temp->json_name , temp_next->json_name);
             /* find hash indexes */
             index1 = hash1(temp->json_name, files->size);
             index2 = hash1(temp_next->json_name, files->size);
@@ -207,7 +206,6 @@ void print_two_lists(list * mylist1 ,list * mylist2, HashTable * files)
             lnode_data * node_data =new_lnode_data( temp_data);
 
             if (cnt==5){
-                //printf("OK\n");
                 insert_lnode_data(test,node_data);
                // cnt = 0;
 

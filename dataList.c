@@ -102,7 +102,7 @@ void delete_dataList(list_data *dataList)       // deletes a data list
     free(dataList);
 }
 
-void delete_dataList_val(list_data *dataList)       // deletes a data list
+void delete_dataList_val(list_data *dataList)       // similar to delete datalist but for differeent list
 {
     if (dataList->start == NULL) /* Checking if list is empty */
     {
@@ -118,7 +118,6 @@ void delete_dataList_val(list_data *dataList)       // deletes a data list
             dataList->start = dataList->start->next; /* Move list->start to next node */
             free(prev->data->file1);
             free(prev->data->file2);
-            //free(prev->data);
             free(prev);
             prev = dataList->start; /* Prev indicated to previous state of list->start */
         }

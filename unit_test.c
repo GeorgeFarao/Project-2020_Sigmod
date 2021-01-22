@@ -212,6 +212,10 @@ void test_hashtable(void)
     TEST_CHECK(   strcmp(ebay101->list_same_jsons->different_cliques->root->key , "diaforetikos")==0   );
     TEST_MSG("Nodes are not different\n");
     
+    match_same_products(table, "diaforetikos", "ebay100.json");
+    TEST_CHECK(find_conflicts_test(table, NULL)==1);
+    TEST_MSG("Conflict not found \n");
+    
     
     // delete_hashtable(table);
     free(table);
