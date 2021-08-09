@@ -1,11 +1,5 @@
 # **Software Development for Information Systems**
 
-## Project - Part 1 
-
-## Participants:
-* **Kazakos Vasileios - 1115201700040**
-* **Stivaktas Emmanouil - 1115201700152**
-* **Farao Georgios - 1115201700177**
 
 ### Purpose:
 Purpose of the project is to find matching products (in this case json files) of different entries that are found in several websites. This is also known as entity resolution or disambiguation in bibliography. To elaborate, we are given multiple folders which contain json files. Each folder represents an ecommerce website (E.g www.ebay.com) and each json file represent a selling product. We are also given a .csv file that contains mathcing products id's as a set of two. Below, we will explain how we match same products based on transitive property and also the structs that have been used throughout the programm.
@@ -58,11 +52,8 @@ All products that match point to the same list. When we find a new set of produc
 * By using a hash table with a good hash function we can reduce the complexity to O(1)*O(logn/M) with M being size of hash table.
 
 
-## Project - Part 2
+### What's been added
 
-### What's been added to Part 1
-
-* Everything has been implemented according to the excercise requirements.
 * For every clique we find all products that are different.
 * We split randomly our data
    * train_set: 80%
